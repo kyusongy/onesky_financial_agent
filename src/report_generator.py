@@ -2,24 +2,27 @@
 Report generator for filling the output template.
 """
 import pandas as pd
-from openpyxl import load_workbook
-from openpyxl.styles import PatternFill
+from openpyxl import load_workbook, Workbook
+from openpyxl.styles import PatternFill, Font, Alignment
 from pathlib import Path
 from typing import Optional, BinaryIO, Union
 from io import BytesIO
-from copy import copy
+from datetime import datetime
 
-from .models import TransactionGroup, ProcessingResult, BankType
+from .models import TransactionGroup, TransactionRow, ProcessingResult, BankType
 from config.mappings import (
     DEFAULT_OUTPUT_TEMPLATE,
     TEMPLATE_COL_VND,
     TEMPLATE_COL_USD,
     TEMPLATE_ROWS,
+    NATURE_DISPLAY_MAP,
 )
 
 
 # Yellow highlight for manual review
 HIGHLIGHT_FILL = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
+HEADER_FILL = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+HEADER_FONT = Font(color="FFFFFF", bold=True)
 
 
 class ReportGenerator:
@@ -65,54 +68,69 @@ class ReportGenerator:
         return output.read()
     
     def _fill_income(self, ws, result: ProcessingResult) -> None:
-        """Fill income section values."""
+        """Fill income section values with totals."""
         for bank_type, values in result.income.items():
             col = self._get_column(bank_type)
             
-            # Contribution (row 5 in Excel = index 4)
+            # Contribution
             self._set_cell(ws, TEMPLATE_ROWS["contribution"], col, values.get("contribution", 0))
             
-            # Fund transfer (row 6 in Excel = index 5)
+            # Fund transfer
             self._set_cell(ws, TEMPLATE_ROWS["fund_transfer"], col, values.get("fund_transfer", 0))
             
-            # Interest (row 7 in Excel = index 6)
+            # Interest
             self._set_cell(ws, TEMPLATE_ROWS["interest"], col, values.get("interest", 0))
             
-            # PED (row 8 in Excel = index 7)
+            # PED
             self._set_cell(ws, TEMPLATE_ROWS["ped"], col, values.get("ped", 0))
+            
+            # Total for income section
+            income_total = sum(values.values())
+            if "income_total" in TEMPLATE_ROWS:
+                self._set_cell(ws, TEMPLATE_ROWS["income_total"], col, income_total)
     
     def _fill_advance_settlement(self, ws, result: ProcessingResult) -> None:
-        """Fill advance/settlement section values."""
+        """Fill advance/settlement section values with totals."""
         for bank_type, values in result.advance_settlement.items():
             col = self._get_column(bank_type)
             
-            # Advance (row 37 in Excel = index 36)
+            # Advance
             self._set_cell(ws, TEMPLATE_ROWS["advance"], col, values.get("advance", 0))
             
-            # Settlement (row 38 in Excel = index 37)
+            # Settlement
             self._set_cell(ws, TEMPLATE_ROWS["settlement"], col, values.get("settlement", 0))
+            
+            # Total for advance/settlement section
+            total = sum(values.values())
+            if "advance_settlement_total" in TEMPLATE_ROWS:
+                self._set_cell(ws, TEMPLATE_ROWS["advance_settlement_total"], col, total)
     
     def _fill_nature(self, ws, result: ProcessingResult) -> None:
-        """Fill expenditure by nature section values."""
+        """Fill expenditure by nature section values with totals."""
         for bank_type, values in result.nature_totals.items():
             col = self._get_column(bank_type)
             
-            # Org (row 13 in Excel = index 12)
+            # Org
             self._set_cell(ws, TEMPLATE_ROWS["org"], col, values.get("org", 0))
             
-            # Edu (row 14 in Excel = index 13)
+            # Edu
             self._set_cell(ws, TEMPLATE_ROWS["edu"], col, values.get("edu", 0))
             
-            # Oper (row 15 in Excel = index 14)
+            # Oper
             self._set_cell(ws, TEMPLATE_ROWS["oper"], col, values.get("oper", 0))
             
-            # Nutrition (row 16 in Excel = index 15)
+            # Nutrition
             self._set_cell(ws, TEMPLATE_ROWS["nutrition"], col, values.get("nutrition", 0))
             
-            # Edu Infra (row 17 in Excel = index 16)
+            # Edu Infra
             self._set_cell(ws, TEMPLATE_ROWS["edu_infra"], col, values.get("edu_infra", 0))
             
-            # Manual (row 41 in Excel = index 40)
+            # Total for expense section (excluding manual)
+            expense_total = sum(v for k, v in values.items() if k != "manual")
+            if "expense_total" in TEMPLATE_ROWS:
+                self._set_cell(ws, TEMPLATE_ROWS["expense_total"], col, expense_total)
+            
+            # Manual
             self._set_cell(ws, TEMPLATE_ROWS["manual"], col, values.get("manual", 0))
     
     def _get_column(self, bank_type: BankType) -> int:
@@ -129,31 +147,129 @@ class ReportGenerator:
 
 def generate_marked_transactions(
     original_file: Union[str, Path, BinaryIO],
-    manual_groups: list[TransactionGroup]
+    all_groups: list[TransactionGroup],
+    exchange_rates: dict[str, float],
+    nature_mapper=None
 ) -> bytes:
     """
-    Generate a copy of the transaction file with manual review rows highlighted.
+    Generate a processed transaction file with additional columns:
+    - Nature category for each row
+    - Exchange rate (for USD transactions)
+    - Amount in corresponding currency (VND for VND bank, USD for USD bank)
     
     Args:
         original_file: Path or file-like object of original transaction file
-        manual_groups: List of groups requiring manual review
+        all_groups: List of all processed transaction groups
+        exchange_rates: Dictionary of date string to exchange rate
+        nature_mapper: NatureMapper instance for looking up nature categories
         
     Returns:
-        Bytes of the highlighted Excel file
+        Bytes of the enhanced Excel file
     """
     wb = load_workbook(original_file)
     ws = wb.active
     
-    # Collect all row indices that need highlighting
-    highlight_rows: set[int] = set()
-    for group in manual_groups:
-        for row in group.rows:
-            # Excel rows are 1-based
-            highlight_rows.add(row.original_row_index + 1)
+    # Find the last column and add new headers
+    max_col = ws.max_column
     
-    # Apply highlighting
+    # Add new column headers (find header row first)
+    header_row = 1
+    for row in range(1, min(10, ws.max_row + 1)):
+        cell_val = ws.cell(row=row, column=2).value
+        if cell_val and str(cell_val).lower() == "date":
+            header_row = row
+            break
+    
+    # New columns
+    col_exchange_rate = max_col + 1
+    col_bank_label = max_col + 2
+    col_month = max_col + 3
+    col_account_num = max_col + 4
+    col_nature = max_col + 5
+    col_converted_amount = max_col + 6
+    
+    # Set headers
+    headers = [
+        ("Exchange Rate", col_exchange_rate),
+        ("Bank", col_bank_label),
+        ("Month", col_month),
+        ("Account No.", col_account_num),
+        ("Nature", col_nature),
+        ("Amount (Currency)", col_converted_amount),
+    ]
+    
+    for header_text, col in headers:
+        cell = ws.cell(row=header_row, column=col)
+        cell.value = header_text
+        cell.fill = HEADER_FILL
+        cell.font = HEADER_FONT
+    
+    # Collect all row indices that need highlighting (manual review)
+    highlight_rows: set[int] = set()
+    
+    # Process each group
+    for group in all_groups:
+        # Get exchange rate for this group's date
+        date_key = group.date.strftime("%Y-%m-%d") if group.date else ""
+        ex_rate = exchange_rates.get(date_key) if exchange_rates else None
+        
+        # Get month from date
+        month_str = group.date.strftime("%Y%m") if group.date else ""
+        
+        # Bank label
+        bank_label = group.bank_type.value  # 29 or 30
+        
+        # Mark manual review rows
+        if group.requires_manual_review:
+            for row in group.rows:
+                highlight_rows.add(row.original_row_index + 1)
+        
+        for i, row in enumerate(group.rows):
+            excel_row = row.original_row_index + 1  # Excel is 1-based
+            
+            # Skip if row index is invalid
+            if excel_row <= header_row:
+                continue
+            
+            # Exchange rate (only for USD bank and not first entry)
+            if group.bank_type == BankType.USD and ex_rate:
+                ws.cell(row=excel_row, column=col_exchange_rate).value = ex_rate
+            
+            # Bank label
+            ws.cell(row=excel_row, column=col_bank_label).value = bank_label
+            
+            # Month
+            ws.cell(row=excel_row, column=col_month).value = month_str
+            
+            # For non-bank entries, add account number and nature
+            is_first_entry = (i == 0)
+            if not is_first_entry and not row.is_bank_entry():
+                # Account number
+                account_num = row.get_account_number()
+                if account_num:
+                    ws.cell(row=excel_row, column=col_account_num).value = account_num
+                
+                # Nature category
+                if row.nature_category:
+                    nature_display = NATURE_DISPLAY_MAP.get(
+                        row.nature_category, 
+                        row.nature_category
+                    )
+                    ws.cell(row=excel_row, column=col_nature).value = nature_display
+            
+            # Converted amount (VND for VND bank, USD for USD bank)
+            if row.amount is not None:
+                if group.bank_type == BankType.USD and ex_rate:
+                    # Convert VND amount to USD
+                    converted = row.amount / ex_rate
+                    ws.cell(row=excel_row, column=col_converted_amount).value = converted
+                else:
+                    # VND bank - amount is already in VND
+                    ws.cell(row=excel_row, column=col_converted_amount).value = row.amount
+    
+    # Apply highlighting for manual review rows
     for row_idx in highlight_rows:
-        for col in range(1, ws.max_column + 1):
+        for col in range(1, col_converted_amount + 1):
             cell = ws.cell(row=row_idx, column=col)
             cell.fill = HIGHLIGHT_FILL
     
@@ -162,4 +278,3 @@ def generate_marked_transactions(
     wb.save(output)
     output.seek(0)
     return output.read()
-

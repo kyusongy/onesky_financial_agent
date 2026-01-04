@@ -24,15 +24,18 @@ TEMPLATE_ROWS = {
     "fund_transfer": 5,
     "interest": 6,
     "ped": 7,
+    "income_total": 3,
     # Expenditure by nature section
     "org": 12,
     "edu": 13,
     "oper": 14,
     "nutrition": 15,
     "edu_infra": 16,
+    "expense_total": 11,
     # Advance/Settlement section
     "advance": 36,
     "settlement": 37,
+    "advance_settlement_total": 35,
     # Manual input
     "manual": 40,
 }
@@ -49,6 +52,18 @@ NATURE_CATEGORY_MAP = {
     "reimbursement": "settlement",
 }
 
+# Nature display names for marked transactions
+NATURE_DISPLAY_MAP = {
+    "org": "Organisational capacity building",
+    "edu": "Education quality improvement",
+    "oper": "Program Operation",
+    "nutrition": "Nutrition for the children",
+    "edu_infra": "Education Infrastructure",
+    "manual": "Manual input",
+    "advance": "Advance by cash",
+    "settlement": "Reimbursement",
+}
+
 # Transaction type identifiers
 TRANSACTION_TYPE_DEPOSIT = "deposit"
 TRANSACTION_TYPE_TRANSFER = "transfer"
@@ -63,4 +78,3 @@ EXCEL_COLUMNS = {
     "account": 7,
     "amount": 8,
 }
-
