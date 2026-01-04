@@ -3,6 +3,11 @@ Nature mapper for the "by nature" section.
 
 Maps transactions to nature categories using the lookup table.
 Applies filling logic based on number of rows and nature types.
+
+Note: Expense amounts in transactions are typically negative (money going out),
+but in the report's expense section they should be shown as positive values.
+
+For USD bank, amounts are converted from VND to USD using the exchange rate.
 """
 import pandas as pd
 from pathlib import Path
@@ -86,15 +91,33 @@ class NatureMapper:
         
         return None
     
+    def get_nature_display(self, account_number: Optional[str]) -> Optional[str]:
+        """
+        Get the raw nature category string for display purposes.
+        
+        Args:
+            account_number: Account number (e.g., "71101VN")
+            
+        Returns:
+            Raw nature string from lookup table or None
+        """
+        if not account_number:
+            return None
+        
+        account_key = account_number.strip().lower()
+        return self.lookup_table.get(account_key)
+    
     def process_groups(
         self,
-        groups_by_bank: dict[BankType, list[TransactionGroup]]
+        groups_by_bank: dict[BankType, list[TransactionGroup]],
+        exchange_rates: dict[str, float] = None
     ) -> tuple[dict[BankType, dict[str, float]], list[TransactionGroup]]:
         """
         Process all groups and calculate nature totals.
         
         Args:
             groups_by_bank: Dictionary mapping BankType to list of groups
+            exchange_rates: Dictionary of date string to exchange rate (for USD conversion)
             
         Returns:
             Tuple of (nature_totals by bank, list of manual review groups)
@@ -107,13 +130,16 @@ class NatureMapper:
         
         for bank_type, groups in groups_by_bank.items():
             for group in groups:
-                result = self._process_group(group)
+                # Get exchange rate for USD conversion
+                ex_rate = self._get_exchange_rate(group, bank_type, exchange_rates)
+                
+                result = self._process_group(group, ex_rate)
                 
                 if result["is_manual"]:
                     group.requires_manual_review = True
                     manual_groups.append(group)
-                    # Add to manual input total
-                    nature_totals[bank_type]["manual"] += result["manual_amount"]
+                    # Add to manual input total (use absolute value)
+                    nature_totals[bank_type]["manual"] += abs(result["manual_amount"])
                 else:
                     # Add to respective nature categories
                     for nature_key, amount in result["nature_amounts"].items():
@@ -121,6 +147,26 @@ class NatureMapper:
                             nature_totals[bank_type][nature_key] += amount
         
         return nature_totals, manual_groups
+    
+    def _get_exchange_rate(
+        self,
+        group: TransactionGroup, 
+        bank_type: BankType, 
+        exchange_rates: dict[str, float]
+    ) -> float:
+        """Get exchange rate for USD bank, return 1.0 for VND bank."""
+        if bank_type != BankType.USD:
+            return 1.0
+        if not exchange_rates or not group.date:
+            return 1.0
+        date_key = group.date.strftime("%Y-%m-%d")
+        return exchange_rates.get(date_key, 1.0)
+    
+    def _convert_amount(self, amount: float, ex_rate: float) -> float:
+        """Convert amount using exchange rate (divide for VND to USD)."""
+        if ex_rate <= 0:
+            return amount
+        return amount / ex_rate
     
     def _init_nature_totals(self) -> dict[str, float]:
         """Initialize nature totals dictionary."""
@@ -133,14 +179,16 @@ class NatureMapper:
             "manual": 0.0,
         }
     
-    def _process_group(self, group: TransactionGroup) -> dict:
+    def _process_group(self, group: TransactionGroup, ex_rate: float) -> dict:
         """
         Process a single group for nature mapping.
         
         Filling logic:
         - If any row's nature = manual: mark for manual review, use first row's amount
         - If nature != manual AND 2 rows: use 2nd row's nature, fill 1st row's amount
-        - If nature != manual AND >2 rows: fill each row's amount by its nature (opposite sign)
+        - If nature != manual AND >2 rows: fill each row's amount by its nature
+        
+        Note: All expense amounts are converted to positive values for the report.
         
         Returns:
             Dict with keys: is_manual, manual_amount, nature_amounts
@@ -154,44 +202,46 @@ class NatureMapper:
         if not group.rows:
             return result
         
-        # Assign nature to each row
+        # Assign nature to each row (skip bank entry rows)
         for row in group.rows:
-            account_num = row.get_account_number()
-            row.nature_category = self.get_nature(account_num)
+            if not row.is_bank_entry():
+                account_num = row.get_account_number()
+                row.nature_category = self.get_nature(account_num)
         
         # Check if any row requires manual review
         has_manual = any(row.nature_category == "manual" for row in group.rows)
         
         if has_manual:
             result["is_manual"] = True
-            # Use first row's amount for manual input
+            # Use first row's amount for manual input (converted if USD)
             if group.first_row and group.first_row.amount is not None:
-                result["manual_amount"] = group.first_row.amount
+                result["manual_amount"] = self._convert_amount(group.first_row.amount, ex_rate)
             return result
         
         # Process based on number of rows
         num_rows = len(group.rows)
         
         if num_rows == 2:
-            # Use 2nd row's nature, fill 1st row's amount
+            # Use 2nd row's nature, fill 1st row's amount (as positive, converted if USD)
             first_row = group.rows[0]
             second_row = group.rows[1]
             
             if second_row.nature_category and first_row.amount is not None:
-                result["nature_amounts"][second_row.nature_category] = first_row.amount
+                # Take absolute value and convert for expense section
+                converted = self._convert_amount(first_row.amount, ex_rate)
+                result["nature_amounts"][second_row.nature_category] = abs(converted)
         
         elif num_rows > 2:
-            # Fill each row's amount by its nature (opposite sign)
-            # First row is the bank actual input, skip it
-            # Use other rows' amounts with opposite sign
+            # Fill each detail row's amount by its nature
+            # Use absolute values for expense section
             for row in group.detail_rows:
                 if row.nature_category and row.amount is not None:
-                    # Take opposite sign (negate the amount)
-                    amount = -row.amount
+                    # Use absolute value of the amount (converted if USD)
+                    converted = self._convert_amount(row.amount, ex_rate)
+                    amount = abs(converted)
                     if row.nature_category in result["nature_amounts"]:
                         result["nature_amounts"][row.nature_category] += amount
                     else:
                         result["nature_amounts"][row.nature_category] = amount
         
         return result
-
