@@ -149,7 +149,10 @@ dmypy.json
 cython_debug/
 
 # Instruction data (project specific)
-instruction_data/
+instruction_data/*
+!instruction_data/templates/
+!instruction_data/templates/*.xlsx
+instruction_data/test_data/
 
 # OS specific
 .DS_Store
