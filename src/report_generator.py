@@ -321,19 +321,22 @@ def _get_assigned_to_label(group, row) -> str:
     
     elif section == "nature":
         # Use the row's nature category
-        if row.nature_category:
+        if row.nature_category and row.nature_category != "manual":
             nature_display = NATURE_DISPLAY_MAP.get(row.nature_category, row.nature_category)
             return f"By nature: {nature_display}"
         return "By nature"
     
     elif section == "manual":
-        if row.nature_category:
+        # For manual input groups, use the row's actual nature (not "manual")
+        if row.nature_category and row.nature_category != "manual":
             nature_display = NATURE_DISPLAY_MAP.get(row.nature_category, row.nature_category)
-            return f"Manual input: {nature_display}"
-        return "Manual input"
+            return f"By nature: {nature_display}"
+        return "By nature: Manual input"
     
     # If no section assigned but row has nature
     if row.nature_category:
+        if row.nature_category == "manual":
+            return "By nature: Manual input"
         nature_display = NATURE_DISPLAY_MAP.get(row.nature_category, row.nature_category)
         return f"By nature: {nature_display}"
     

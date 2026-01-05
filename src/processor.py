@@ -120,37 +120,30 @@ def _determine_row_bank(row: TransactionRow) -> Optional[BankType]:
 
 def _remove_capital_rows(group: TransactionGroup) -> TransactionGroup:
     """
-    Remove rows where memo contains 'capital' and their opposite-amount pairs.
+    Remove capital rows and their offset pairs.
     
-    For each row with 'capital' in memo:
-    1. Remove that row
-    2. Find and remove another row with the same absolute amount but opposite sign
+    Capital row identification:
+    - Memo contains 'capital' AND account code starts with '13' (e.g., 1310VN)
+    
+    For each capital row found:
+    1. Remove the capital row itself
+    2. Remove the row immediately before it (the offset row)
     """
     rows = deepcopy(group.rows)
     rows_to_remove: set[int] = set()
     
-    # First pass: find capital rows
-    capital_indices: list[int] = []
+    # Find capital rows: memo contains "capital" AND account starts with "13"
     for i, row in enumerate(rows):
         if row.memo_contains("capital"):
-            capital_indices.append(i)
-            rows_to_remove.add(i)
-    
-    # Second pass: find opposite-amount pairs for capital rows
-    for cap_idx in capital_indices:
-        cap_row = rows[cap_idx]
-        if cap_row.amount is None:
-            continue
-        
-        target_amount = -cap_row.amount  # Opposite sign
-        
-        # Find a matching row (not already marked for removal)
-        for i, row in enumerate(rows):
-            if i in rows_to_remove:
-                continue
-            if row.amount is not None and abs(row.amount - target_amount) < 0.01:
+            # Check if account code starts with "13"
+            account_num = row.get_account_number()
+            if account_num and account_num.lower().startswith("13"):
+                # This is the capital row to remove
                 rows_to_remove.add(i)
-                break  # Only remove one matching row per capital row
+                
+                # Also remove the row immediately before it (the offset row)
+                if i > 0:
+                    rows_to_remove.add(i - 1)
     
     # Create new group with remaining rows
     remaining_rows = [row for i, row in enumerate(rows) if i not in rows_to_remove]
