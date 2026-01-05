@@ -1,149 +1,176 @@
 """
 Data classes for transaction processing.
+
+This module defines the core data structures for the financial reporting system:
+- ReportSection: Enum for categorizing transactions
+- TransactionEntry: Individual transaction split rows
+- TransactionGroup: Grouped transaction with header info and entries
+- ProcessingResult: Aggregated processing results
 """
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 from enum import Enum
+import uuid
 
 
-class BankType(Enum):
-    """Bank type identifier."""
-    USD = 29  # USD Bank
-    VND = 30  # VND Bank
+class ReportSection(Enum):
+    """Report section categories for transaction assignment."""
+    INCOME = "Income"
+    ADVANCE_SETTLEMENT = "Advance_Settlement"
+    NATURE = "Nature"
+    MANUAL = "Manual"
+    IGNORE = "Ignore"  # For "Transfer" out-legs or internal logic
+
+
+# Bank identifier constants
+BANK_USD = "29"
+BANK_VND = "30"
 
 
 @dataclass
-class TransactionRow:
-    """Represents a single transaction row."""
-    date: Optional[datetime]
-    transaction_type: Optional[str]
-    name: Optional[str]
-    memo: Optional[str]
-    account: Optional[str]
-    amount: Optional[float]
-    # Derived fields
-    nature_category: Optional[str] = None
-    requires_manual_review: bool = False
-    original_row_index: int = 0  # Track original position for highlighting
-    # New fields for marked transaction output
-    exchange_rate: Optional[float] = None
-    converted_amount: Optional[float] = None
+class TransactionEntry:
+    """
+    Represents a single row within a transaction group (the splits).
+    
+    These are the child rows that follow the header/bank row in a transaction.
+    """
+    row_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    account_code: str = ""        # e.g., "71101VN", extracted from Account column
+    account_name: str = ""        # Full account name
+    original_memo: str = ""       # The memo for this specific row
+    amount: float = 0.0           # The amount for this split
+    original_row_index: int = 0   # Track original position for highlighting
+    
+    # Enrichment fields (filled during processing)
+    nature_type: Optional[str] = None   # From Nature Lookup or Manual Logic
+    is_manual_trigger: bool = False     # If account is 1250, 1500, etc.
+    is_ignored: bool = False            # For the "Row 13" removal logic
 
-    def get_account_number(self) -> Optional[str]:
-        """Extract account number from account string (e.g., '71101VN' from '71101VN Contributions:...')."""
-        if not self.account:
-            return None
-        # Account number is the first part before any space or colon
-        account_str = str(self.account).strip()
-        # Find the first space or colon
-        for i, char in enumerate(account_str):
-            if char in (' ', ':'):
-                return account_str[:i]
-        return account_str
+    def get_account_number(self) -> str:
+        """Return the account code."""
+        return self.account_code
 
     def memo_contains(self, keyword: str, case_sensitive: bool = False) -> bool:
         """Check if memo contains a keyword."""
-        if not self.memo:
+        if not self.original_memo:
             return False
-        memo = str(self.memo)
+        memo = self.original_memo
+        if not case_sensitive:
+            memo = memo.lower()
+            keyword = keyword.lower()
+        return keyword in memo
+
+
+@dataclass
+class TransactionGroup:
+    """
+    Represents the grouped transaction (The Parent).
+    
+    Contains header row information and a list of child entries (splits).
+    """
+    group_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    date: Optional[datetime] = None
+    bank_identifier: str = BANK_VND  # "29" (USD) or "30" (VND)
+    transaction_type: str = ""       # Deposit, Cheque Expense, Transfer
+    payee_name: str = ""             # "Name" column
+    bank_memo: str = ""              # Memo of the first row (Header)
+    bank_amount: float = 0.0         # Amount of the first row (Total)
+    currency: str = "VND"            # USD or VND
+    exchange_rate: float = 1.0       # User input for USD rows
+    original_row_index: int = 0      # Track original position for highlighting
+    
+    # The children rows (starts from the 2nd row of the raw group)
+    entries: List[TransactionEntry] = field(default_factory=list)
+    
+    # State Management
+    is_processed: bool = False
+    assigned_section: Optional[ReportSection] = None
+    
+    @property
+    def total_entries_count(self) -> int:
+        """Get the number of child entries."""
+        return len(self.entries)
+
+    @property
+    def active_entries(self) -> List[TransactionEntry]:
+        """Get entries that are not ignored."""
+        return [e for e in self.entries if not e.is_ignored]
+
+    def get_net_amount_vnd(self) -> float:
+        """Helper to get value in VND for reporting."""
+        if self.bank_identifier == BANK_USD:
+            return self.bank_amount * self.exchange_rate
+        return self.bank_amount
+
+    def get_converted_amount(self, ex_rate: Optional[float] = None) -> float:
+        """
+        Convert amount using exchange rate (divide for VND to USD).
+        
+        For USD bank transactions, divides by exchange rate.
+        For VND bank transactions, returns amount as-is.
+        """
+        rate = ex_rate if ex_rate is not None else self.exchange_rate
+        if self.bank_identifier == BANK_USD and rate > 0:
+            return self.bank_amount / rate
+        return self.bank_amount
+
+    def is_deposit(self) -> bool:
+        """Check if transaction type is deposit."""
+        if not self.transaction_type:
+            return False
+        return self.transaction_type.lower().strip() == "deposit"
+
+    def is_transfer(self) -> bool:
+        """Check if transaction type is transfer."""
+        if not self.transaction_type:
+            return False
+        return self.transaction_type.lower().strip() == "transfer"
+
+    def memo_contains(self, keyword: str, case_sensitive: bool = False) -> bool:
+        """Check if bank memo contains a keyword."""
+        if not self.bank_memo:
+            return False
+        memo = self.bank_memo
         if not case_sensitive:
             memo = memo.lower()
             keyword = keyword.lower()
         return keyword in memo
 
     def name_contains(self, keyword: str, case_sensitive: bool = False) -> bool:
-        """Check if name contains a keyword."""
-        if not self.name:
+        """Check if payee name contains a keyword."""
+        if not self.payee_name:
             return False
-        name = str(self.name)
+        name = self.payee_name
         if not case_sensitive:
             name = name.lower()
             keyword = keyword.lower()
         return keyword in name
 
-    def is_deposit(self) -> bool:
-        """Check if transaction type is deposit."""
-        if not self.transaction_type:
-            return False
-        return str(self.transaction_type).lower().strip() == "deposit"
-
-    def is_transfer(self) -> bool:
-        """Check if transaction type is transfer."""
-        if not self.transaction_type:
-            return False
-        return str(self.transaction_type).lower().strip() == "transfer"
-    
-    def is_bank_entry(self) -> bool:
-        """Check if this row is a bank entry (has bank account in account field)."""
-        if not self.account:
-            return False
-        account_lower = str(self.account).lower()
-        return "bank vn" in account_lower or "29 bank" in account_lower or "30 bank" in account_lower
-
-
-@dataclass
-class TransactionGroup:
-    """Collection of transaction rows grouped by date."""
-    date: Optional[datetime]
-    bank_type: BankType
-    rows: list[TransactionRow] = field(default_factory=list)
-    requires_manual_review: bool = False
-    exchange_rate: Optional[float] = None  # Exchange rate for this group's date
-    is_processed: bool = False  # Whether this group was already processed
-    processed_section: Optional[str] = None  # Which section processed this group (income, advance_settlement, nature)
-    
-    @property
-    def first_row(self) -> Optional[TransactionRow]:
-        """Get the first row (usually the bank account row)."""
-        return self.rows[0] if self.rows else None
-    
-    @property
-    def detail_rows(self) -> list[TransactionRow]:
-        """Get all rows except the first (detail rows)."""
-        return self.rows[1:] if len(self.rows) > 1 else []
-    
-    @property
-    def first_amount(self) -> float:
-        """Get the amount from the first row."""
-        if self.first_row and self.first_row.amount is not None:
-            return self.first_row.amount
-        return 0.0
-
-    def get_total_amount(self) -> float:
-        """Sum all amounts in the group."""
-        return sum(row.amount or 0 for row in self.rows)
-    
-    def has_deposit_type(self) -> bool:
-        """Check if any row in group is a deposit."""
-        return any(row.is_deposit() for row in self.rows)
-    
-    def has_transfer_type(self) -> bool:
-        """Check if any row in group is a transfer."""
-        return any(row.is_transfer() for row in self.rows)
-    
     def any_memo_contains(self, keyword: str) -> bool:
-        """Check if any row's memo contains keyword."""
-        return any(row.memo_contains(keyword) for row in self.rows)
-    
+        """Check if bank memo or any entry's memo contains keyword."""
+        if self.memo_contains(keyword):
+            return True
+        return any(entry.memo_contains(keyword) for entry in self.entries)
+
     def any_name_contains(self, keyword: str) -> bool:
-        """Check if any row's name contains keyword."""
-        return any(row.name_contains(keyword) for row in self.rows)
+        """Check if payee name contains keyword."""
+        return self.name_contains(keyword)
 
 
 @dataclass
 class ProcessingResult:
     """Result of transaction processing."""
-    groups_by_bank: dict[BankType, list[TransactionGroup]] = field(default_factory=dict)
+    groups_by_bank: dict[str, list[TransactionGroup]] = field(default_factory=dict)
     
     # Income totals per bank
-    income: dict[BankType, dict[str, float]] = field(default_factory=dict)
+    income: dict[str, dict[str, float]] = field(default_factory=dict)
     
     # Advance/Settlement totals per bank
-    advance_settlement: dict[BankType, dict[str, float]] = field(default_factory=dict)
+    advance_settlement: dict[str, dict[str, float]] = field(default_factory=dict)
     
     # Nature totals per bank
-    nature_totals: dict[BankType, dict[str, float]] = field(default_factory=dict)
+    nature_totals: dict[str, dict[str, float]] = field(default_factory=dict)
     
     # Groups requiring manual review
     manual_groups: list[TransactionGroup] = field(default_factory=list)
@@ -156,13 +183,14 @@ class ProcessingResult:
 
     def __post_init__(self):
         # Initialize nested dicts for both bank types
-        for bank in BankType:
+        for bank in [BANK_USD, BANK_VND]:
             if bank not in self.groups_by_bank:
                 self.groups_by_bank[bank] = []
             if bank not in self.income:
                 self.income[bank] = {
                     "contribution": 0.0,
                     "fund_transfer": 0.0,
+                    "fund_transfer_elc": 0.0,
                     "interest": 0.0,
                     "ped": 0.0,
                 }
@@ -181,14 +209,14 @@ class ProcessingResult:
                     "manual": 0.0,
                 }
     
-    def get_income_total(self, bank_type: BankType) -> float:
+    def get_income_total(self, bank_id: str) -> float:
         """Get total income for a bank type."""
-        return sum(self.income[bank_type].values())
+        return sum(self.income.get(bank_id, {}).values())
     
-    def get_expense_total(self, bank_type: BankType) -> float:
+    def get_expense_total(self, bank_id: str) -> float:
         """Get total expenses (by nature) for a bank type."""
-        return sum(self.nature_totals[bank_type].values())
+        return sum(self.nature_totals.get(bank_id, {}).values())
     
-    def get_advance_settlement_total(self, bank_type: BankType) -> float:
+    def get_advance_settlement_total(self, bank_id: str) -> float:
         """Get total advance/settlement for a bank type."""
-        return sum(self.advance_settlement[bank_type].values())
+        return sum(self.advance_settlement.get(bank_id, {}).values())

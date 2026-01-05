@@ -1,16 +1,21 @@
 """
 Transaction processor for grouping, splitting, and capital removal.
+
+Handles:
+1. Splitting transfer groups (containing both banks) into separate groups
+2. Removing capital rows (Row 13 cleaning rule)
 """
 from typing import Optional
 from copy import deepcopy
+import uuid
 
-from .models import TransactionRow, TransactionGroup, BankType
+from .models import TransactionEntry, TransactionGroup, BANK_USD, BANK_VND
 
 
 def process_transactions(
     groups: list[TransactionGroup],
     exchange_rate: Optional[float] = None
-) -> dict[BankType, list[TransactionGroup]]:
+) -> dict[str, list[TransactionGroup]]:
     """
     Process transaction groups:
     1. Split transfer groups (containing both banks) into separate groups
@@ -21,11 +26,11 @@ def process_transactions(
         exchange_rate: Exchange rate for USD transactions (VND to USD)
         
     Returns:
-        Dictionary mapping BankType to list of processed groups
+        Dictionary mapping bank_identifier to list of processed groups
     """
-    processed_groups: dict[BankType, list[TransactionGroup]] = {
-        BankType.USD: [],
-        BankType.VND: [],
+    processed_groups: dict[str, list[TransactionGroup]] = {
+        BANK_USD: [],
+        BANK_VND: [],
     }
     
     for group in groups:
@@ -33,130 +38,174 @@ def process_transactions(
         split_groups = _split_transfer_group(group)
         
         for split_group in split_groups:
-            # Step 2: Remove capital rows
+            # Step 2: Remove capital rows (mark as ignored)
             cleaned_group = _remove_capital_rows(split_group)
             
-            # Only add non-empty groups
-            if cleaned_group.rows:
-                processed_groups[cleaned_group.bank_type].append(cleaned_group)
+            # Only add groups with active entries or bank amount
+            if cleaned_group.active_entries or cleaned_group.bank_amount != 0:
+                processed_groups[cleaned_group.bank_identifier].append(cleaned_group)
     
     return processed_groups
+
+
+def _is_bank_entry(entry: TransactionEntry) -> bool:
+    """Check if this entry is a bank account row (should be a header, not entry)."""
+    if not entry.account_name:
+        return False
+    account_lower = entry.account_name.lower()
+    return "bank vn" in account_lower or "29 bank" in account_lower or "30 bank" in account_lower
 
 
 def _split_transfer_group(group: TransactionGroup) -> list[TransactionGroup]:
     """
     Split a group if it's a transfer containing both USD and VND bank rows.
     
-    For transfer transactions, both banks appear in the same group.
-    We need to split them into separate groups based on the bank type.
-    """
-    # Check if this is a transfer group by looking at transaction type
-    is_transfer = any(row.is_transfer() for row in group.rows)
+    For transfer transactions, the raw data contains two bank account rows:
+    - First row: One bank (e.g., 29 Bank) - becomes header with bank_amount
+    - Second row: Other bank (e.g., 30 Bank) - stored as entry but should be split
     
-    if not is_transfer:
+    This function:
+    1. Detects entries that are actually bank rows
+    2. Creates separate groups for each bank, with proper bank_amount
+    3. Non-bank entries are assigned to their respective bank groups
+    """
+    # Check if this is a transfer group
+    if not group.is_transfer():
         return [group]
     
-    # Check if group contains both bank types
-    usd_rows: list[TransactionRow] = []
-    vnd_rows: list[TransactionRow] = []
+    # Find bank entries (entries that are actually bank rows)
+    bank_entries: list[TransactionEntry] = []
+    non_bank_entries: list[TransactionEntry] = []
     
-    for row in group.rows:
-        bank = _determine_row_bank(row)
-        if bank == BankType.USD:
-            usd_rows.append(deepcopy(row))
-        elif bank == BankType.VND:
-            vnd_rows.append(deepcopy(row))
+    for entry in group.entries:
+        if _is_bank_entry(entry):
+            bank_entries.append(entry)
         else:
-            # If can't determine, keep with original bank type
-            if group.bank_type == BankType.USD:
-                usd_rows.append(deepcopy(row))
-            else:
-                vnd_rows.append(deepcopy(row))
+            non_bank_entries.append(entry)
+    
+    # If no bank entries found, no split needed
+    if not bank_entries:
+        return [group]
+    
+    # Create groups for each bank
+    # The original header (group's bank_amount) is for the original bank_identifier
+    # Each bank entry becomes a new group with its own bank_amount
     
     result = []
     
-    if usd_rows:
+    # Original group (header row's bank)
+    original_bank = group.bank_identifier
+    original_non_bank = [deepcopy(e) for e in non_bank_entries 
+                         if _determine_entry_bank(e) == original_bank or _determine_entry_bank(e) is None]
+    
+    # Filter non-bank entries to only those that don't belong to a specific other bank
+    original_entries = []
+    for e in non_bank_entries:
+        entry_bank = _determine_entry_bank(e)
+        if entry_bank is None or entry_bank == original_bank:
+            original_entries.append(deepcopy(e))
+    
+    result.append(TransactionGroup(
+        group_id=str(uuid.uuid4()),
+        date=group.date,
+        bank_identifier=original_bank,
+        transaction_type=group.transaction_type,
+        payee_name=group.payee_name,
+        bank_memo=group.bank_memo,
+        bank_amount=group.bank_amount,
+        currency="USD" if original_bank == BANK_USD else "VND",
+        exchange_rate=group.exchange_rate,
+        original_row_index=group.original_row_index,
+        entries=original_entries,
+    ))
+    
+    # Create new groups for each bank entry
+    for bank_entry in bank_entries:
+        entry_bank = _determine_entry_bank(bank_entry)
+        if entry_bank is None:
+            continue
+        
+        # Find non-bank entries that belong to this bank
+        bank_non_bank_entries = []
+        for e in non_bank_entries:
+            e_bank = _determine_entry_bank(e)
+            if e_bank == entry_bank:
+                bank_non_bank_entries.append(deepcopy(e))
+        
         result.append(TransactionGroup(
+            group_id=str(uuid.uuid4()),
             date=group.date,
-            bank_type=BankType.USD,
-            rows=usd_rows,
+            bank_identifier=entry_bank,
+            transaction_type=group.transaction_type,
+            payee_name=group.payee_name,
+            bank_memo=bank_entry.original_memo or group.bank_memo,
+            bank_amount=bank_entry.amount,  # Use the bank entry's amount
+            currency="USD" if entry_bank == BANK_USD else "VND",
+            exchange_rate=group.exchange_rate,
+            original_row_index=bank_entry.original_row_index,
+            entries=bank_non_bank_entries,
         ))
     
-    if vnd_rows:
-        result.append(TransactionGroup(
-            date=group.date,
-            bank_type=BankType.VND,
-            rows=vnd_rows,
-        ))
-    
-    # If no split occurred, return original
-    if not result:
-        return [group]
-    
-    return result
+    return result if result else [group]
 
 
-def _determine_row_bank(row: TransactionRow) -> Optional[BankType]:
-    """Determine bank type from a row's account column."""
-    if not row.account:
+def _determine_entry_bank(entry: TransactionEntry) -> Optional[str]:
+    """Determine bank type from an entry's account column."""
+    if not entry.account_name:
         return None
     
-    account_str = str(row.account).lower()
+    account_str = entry.account_name.lower()
     
     # Check for explicit bank markers
     if "29 bank" in account_str or "vietnam (usd)" in account_str:
-        return BankType.USD
+        return BANK_USD
     if "30 bank" in account_str or "vietnam (vnd)" in account_str:
-        return BankType.VND
+        return BANK_VND
     
-    # Check for USD/VND keywords
+    # Check for USD/VND keywords in account code
     if "usd" in account_str:
-        return BankType.USD
+        return BANK_USD
     if "vnd" in account_str:
-        return BankType.VND
+        return BANK_VND
     
     return None
 
 
 def _remove_capital_rows(group: TransactionGroup) -> TransactionGroup:
     """
-    Remove capital rows and their offset pairs.
+    Remove capital rows and their offset pairs by marking them as ignored.
     
     Capital row identification:
     - Memo contains 'capital' AND account code starts with '13' (e.g., 1310VN)
     
     For each capital row found:
-    1. Remove the capital row itself
-    2. Remove the row immediately before it (the offset row)
+    1. Mark the capital row as is_ignored
+    2. Mark the row immediately before it as is_ignored
     """
-    rows = deepcopy(group.rows)
-    rows_to_remove: set[int] = set()
+    entries = group.entries
+    indices_to_ignore: set[int] = set()
     
     # Find capital rows: memo contains "capital" AND account starts with "13"
-    for i, row in enumerate(rows):
-        if row.memo_contains("capital"):
+    for i, entry in enumerate(entries):
+        if entry.memo_contains("capital"):
             # Check if account code starts with "13"
-            account_num = row.get_account_number()
+            account_num = entry.get_account_number()
             if account_num and account_num.lower().startswith("13"):
-                # This is the capital row to remove
-                rows_to_remove.add(i)
+                # Mark this row as ignored
+                indices_to_ignore.add(i)
                 
-                # Also remove the row immediately before it (the offset row)
+                # Also mark the row immediately before it (the offset row)
                 if i > 0:
-                    rows_to_remove.add(i - 1)
+                    indices_to_ignore.add(i - 1)
     
-    # Create new group with remaining rows
-    remaining_rows = [row for i, row in enumerate(rows) if i not in rows_to_remove]
+    # Mark entries as ignored
+    for i in indices_to_ignore:
+        if i < len(entries):
+            entries[i].is_ignored = True
     
-    return TransactionGroup(
-        date=group.date,
-        bank_type=group.bank_type,
-        rows=remaining_rows,
-        requires_manual_review=group.requires_manual_review,
-    )
+    return group
 
 
 def has_usd_transactions(groups: list[TransactionGroup]) -> bool:
     """Check if any group is for USD bank."""
-    return any(g.bank_type == BankType.USD for g in groups)
-
+    return any(g.bank_identifier == BANK_USD for g in groups)
