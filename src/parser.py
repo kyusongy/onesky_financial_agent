@@ -1,12 +1,16 @@
 """
 Transaction file parser for handling complex Excel structure.
+
+Parses Transaction.xlsx and creates TransactionGroup objects with
+header information extracted and child rows as TransactionEntry objects.
 """
 import pandas as pd
 from pathlib import Path
 from typing import Optional, BinaryIO, Union
 from datetime import datetime
+import uuid
 
-from .models import TransactionRow, TransactionGroup, BankType
+from .models import TransactionEntry, TransactionGroup, BANK_USD, BANK_VND
 
 
 def parse_transaction_file(
@@ -25,13 +29,12 @@ def parse_transaction_file(
     df = pd.read_excel(file_source, header=None, engine='openpyxl')
     
     # Find the actual data start (after header row)
-    # Header row contains: Date, Transaction Type, No., Posting, Name, Memo/Description, Account, Amount
     header_row_idx = _find_header_row(df)
     
     # Process rows starting after header
     groups = []
-    current_bank_type: Optional[BankType] = None
-    current_group_rows: list[TransactionRow] = []
+    current_bank_id: Optional[str] = None
+    current_group_rows: list[dict] = []
     current_date: Optional[datetime] = None
     
     for idx in range(header_row_idx + 1, len(df)):
@@ -42,34 +45,34 @@ def parse_transaction_file(
         if bank_marker:
             # Save current group if exists
             if current_group_rows:
-                groups.append(_create_group(current_group_rows, current_bank_type, current_date))
+                groups.append(_create_group(current_group_rows, current_bank_id, current_date))
                 current_group_rows = []
-            current_bank_type = bank_marker
+            current_bank_id = bank_marker
             continue
         
         # Check for empty row (group separator)
         if _is_empty_row(row):
             if current_group_rows:
-                groups.append(_create_group(current_group_rows, current_bank_type, current_date))
+                groups.append(_create_group(current_group_rows, current_bank_id, current_date))
                 current_group_rows = []
                 current_date = None
             continue
         
-        # Parse transaction row
-        tx_row = _parse_row(row, idx)
+        # Parse transaction row as dict
+        row_data = _parse_row(row, idx)
         
         # Update date if this row has a date
-        if tx_row.date:
-            current_date = tx_row.date
+        if row_data["date"]:
+            current_date = row_data["date"]
         
-        current_group_rows.append(tx_row)
+        current_group_rows.append(row_data)
     
     # Don't forget the last group
     if current_group_rows:
-        groups.append(_create_group(current_group_rows, current_bank_type, current_date))
+        groups.append(_create_group(current_group_rows, current_bank_id, current_date))
     
     # Check if there are USD transactions
-    has_usd = any(g.bank_type == BankType.USD for g in groups)
+    has_usd = any(g.bank_identifier == BANK_USD for g in groups)
     
     return groups, has_usd
 
@@ -85,7 +88,7 @@ def _find_header_row(df: pd.DataFrame) -> int:
     return 3  # Default to row 3 if not found
 
 
-def _check_bank_marker(row: pd.Series) -> Optional[BankType]:
+def _check_bank_marker(row: pd.Series) -> Optional[str]:
     """Check if row is a bank section marker."""
     first_val = row.iloc[0]
     if pd.isna(first_val):
@@ -94,9 +97,9 @@ def _check_bank_marker(row: pd.Series) -> Optional[BankType]:
     val_str = str(first_val).lower().strip()
     
     if "29" in val_str and "usd" in val_str:
-        return BankType.USD
+        return BANK_USD
     if "30" in val_str and "vnd" in val_str:
-        return BankType.VND
+        return BANK_VND
     
     return None
 
@@ -109,8 +112,8 @@ def _is_empty_row(row: pd.Series) -> bool:
     return True
 
 
-def _parse_row(row: pd.Series, original_idx: int) -> TransactionRow:
-    """Parse a single transaction row."""
+def _parse_row(row: pd.Series, original_idx: int) -> dict:
+    """Parse a single transaction row into a dictionary."""
     # Column indices (based on observed structure)
     # 0: Label/empty, 1: Date, 2: Transaction Type, 3: No., 4: Posting,
     # 5: Name, 6: Memo/Description, 7: Account, 8: Amount
@@ -122,15 +125,15 @@ def _parse_row(row: pd.Series, original_idx: int) -> TransactionRow:
     account = _safe_str(row.iloc[7]) if len(row) > 7 else None
     amount = _parse_amount(row.iloc[8]) if len(row) > 8 else None
     
-    return TransactionRow(
-        date=date_val,
-        transaction_type=tx_type,
-        name=name,
-        memo=memo,
-        account=account,
-        amount=amount,
-        original_row_index=original_idx,
-    )
+    return {
+        "date": date_val,
+        "transaction_type": tx_type,
+        "name": name,
+        "memo": memo,
+        "account": account,
+        "amount": amount,
+        "original_row_index": original_idx,
+    }
 
 
 def _parse_date(val) -> Optional[datetime]:
@@ -165,30 +168,95 @@ def _safe_str(val) -> Optional[str]:
     return s if s else None
 
 
+def _extract_account_code(account_str: Optional[str]) -> str:
+    """Extract account number from account string (e.g., '71101VN' from '71101VN Contributions:...')."""
+    if not account_str:
+        return ""
+    # Account number is the first part before any space or colon
+    account_str = account_str.strip()
+    for i, char in enumerate(account_str):
+        if char in (' ', ':'):
+            return account_str[:i]
+    return account_str
+
+
+def _determine_currency(account_str: Optional[str]) -> str:
+    """Determine currency from account string."""
+    if not account_str:
+        return "VND"
+    account_lower = account_str.lower()
+    if "usd" in account_lower:
+        return "USD"
+    return "VND"
+
+
+def _is_bank_entry(account_str: Optional[str]) -> bool:
+    """Check if this is a bank account entry (header row)."""
+    if not account_str:
+        return False
+    account_lower = account_str.lower()
+    return "bank vn" in account_lower or "29 bank" in account_lower or "30 bank" in account_lower
+
+
 def _create_group(
-    rows: list[TransactionRow],
-    bank_type: Optional[BankType],
+    rows: list[dict],
+    bank_id: Optional[str],
     date: Optional[datetime]
 ) -> TransactionGroup:
-    """Create a TransactionGroup from rows."""
-    # Default to VND if bank type not determined
-    if bank_type is None:
+    """
+    Create a TransactionGroup from parsed rows.
+    
+    The first row becomes the header (bank_amount, bank_memo, etc.)
+    Subsequent rows become TransactionEntry objects.
+    """
+    if not rows:
+        return TransactionGroup(bank_identifier=bank_id or BANK_VND, date=date)
+    
+    # First row is the header/bank row
+    header = rows[0]
+    
+    # Determine bank identifier if not already set
+    if bank_id is None:
         # Try to infer from account column
-        for row in rows:
-            if row.account:
-                account_str = str(row.account).lower()
+        for row_data in rows:
+            account = row_data.get("account")
+            if account:
+                account_str = str(account).lower()
                 if "usd" in account_str or "29 bank" in account_str:
-                    bank_type = BankType.USD
+                    bank_id = BANK_USD
                     break
                 if "vnd" in account_str or "30 bank" in account_str:
-                    bank_type = BankType.VND
+                    bank_id = BANK_VND
                     break
-        if bank_type is None:
-            bank_type = BankType.VND  # Default
+        if bank_id is None:
+            bank_id = BANK_VND  # Default
+    
+    # Determine currency
+    currency = "USD" if bank_id == BANK_USD else "VND"
+    
+    # Create entries from subsequent rows (skip first/header row)
+    entries = []
+    for row_data in rows[1:]:
+        account_str = row_data.get("account") or ""
+        entry = TransactionEntry(
+            row_id=str(uuid.uuid4()),
+            account_code=_extract_account_code(account_str),
+            account_name=account_str,
+            original_memo=row_data.get("memo") or "",
+            amount=row_data.get("amount") or 0.0,
+            original_row_index=row_data.get("original_row_index", 0),
+        )
+        entries.append(entry)
     
     return TransactionGroup(
-        date=date,
-        bank_type=bank_type,
-        rows=rows,
+        group_id=str(uuid.uuid4()),
+        date=date or header.get("date"),
+        bank_identifier=bank_id,
+        transaction_type=header.get("transaction_type") or "",
+        payee_name=header.get("name") or "",
+        bank_memo=header.get("memo") or "",
+        bank_amount=header.get("amount") or 0.0,
+        currency=currency,
+        original_row_index=header.get("original_row_index", 0),
+        entries=entries,
     )
-

@@ -7,7 +7,7 @@ to eliminate code duplication across calculator modules.
 from typing import Optional
 from datetime import datetime
 
-from ..models import TransactionGroup, BankType
+from ..models import TransactionGroup, BANK_USD, BANK_VND
 
 
 def get_exchange_rate(
@@ -27,7 +27,7 @@ def get_exchange_rate(
     Returns:
         Exchange rate (1.0 if not applicable or not found)
     """
-    if group.bank_type != BankType.USD:
+    if group.bank_identifier != BANK_USD:
         return 1.0
     if not exchange_rates or not group.date:
         return 1.0
@@ -35,20 +35,24 @@ def get_exchange_rate(
     return exchange_rates.get(date_key, 1.0)
 
 
-def convert_amount(amount: float, ex_rate: float) -> float:
+def convert_amount(amount: float, bank_identifier: str, ex_rate: float) -> float:
     """
     Convert amount using exchange rate (divide for VND to USD).
     
+    For USD bank, divides amount by exchange rate.
+    For VND bank, returns amount as-is.
+    
     Args:
         amount: Amount to convert
+        bank_identifier: "29" for USD or "30" for VND
         ex_rate: Exchange rate
         
     Returns:
         Converted amount
     """
-    if ex_rate <= 0:
-        return amount
-    return amount / ex_rate
+    if bank_identifier == BANK_USD and ex_rate > 0:
+        return amount / ex_rate
+    return amount
 
 
 def init_nature_totals() -> dict[str, float]:
@@ -76,6 +80,7 @@ def init_income_totals() -> dict[str, float]:
     return {
         "contribution": 0.0,
         "fund_transfer": 0.0,
+        "fund_transfer_elc": 0.0,
         "interest": 0.0,
         "ped": 0.0,
     }
@@ -102,6 +107,11 @@ def get_account_type(account_number: Optional[str]) -> Optional[str]:
         if acct_type in account_lower:
             return acct_type
     return None
+
+
+def is_manual_account(account_number: Optional[str]) -> bool:
+    """Check if account number triggers manual input processing."""
+    return get_account_type(account_number) is not None
 
 
 # Nature normalization mapping
@@ -133,4 +143,3 @@ def normalize_nature(nature_raw: str) -> str:
             return category
     
     return nature_lower
-

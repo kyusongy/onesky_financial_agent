@@ -9,13 +9,14 @@ from typing import Optional, BinaryIO, Union
 from io import BytesIO
 from datetime import datetime
 
-from .models import TransactionGroup, TransactionRow, ProcessingResult, BankType
+from .models import TransactionGroup, TransactionEntry, ProcessingResult, ReportSection, BANK_USD, BANK_VND
 from config.mappings import (
     DEFAULT_OUTPUT_TEMPLATE,
     TEMPLATE_COL_VND,
     TEMPLATE_COL_USD,
     TEMPLATE_ROWS,
     NATURE_DISPLAY_MAP,
+    INCOME_TYPE_MAP,
 )
 
 
@@ -69,14 +70,17 @@ class ReportGenerator:
     
     def _fill_income(self, ws, result: ProcessingResult) -> None:
         """Fill income section values with totals."""
-        for bank_type, values in result.income.items():
-            col = self._get_column(bank_type)
+        for bank_id, values in result.income.items():
+            col = self._get_column(bank_id)
             
             # Contribution
             self._set_cell(ws, TEMPLATE_ROWS["contribution"], col, values.get("contribution", 0))
             
             # Fund transfer
             self._set_cell(ws, TEMPLATE_ROWS["fund_transfer"], col, values.get("fund_transfer", 0))
+            
+            # Fund transfer to ELC
+            self._set_cell(ws, TEMPLATE_ROWS["fund_transfer_elc"], col, values.get("fund_transfer_elc", 0))
             
             # Interest
             self._set_cell(ws, TEMPLATE_ROWS["interest"], col, values.get("interest", 0))
@@ -91,8 +95,8 @@ class ReportGenerator:
     
     def _fill_advance_settlement(self, ws, result: ProcessingResult) -> None:
         """Fill advance/settlement section values with totals."""
-        for bank_type, values in result.advance_settlement.items():
-            col = self._get_column(bank_type)
+        for bank_id, values in result.advance_settlement.items():
+            col = self._get_column(bank_id)
             
             # Advance
             self._set_cell(ws, TEMPLATE_ROWS["advance"], col, values.get("advance", 0))
@@ -107,8 +111,8 @@ class ReportGenerator:
     
     def _fill_nature(self, ws, result: ProcessingResult) -> None:
         """Fill expenditure by nature section values with totals."""
-        for bank_type, values in result.nature_totals.items():
-            col = self._get_column(bank_type)
+        for bank_id, values in result.nature_totals.items():
+            col = self._get_column(bank_id)
             
             # Org
             self._set_cell(ws, TEMPLATE_ROWS["org"], col, values.get("org", 0))
@@ -133,9 +137,9 @@ class ReportGenerator:
             # Manual
             self._set_cell(ws, TEMPLATE_ROWS["manual"], col, values.get("manual", 0))
     
-    def _get_column(self, bank_type: BankType) -> int:
+    def _get_column(self, bank_id: str) -> int:
         """Get column index for bank type (1-based for openpyxl)."""
-        if bank_type == BankType.VND:
+        if bank_id == BANK_VND:
             return TEMPLATE_COL_VND + 1  # Column D (4)
         return TEMPLATE_COL_USD + 1  # Column E (5)
     
@@ -153,9 +157,10 @@ def generate_marked_transactions(
 ) -> bytes:
     """
     Generate a processed transaction file with additional columns:
-    - Nature category for each row
-    - Exchange rate (for USD transactions)
-    - Amount in corresponding currency (VND for VND bank, USD for USD bank)
+    - Report_Section (Income/Nature/Advance_Settlement)
+    - Type (specific category within the section)
+    - Amount_in_Respective_Currency
+    - Is_Processed
     
     Args:
         original_file: Path or file-like object of original transaction file
@@ -181,23 +186,21 @@ def generate_marked_transactions(
             break
     
     # New columns
-    col_exchange_rate = max_col + 1
-    col_bank_label = max_col + 2
-    col_month = max_col + 3
-    col_account_num = max_col + 4
-    col_nature = max_col + 5
-    col_converted_amount = max_col + 6
-    col_assigned_to = max_col + 7
+    col_report_section = max_col + 1
+    col_type = max_col + 2
+    col_amount_currency = max_col + 3
+    col_is_processed = max_col + 4
+    col_exchange_rate = max_col + 5
+    col_bank = max_col + 6
     
     # Set headers
     headers = [
-        ("Exchange Rate", col_exchange_rate),
-        ("Bank", col_bank_label),
-        ("Month", col_month),
-        ("Account No.", col_account_num),
-        ("Nature", col_nature),
-        ("Amount (Currency)", col_converted_amount),
-        ("Assigned To", col_assigned_to),
+        ("Report_Section", col_report_section),
+        ("Type", col_type),
+        ("Amount_in_Respective_Currency", col_amount_currency),
+        ("Is_Processed", col_is_processed),
+        ("Exchange_Rate", col_exchange_rate),
+        ("Bank", col_bank),
     ]
     
     for header_text, col in headers:
@@ -215,68 +218,74 @@ def generate_marked_transactions(
         date_key = group.date.strftime("%Y-%m-%d") if group.date else ""
         ex_rate = exchange_rates.get(date_key) if exchange_rates else None
         
-        # Get month from date
-        month_str = group.date.strftime("%Y%m") if group.date else ""
-        
         # Bank label
-        bank_label = group.bank_type.value  # 29 or 30
+        bank_label = group.bank_identifier
+        
+        # Get section and type labels
+        section_label, type_label = _get_section_type_labels(group)
         
         # Mark manual review rows
-        if group.requires_manual_review:
-            for row in group.rows:
-                highlight_rows.add(row.original_row_index + 1)
+        if group.assigned_section == ReportSection.MANUAL or any(e.is_manual_trigger for e in group.entries):
+            highlight_rows.add(group.original_row_index + 1)
+            for entry in group.entries:
+                highlight_rows.add(entry.original_row_index + 1)
         
-        for i, row in enumerate(group.rows):
-            excel_row = row.original_row_index + 1  # Excel is 1-based
+        # Fill header row
+        excel_row = group.original_row_index + 1
+        if excel_row > header_row:
+            ws.cell(row=excel_row, column=col_report_section).value = section_label
+            ws.cell(row=excel_row, column=col_type).value = type_label
+            ws.cell(row=excel_row, column=col_is_processed).value = "Yes" if group.is_processed else "No"
+            ws.cell(row=excel_row, column=col_bank).value = bank_label
             
-            # Skip if row index is invalid
+            # Exchange rate (only for USD bank)
+            if group.bank_identifier == BANK_USD and ex_rate:
+                ws.cell(row=excel_row, column=col_exchange_rate).value = ex_rate
+            
+            # Converted amount
+            if group.bank_amount:
+                if group.bank_identifier == BANK_USD and ex_rate:
+                    converted = group.bank_amount / ex_rate
+                    ws.cell(row=excel_row, column=col_amount_currency).value = converted
+                else:
+                    ws.cell(row=excel_row, column=col_amount_currency).value = group.bank_amount
+        
+        # Fill entry rows
+        for entry in group.entries:
+            excel_row = entry.original_row_index + 1
+            
             if excel_row <= header_row:
                 continue
             
-            # Exchange rate (only for USD bank and not first entry)
-            if group.bank_type == BankType.USD and ex_rate:
+            # Determine entry type based on group's section
+            # For INCOME/ADVANCE_SETTLEMENT: always inherit group's type_label
+            # For NATURE/MANUAL: use entry's determined nature_type (never "manual")
+            entry_type = type_label  # Default to group's type
+            
+            if group.assigned_section in (ReportSection.NATURE, ReportSection.MANUAL):
+                # Use entry's nature_type if available and not "manual"
+                if entry.nature_type and entry.nature_type != "manual":
+                    entry_type = NATURE_DISPLAY_MAP.get(entry.nature_type, entry.nature_type)
+            
+            ws.cell(row=excel_row, column=col_report_section).value = section_label
+            ws.cell(row=excel_row, column=col_type).value = entry_type
+            ws.cell(row=excel_row, column=col_is_processed).value = "Yes" if group.is_processed else "No"
+            ws.cell(row=excel_row, column=col_bank).value = bank_label
+            
+            if group.bank_identifier == BANK_USD and ex_rate:
                 ws.cell(row=excel_row, column=col_exchange_rate).value = ex_rate
             
-            # Bank label
-            ws.cell(row=excel_row, column=col_bank_label).value = bank_label
-            
-            # Month
-            ws.cell(row=excel_row, column=col_month).value = month_str
-            
-            # For non-bank entries, add account number and nature
-            is_first_entry = (i == 0)
-            if not is_first_entry and not row.is_bank_entry():
-                # Account number
-                account_num = row.get_account_number()
-                if account_num:
-                    ws.cell(row=excel_row, column=col_account_num).value = account_num
-                
-                # Nature category
-                if row.nature_category:
-                    nature_display = NATURE_DISPLAY_MAP.get(
-                        row.nature_category, 
-                        row.nature_category
-                    )
-                    ws.cell(row=excel_row, column=col_nature).value = nature_display
-            
-            # Converted amount (VND for VND bank, USD for USD bank)
-            if row.amount is not None:
-                if group.bank_type == BankType.USD and ex_rate:
-                    # Convert VND amount to USD
-                    converted = row.amount / ex_rate
-                    ws.cell(row=excel_row, column=col_converted_amount).value = converted
+            # Converted amount for entry
+            if entry.amount:
+                if group.bank_identifier == BANK_USD and ex_rate:
+                    converted = entry.amount / ex_rate
+                    ws.cell(row=excel_row, column=col_amount_currency).value = converted
                 else:
-                    # VND bank - amount is already in VND
-                    ws.cell(row=excel_row, column=col_converted_amount).value = row.amount
-            
-            # Assigned To - show which section and category this is assigned to
-            assigned_label = _get_assigned_to_label(group, row)
-            if assigned_label:
-                ws.cell(row=excel_row, column=col_assigned_to).value = assigned_label
+                    ws.cell(row=excel_row, column=col_amount_currency).value = entry.amount
     
     # Apply highlighting for manual review rows
     for row_idx in highlight_rows:
-        for col in range(1, col_assigned_to + 1):
+        for col in range(1, col_bank + 1):
             cell = ws.cell(row=row_idx, column=col)
             cell.fill = HIGHLIGHT_FILL
     
@@ -287,57 +296,68 @@ def generate_marked_transactions(
     return output.read()
 
 
-def _get_assigned_to_label(group, row) -> str:
+def _get_section_type_labels(group: TransactionGroup) -> tuple[str, str]:
     """
-    Generate the 'Assigned To' label for a row based on the group's processing.
+    Get section and type labels for a transaction group.
     
-    Returns labels like:
-    - "Income: Contribution"
-    - "Income: Interest"
-    - "Advance/Settlement: Advance"
-    - "By nature: Organisational capacity building"
+    Returns:
+        Tuple of (section_label, type_label)
     """
-    # Check group's processed section first
-    section = getattr(group, 'processed_section', None)
+    section = group.assigned_section
     
-    if section == "income":
+    if section == ReportSection.INCOME:
+        section_label = "Income"
         # Determine which income type
-        if group.has_deposit_type() and group.any_name_contains("onesky"):
-            return "Income: Contribution"
-        if group.any_memo_contains("transfer") and not group.any_memo_contains("elc"):
-            return "Income: Fund transfer"
-        if group.has_deposit_type() and group.any_memo_contains("interest"):
-            return "Income: Interest"
-        if group.has_deposit_type() and group.any_memo_contains("ped"):
-            return "Income: PED"
-        return "Income"
+        if group.is_deposit() and group.any_name_contains("onesky"):
+            type_label = "Contribution"
+        elif group.any_memo_contains("transfer") and group.any_memo_contains("elc"):
+            type_label = "Fund transfer to ELC"
+        elif group.any_memo_contains("transfer") and not group.any_memo_contains("elc"):
+            type_label = "Fund transfer to USD"
+        elif group.is_deposit() and group.any_memo_contains("interest"):
+            type_label = "Interest"
+        elif group.is_deposit() and group.any_memo_contains("ped"):
+            type_label = "PED"
+        else:
+            type_label = ""
+        return section_label, type_label
     
-    elif section == "advance_settlement":
+    elif section == ReportSection.ADVANCE_SETTLEMENT:
+        section_label = "Advance_Settlement"
         if group.any_memo_contains("advance") and not group.any_memo_contains("settlement"):
-            return "Advance/Settlement: Advance"
-        if group.any_memo_contains("settlement"):
-            return "Advance/Settlement: Settlement"
-        return "Advance/Settlement"
+            type_label = "Advance by cash"
+        elif group.any_memo_contains("settlement"):
+            type_label = "Settlement"
+        else:
+            type_label = ""
+        return section_label, type_label
     
-    elif section == "nature":
-        # Use the row's nature category
-        if row.nature_category and row.nature_category != "manual":
-            nature_display = NATURE_DISPLAY_MAP.get(row.nature_category, row.nature_category)
-            return f"By nature: {nature_display}"
-        return "By nature"
+    elif section == ReportSection.NATURE:
+        section_label = "Nature"
+        # Get nature from first active entry
+        active = group.active_entries
+        if active and active[0].nature_type:
+            type_label = NATURE_DISPLAY_MAP.get(active[0].nature_type, active[0].nature_type)
+        else:
+            type_label = ""
+        return section_label, type_label
     
-    elif section == "manual":
-        # For manual input groups, use the row's actual nature (not "manual")
-        if row.nature_category and row.nature_category != "manual":
-            nature_display = NATURE_DISPLAY_MAP.get(row.nature_category, row.nature_category)
-            return f"By nature: {nature_display}"
-        return "By nature: Manual input"
+    elif section == ReportSection.MANUAL:
+        section_label = "Advance_Settlement"  # Manual groups are typically advance/settlement
+        # Find the first entry with a determined nature_type
+        active = group.active_entries
+        type_label = ""
+        for entry in active:
+            if entry.nature_type and entry.nature_type != "manual":
+                type_label = NATURE_DISPLAY_MAP.get(entry.nature_type, entry.nature_type)
+                break
+        # If no nature found, try to determine from memo
+        if not type_label:
+            if group.any_memo_contains("advance") and not group.any_memo_contains("settlement"):
+                type_label = "Advance by cash"
+            elif group.any_memo_contains("settlement"):
+                type_label = "Settlement"
+        return section_label, type_label
     
-    # If no section assigned but row has nature
-    if row.nature_category:
-        if row.nature_category == "manual":
-            return "By nature: Manual input"
-        nature_display = NATURE_DISPLAY_MAP.get(row.nature_category, row.nature_category)
-        return f"By nature: {nature_display}"
-    
-    return ""
+    # Default
+    return "", ""

@@ -13,7 +13,7 @@ from src.calculators.advance_settlement import calculate_advance_settlement
 from src.calculators.nature import NatureMapper
 from src.calculators.manual_input import ManualInputProcessor, mark_processed_groups
 from src.report_generator import ReportGenerator, generate_marked_transactions
-from src.models import ProcessingResult, BankType
+from src.models import ProcessingResult, BANK_USD, BANK_VND
 
 # Page configuration
 st.set_page_config(
@@ -75,7 +75,7 @@ def get_usd_dates(groups) -> list[str]:
     """Extract unique dates that have USD transactions."""
     usd_dates = set()
     for group in groups:
-        if group.bank_type == BankType.USD and group.date:
+        if group.bank_identifier == BANK_USD and group.date:
             usd_dates.add(group.date.strftime("%Y-%m-%d"))
     return sorted(list(usd_dates))
 
@@ -150,7 +150,7 @@ def main():
             4. **Download Results**: Download the filled report and marked transaction file
             
             **Supported Features:**
-            - Income calculation (Contribution, Fund Transfer, Interest, PED)
+            - Income calculation (Contribution, Fund Transfer USD, Fund Transfer ELC, Interest, PED)
             - Advance/Settlement tracking
             - Expenditure by nature categorization
             - Manual review highlighting for complex transactions
@@ -214,9 +214,9 @@ def main():
                 
                 # Step 2: Assign exchange rates to groups
                 for group in groups:
-                    if group.bank_type == BankType.USD and group.date:
+                    if group.bank_identifier == BANK_USD and group.date:
                         date_key = group.date.strftime("%Y-%m-%d")
-                        group.exchange_rate = st.session_state.exchange_rates.get(date_key)
+                        group.exchange_rate = st.session_state.exchange_rates.get(date_key, 1.0)
                 
                 # Step 3: Process groups (split transfers, remove capital rows)
                 groups_by_bank = process_transactions(groups)
@@ -254,13 +254,13 @@ def main():
                 )
                 
                 # Merge manual nature totals into main nature totals
-                for bank_type in BankType:
-                    for key, value in manual_nature_totals[bank_type].items():
-                        if key in nature_totals[bank_type]:
-                            nature_totals[bank_type][key] += value
+                for bank_id in [BANK_USD, BANK_VND]:
+                    for key, value in manual_nature_totals[bank_id].items():
+                        if key in nature_totals[bank_id]:
+                            nature_totals[bank_id][key] += value
                         elif key in ["advance", "settlement"]:
                             # Add to advance/settlement section
-                            advance_settlement[bank_type][key] += value
+                            advance_settlement[bank_id][key] += value
                 
                 # Collect all groups for marked transaction output
                 all_groups = []
@@ -309,7 +309,7 @@ def main():
             st.metric("USD Dates", len(st.session_state.usd_dates))
         
         with col4:
-            vnd_income = result.get_income_total(BankType.VND)
+            vnd_income = result.get_income_total(BANK_VND)
             st.metric("VND Income", f"{vnd_income:,.0f}")
         
         # Detailed breakdown
@@ -321,7 +321,7 @@ def main():
                 with col1:
                     st.markdown("**VND Bank (30)**")
                     vnd_total = 0
-                    for key, val in result.income[BankType.VND].items():
+                    for key, val in result.income[BANK_VND].items():
                         if val != 0:
                             st.write(f"- {key.replace('_', ' ').title()}: {val:,.0f}")
                             vnd_total += val
@@ -329,7 +329,7 @@ def main():
                 with col2:
                     st.markdown("**USD Bank (29)**")
                     usd_total = 0
-                    for key, val in result.income[BankType.USD].items():
+                    for key, val in result.income[BANK_USD].items():
                         if val != 0:
                             st.write(f"- {key.replace('_', ' ').title()}: {val:,.0f}")
                             usd_total += val
@@ -340,7 +340,7 @@ def main():
                 with col1:
                     st.markdown("**VND Bank (30)**")
                     vnd_total = 0
-                    for key, val in result.advance_settlement[BankType.VND].items():
+                    for key, val in result.advance_settlement[BANK_VND].items():
                         if val != 0:
                             st.write(f"- {key.title()}: {val:,.0f}")
                             vnd_total += val
@@ -348,7 +348,7 @@ def main():
                 with col2:
                     st.markdown("**USD Bank (29)**")
                     usd_total = 0
-                    for key, val in result.advance_settlement[BankType.USD].items():
+                    for key, val in result.advance_settlement[BANK_USD].items():
                         if val != 0:
                             st.write(f"- {key.title()}: {val:,.0f}")
                             usd_total += val
@@ -359,7 +359,7 @@ def main():
                 with col1:
                     st.markdown("**VND Bank (30)**")
                     vnd_total = 0
-                    for key, val in result.nature_totals[BankType.VND].items():
+                    for key, val in result.nature_totals[BANK_VND].items():
                         if val != 0:
                             st.write(f"- {key.upper()}: {val:,.0f}")
                             vnd_total += val
@@ -367,7 +367,7 @@ def main():
                 with col2:
                     st.markdown("**USD Bank (29)**")
                     usd_total = 0
-                    for key, val in result.nature_totals[BankType.USD].items():
+                    for key, val in result.nature_totals[BANK_USD].items():
                         if val != 0:
                             st.write(f"- {key.upper()}: {val:,.0f}")
                             usd_total += val

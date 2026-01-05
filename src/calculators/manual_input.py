@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Optional, BinaryIO, Union
 from dataclasses import dataclass
 
-from ..models import TransactionGroup, TransactionRow, BankType
+from ..models import TransactionGroup, TransactionEntry, ReportSection, BANK_USD, BANK_VND
 from .utils import get_exchange_rate, convert_amount, normalize_nature, get_account_type, ACCOUNT_TYPES
 
 
@@ -122,21 +122,21 @@ class ManualInputProcessor:
         self,
         manual_groups: list[TransactionGroup],
         exchange_rates: dict[str, float] = None
-    ) -> tuple[dict[BankType, dict[str, float]], list[TransactionGroup]]:
+    ) -> tuple[dict[str, dict[str, float]], list[TransactionGroup]]:
         """
         Process manual input groups and calculate nature totals.
         
         Returns:
             Tuple of (nature_totals by bank, groups still needing manual review)
         """
-        nature_totals: dict[BankType, dict[str, float]] = {
-            BankType.USD: self._init_totals(),
-            BankType.VND: self._init_totals(),
+        nature_totals: dict[str, dict[str, float]] = {
+            BANK_USD: self._init_totals(),
+            BANK_VND: self._init_totals(),
         }
         still_manual: list[TransactionGroup] = []
         
         for group in manual_groups:
-            if getattr(group, 'is_processed', False):
+            if group.is_processed:
                 continue
             
             ex_rate = get_exchange_rate(group, exchange_rates)
@@ -151,10 +151,10 @@ class ManualInputProcessor:
             
             if result["processed"]:
                 group.is_processed = True
-                group.processed_section = "manual"
+                group.assigned_section = ReportSection.MANUAL
                 for nature_key, amount in result["amounts"].items():
-                    if nature_key in nature_totals[group.bank_type]:
-                        nature_totals[group.bank_type][nature_key] += amount
+                    if nature_key in nature_totals[group.bank_identifier]:
+                        nature_totals[group.bank_identifier][nature_key] += amount
             else:
                 still_manual.append(group)
         
@@ -170,8 +170,8 @@ class ManualInputProcessor:
     
     def _get_group_account_type(self, group: TransactionGroup) -> Optional[str]:
         """Determine account type (1250, 1230, 1252, 1500) from group."""
-        for row in group.rows:
-            acct_type = get_account_type(row.get_account_number())
+        for entry in group.entries:
+            acct_type = get_account_type(entry.account_code)
             if acct_type:
                 return acct_type
         return None
@@ -185,37 +185,38 @@ class ManualInputProcessor:
         """
         Process 1250/1230/1252 groups.
         
-        For 2-row groups: look up nature by amount, enter absolute bank value.
-        For >2 rows with 1500: defer to 1500 logic.
-        For >2 rows without 1500: process each row individually.
+        For 1-entry groups: look up nature by amount, enter absolute bank value.
+        For >1 entries with 1500: defer to 1500 logic.
+        For >1 entries without 1500: process each entry individually.
         """
         result = {"processed": False, "amounts": {}}
-        num_rows = len(group.rows)
+        active_entries = group.active_entries
+        num_entries = len(active_entries)
         
-        if num_rows == 2:
-            detail_row = group.detail_rows[0] if group.detail_rows else None
-            if detail_row and detail_row.amount is not None:
-                nature = self.lookup_by_amount(account_type, detail_row.amount)
+        if num_entries == 1:
+            entry = active_entries[0]
+            if entry.amount:
+                nature = self.lookup_by_amount(account_type, entry.amount)
                 if nature:
-                    result["amounts"][nature] = abs(convert_amount(group.first_amount, ex_rate))
+                    result["amounts"][nature] = abs(convert_amount(group.bank_amount, group.bank_identifier, ex_rate))
                     result["processed"] = True
-                    detail_row.nature_category = nature
+                    entry.nature_type = nature
         
-        elif num_rows > 2:
-            # Check if any row is 1500
-            has_1500 = any(get_account_type(row.get_account_number()) == "1500" for row in group.rows)
+        elif num_entries > 1:
+            # Check if any entry is 1500
+            has_1500 = any(get_account_type(e.account_code) == "1500" for e in active_entries)
             
             if has_1500:
                 return self._process_1500(group, ex_rate)
             
-            # Process each row individually
-            for row in group.detail_rows:
-                if row.amount is not None:
-                    nature = self.lookup_by_amount(account_type, row.amount)
+            # Process each entry individually
+            for entry in active_entries:
+                if entry.amount:
+                    nature = self.lookup_by_amount(account_type, entry.amount)
                     if nature:
-                        amount = abs(convert_amount(row.amount, ex_rate))
+                        amount = abs(convert_amount(entry.amount, group.bank_identifier, ex_rate))
                         result["amounts"][nature] = result["amounts"].get(nature, 0.0) + amount
-                        row.nature_category = nature
+                        entry.nature_type = nature
                         result["processed"] = True
         
         return result
@@ -225,67 +226,68 @@ class ManualInputProcessor:
         Process 1500 groups.
         
         1. Negative 1500: look up nature, enter ABSOLUTE BANK AMOUNT
-        2. Positive 1500: if memo contains PIT/SI/HI → Org, else use previous row's nature
-        3. For multi-row: enter each row's amount by nature, subtract positive 1500
+        2. Positive 1500: if memo contains PIT/SI/HI → Org, else use previous entry's nature
+        3. For multi-entry: enter each entry's amount by nature, subtract positive 1500
         """
         result = {"processed": False, "amounts": {}}
-        bank_amount = abs(convert_amount(group.first_amount, ex_rate))
+        bank_amount = abs(convert_amount(group.bank_amount, group.bank_identifier, ex_rate))
+        active_entries = group.active_entries
         
-        # First pass: determine nature for non-1500 rows
+        # First pass: determine nature for non-1500 entries
         prev_nature = None
-        for row in group.detail_rows:
-            if get_account_type(row.get_account_number()) != "1500" and row.amount is not None:
+        for entry in active_entries:
+            if get_account_type(entry.account_code) != "1500" and entry.amount:
                 for acct_type in ("1250", "1230", "1252"):
-                    nature = self.lookup_by_amount(acct_type, row.amount)
+                    nature = self.lookup_by_amount(acct_type, entry.amount)
                     if nature:
-                        row.nature_category = nature
+                        entry.nature_type = nature
                         prev_nature = nature
                         break
         
-        # Second pass: process 1500 rows
-        negative_1500_rows = []
+        # Second pass: process 1500 entries
+        negative_1500_entries = []
         positive_1500_by_nature: dict[str, float] = {}
         
-        for row in group.detail_rows:
-            is_1500 = get_account_type(row.get_account_number()) == "1500"
-            if not is_1500 or row.amount is None:
+        for entry in active_entries:
+            is_1500 = get_account_type(entry.account_code) == "1500"
+            if not is_1500 or not entry.amount:
                 continue
             
-            if row.amount < 0:
-                nature = self.lookup_by_amount("1500", row.amount)
+            if entry.amount < 0:
+                nature = self.lookup_by_amount("1500", entry.amount)
                 if nature:
-                    row.nature_category = nature
+                    entry.nature_type = nature
                     prev_nature = nature
-                    negative_1500_rows.append(row)
-            elif row.amount > 0:
-                if any(row.memo_contains(kw) for kw in ("pit", "si", "hi")):
-                    row.nature_category = "org"
+                    negative_1500_entries.append(entry)
+            elif entry.amount > 0:
+                if any(entry.memo_contains(kw) for kw in ("pit", "si", "hi")):
+                    entry.nature_type = "org"
                 elif prev_nature:
-                    row.nature_category = prev_nature
+                    entry.nature_type = prev_nature
                 
-                if row.nature_category:
-                    amt = abs(convert_amount(row.amount, ex_rate))
-                    positive_1500_by_nature[row.nature_category] = \
-                        positive_1500_by_nature.get(row.nature_category, 0.0) + amt
+                if entry.nature_type:
+                    amt = abs(convert_amount(entry.amount, group.bank_identifier, ex_rate))
+                    positive_1500_by_nature[entry.nature_type] = \
+                        positive_1500_by_nature.get(entry.nature_type, 0.0) + amt
         
         # Add negative 1500 amounts using bank_amount
-        for row in negative_1500_rows:
-            if row.nature_category:
-                result["amounts"][row.nature_category] = \
-                    result["amounts"].get(row.nature_category, 0.0) + bank_amount
+        for entry in negative_1500_entries:
+            if entry.nature_type:
+                result["amounts"][entry.nature_type] = \
+                    result["amounts"].get(entry.nature_type, 0.0) + bank_amount
                 result["processed"] = True
         
-        # Add non-1500 row amounts
-        for row in group.detail_rows:
-            if row.amount is None or not row.nature_category:
+        # Add non-1500 entry amounts
+        for entry in active_entries:
+            if not entry.amount or not entry.nature_type:
                 continue
-            is_1500 = get_account_type(row.get_account_number()) == "1500"
+            is_1500 = get_account_type(entry.account_code) == "1500"
             if is_1500:
                 continue
             
-            amount = abs(convert_amount(row.amount, ex_rate))
-            result["amounts"][row.nature_category] = \
-                result["amounts"].get(row.nature_category, 0.0) + amount
+            amount = abs(convert_amount(entry.amount, group.bank_identifier, ex_rate))
+            result["amounts"][entry.nature_type] = \
+                result["amounts"].get(entry.nature_type, 0.0) + amount
             result["processed"] = True
         
         # Subtract positive 1500 amounts
@@ -300,10 +302,10 @@ class ManualInputProcessor:
 
 
 def mark_processed_groups(
-    groups_by_bank: dict[BankType, list[TransactionGroup]],
-    income: dict[BankType, dict[str, float]],
-    advance_settlement: dict[BankType, dict[str, float]],
-    nature_totals: dict[BankType, dict[str, float]]
+    groups_by_bank: dict[str, list[TransactionGroup]],
+    income: dict[str, dict[str, float]],
+    advance_settlement: dict[str, dict[str, float]],
+    nature_totals: dict[str, dict[str, float]]
 ) -> None:
     """
     Mark groups as processed based on what sections they contributed to.
@@ -313,30 +315,30 @@ def mark_processed_groups(
         for group in groups:
             section = _get_processed_section(group)
             group.is_processed = section is not None
-            group.processed_section = section
+            group.assigned_section = section
 
 
-def _get_processed_section(group: TransactionGroup) -> Optional[str]:
+def _get_processed_section(group: TransactionGroup) -> Optional[ReportSection]:
     """Determine which section processed this group."""
     # Income checks
-    if group.has_deposit_type():
+    if group.is_deposit():
         if group.any_name_contains("onesky"):
-            return "income"
+            return ReportSection.INCOME
         if group.any_memo_contains("interest") or group.any_memo_contains("ped"):
-            return "income"
+            return ReportSection.INCOME
     
-    if group.any_memo_contains("transfer") and not group.any_memo_contains("elc"):
-        return "income"
+    if group.any_memo_contains("transfer"):
+        return ReportSection.INCOME
     
     # Advance/Settlement checks
     if group.any_memo_contains("settlement"):
-        return "advance_settlement"
+        return ReportSection.ADVANCE_SETTLEMENT
     if group.any_memo_contains("advance"):
-        return "advance_settlement"
+        return ReportSection.ADVANCE_SETTLEMENT
     
     # Nature check (non-manual)
-    if any(r.nature_category and r.nature_category != "manual" for r in group.detail_rows):
-        return "nature"
+    active_entries = group.active_entries
+    if any(e.nature_type and e.nature_type != "manual" and not e.is_manual_trigger for e in active_entries):
+        return ReportSection.NATURE
     
     return None
-
