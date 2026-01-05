@@ -90,6 +90,8 @@ class TransactionGroup:
     rows: list[TransactionRow] = field(default_factory=list)
     requires_manual_review: bool = False
     exchange_rate: Optional[float] = None  # Exchange rate for this group's date
+    is_processed: bool = False  # Whether this group was already processed
+    processed_section: Optional[str] = None  # Which section processed this group (income, advance_settlement, nature)
     
     @property
     def first_row(self) -> Optional[TransactionRow]:

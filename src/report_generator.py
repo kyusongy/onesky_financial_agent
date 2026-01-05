@@ -187,6 +187,7 @@ def generate_marked_transactions(
     col_account_num = max_col + 4
     col_nature = max_col + 5
     col_converted_amount = max_col + 6
+    col_assigned_to = max_col + 7
     
     # Set headers
     headers = [
@@ -196,6 +197,7 @@ def generate_marked_transactions(
         ("Account No.", col_account_num),
         ("Nature", col_nature),
         ("Amount (Currency)", col_converted_amount),
+        ("Assigned To", col_assigned_to),
     ]
     
     for header_text, col in headers:
@@ -266,10 +268,15 @@ def generate_marked_transactions(
                 else:
                     # VND bank - amount is already in VND
                     ws.cell(row=excel_row, column=col_converted_amount).value = row.amount
+            
+            # Assigned To - show which section and category this is assigned to
+            assigned_label = _get_assigned_to_label(group, row)
+            if assigned_label:
+                ws.cell(row=excel_row, column=col_assigned_to).value = assigned_label
     
     # Apply highlighting for manual review rows
     for row_idx in highlight_rows:
-        for col in range(1, col_converted_amount + 1):
+        for col in range(1, col_assigned_to + 1):
             cell = ws.cell(row=row_idx, column=col)
             cell.fill = HIGHLIGHT_FILL
     
@@ -278,3 +285,56 @@ def generate_marked_transactions(
     wb.save(output)
     output.seek(0)
     return output.read()
+
+
+def _get_assigned_to_label(group, row) -> str:
+    """
+    Generate the 'Assigned To' label for a row based on the group's processing.
+    
+    Returns labels like:
+    - "Income: Contribution"
+    - "Income: Interest"
+    - "Advance/Settlement: Advance"
+    - "By nature: Organisational capacity building"
+    """
+    # Check group's processed section first
+    section = getattr(group, 'processed_section', None)
+    
+    if section == "income":
+        # Determine which income type
+        if group.has_deposit_type() and group.any_name_contains("onesky"):
+            return "Income: Contribution"
+        if group.any_memo_contains("transfer") and not group.any_memo_contains("elc"):
+            return "Income: Fund transfer"
+        if group.has_deposit_type() and group.any_memo_contains("interest"):
+            return "Income: Interest"
+        if group.has_deposit_type() and group.any_memo_contains("ped"):
+            return "Income: PED"
+        return "Income"
+    
+    elif section == "advance_settlement":
+        if group.any_memo_contains("advance") and not group.any_memo_contains("settlement"):
+            return "Advance/Settlement: Advance"
+        if group.any_memo_contains("settlement"):
+            return "Advance/Settlement: Settlement"
+        return "Advance/Settlement"
+    
+    elif section == "nature":
+        # Use the row's nature category
+        if row.nature_category:
+            nature_display = NATURE_DISPLAY_MAP.get(row.nature_category, row.nature_category)
+            return f"By nature: {nature_display}"
+        return "By nature"
+    
+    elif section == "manual":
+        if row.nature_category:
+            nature_display = NATURE_DISPLAY_MAP.get(row.nature_category, row.nature_category)
+            return f"Manual input: {nature_display}"
+        return "Manual input"
+    
+    # If no section assigned but row has nature
+    if row.nature_category:
+        nature_display = NATURE_DISPLAY_MAP.get(row.nature_category, row.nature_category)
+        return f"By nature: {nature_display}"
+    
+    return ""

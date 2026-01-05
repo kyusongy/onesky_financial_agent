@@ -8,6 +8,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 DATA_DIR = PROJECT_ROOT / "instruction_data" / "templates"
 DEFAULT_NATURE_LOOKUP = DATA_DIR / "nature_lookup.xlsx"
 DEFAULT_OUTPUT_TEMPLATE = DATA_DIR / "output_template.xlsx"
+DEFAULT_MANUAL_LOOKUP = DATA_DIR / "Manual.xlsx"
 
 # Bank identifiers
 BANK_USD = 29  # USD Bank

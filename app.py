@@ -11,6 +11,7 @@ from src.processor import process_transactions
 from src.calculators.income import calculate_income
 from src.calculators.advance_settlement import calculate_advance_settlement
 from src.calculators.nature import NatureMapper
+from src.calculators.manual_input import ManualInputProcessor, mark_processed_groups
 from src.report_generator import ReportGenerator, generate_marked_transactions
 from src.models import ProcessingResult, BankType
 
@@ -114,7 +115,7 @@ def main():
         
         st.markdown("---")
         
-        # Optional: Custom nature lookup table
+        # Optional: Custom lookup tables
         st.markdown("### ⚙️ Optional Settings")
         nature_lookup_file = st.file_uploader(
             "Custom Nature Lookup Table",
@@ -124,7 +125,17 @@ def main():
         )
         
         if nature_lookup_file:
-            st.success("✓ Custom lookup table loaded")
+            st.success("✓ Custom nature lookup loaded")
+        
+        manual_lookup_file = st.file_uploader(
+            "Custom Manual Input Lookup",
+            type=["xlsx"],
+            help="Optional: Upload a custom Manual.xlsx to override the default (contains 1250/1230/1252/1500 sheets)",
+            key="manual_upload"
+        )
+        
+        if manual_lookup_file:
+            st.success("✓ Custom manual lookup loaded")
     
     # Main content area
     if transaction_file is None:
@@ -227,6 +238,30 @@ def main():
                 
                 nature_totals, manual_groups = nature_mapper.process_groups(groups_by_bank, st.session_state.exchange_rates)
                 
+                # Step 7: Mark processed groups (for avoiding double counting)
+                mark_processed_groups(groups_by_bank, income, advance_settlement, nature_totals)
+                
+                # Step 8: Process manual input groups
+                manual_processor = ManualInputProcessor(
+                    BytesIO(manual_lookup_file.read()) if manual_lookup_file else None
+                )
+                if manual_lookup_file:
+                    manual_lookup_file.seek(0)
+                
+                manual_nature_totals, still_manual = manual_processor.process_manual_groups(
+                    manual_groups, 
+                    st.session_state.exchange_rates
+                )
+                
+                # Merge manual nature totals into main nature totals
+                for bank_type in BankType:
+                    for key, value in manual_nature_totals[bank_type].items():
+                        if key in nature_totals[bank_type]:
+                            nature_totals[bank_type][key] += value
+                        elif key in ["advance", "settlement"]:
+                            # Add to advance/settlement section
+                            advance_settlement[bank_type][key] += value
+                
                 # Collect all groups for marked transaction output
                 all_groups = []
                 for bank_groups in groups_by_bank.values():
@@ -238,7 +273,7 @@ def main():
                     income=income,
                     advance_settlement=advance_settlement,
                     nature_totals=nature_totals,
-                    manual_groups=manual_groups,
+                    manual_groups=still_manual,  # Only groups that still need manual review
                     all_groups=all_groups,
                     exchange_rates=st.session_state.exchange_rates,
                 )
