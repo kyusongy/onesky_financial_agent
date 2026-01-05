@@ -14,6 +14,7 @@ We check at the GROUP level for transaction type and look for keywords in ANY ro
 For USD bank, amounts are converted from VND to USD using the exchange rate.
 """
 from ..models import TransactionGroup, BankType
+from .utils import get_exchange_rate, convert_amount, init_income_totals
 
 
 def calculate_income(
@@ -33,86 +34,42 @@ def calculate_income(
     result: dict[BankType, dict[str, float]] = {}
     
     for bank_type, groups in groups_by_bank.items():
-        result[bank_type] = {
-            "contribution": 0.0,
-            "fund_transfer": 0.0,
-            "interest": 0.0,
-            "ped": 0.0,
-        }
+        result[bank_type] = init_income_totals()
         
         for group in groups:
-            # Get exchange rate for USD conversion
-            ex_rate = _get_exchange_rate(group, bank_type, exchange_rates)
+            ex_rate = get_exchange_rate(group, exchange_rates)
             
-            contribution = _calculate_contribution(group, ex_rate)
-            fund_transfer = _calculate_fund_transfer(group, ex_rate)
-            interest = _calculate_interest(group, ex_rate)
-            ped = _calculate_ped(group, ex_rate)
-            
-            result[bank_type]["contribution"] += contribution
-            result[bank_type]["fund_transfer"] += fund_transfer
-            result[bank_type]["interest"] += interest
-            result[bank_type]["ped"] += ped
+            result[bank_type]["contribution"] += _calculate_contribution(group, ex_rate)
+            result[bank_type]["fund_transfer"] += _calculate_fund_transfer(group, ex_rate)
+            result[bank_type]["interest"] += _calculate_interest(group, ex_rate)
+            result[bank_type]["ped"] += _calculate_ped(group, ex_rate)
     
     return result
 
 
-def _get_exchange_rate(
-    group: TransactionGroup, 
-    bank_type: BankType, 
-    exchange_rates: dict[str, float]
-) -> float:
-    """Get exchange rate for USD bank, return 1.0 for VND bank."""
-    if bank_type != BankType.USD:
-        return 1.0
-    if not exchange_rates or not group.date:
-        return 1.0
-    date_key = group.date.strftime("%Y-%m-%d")
-    return exchange_rates.get(date_key, 1.0)
-
-
-def _convert_amount(amount: float, ex_rate: float) -> float:
-    """Convert amount using exchange rate (divide for VND to USD)."""
-    if ex_rate <= 0:
-        return amount
-    return amount / ex_rate
-
-
 def _calculate_contribution(group: TransactionGroup, ex_rate: float) -> float:
-    """
-    Contribution: if group has deposit type AND any name contains "onesky",
-    return the first row's amount (converted if USD).
-    """
+    """Contribution: deposit + name contains 'onesky'."""
     if group.has_deposit_type() and group.any_name_contains("onesky"):
-        return _convert_amount(group.first_amount, ex_rate)
+        return convert_amount(group.first_amount, ex_rate)
     return 0.0
 
 
 def _calculate_fund_transfer(group: TransactionGroup, ex_rate: float) -> float:
-    """
-    Fund transfer to USD account: if any memo contains "transfer" AND NOT "ELC",
-    return the first row's amount (converted if USD).
-    """
+    """Fund transfer: memo contains 'transfer' but not 'elc'."""
     if group.any_memo_contains("transfer") and not group.any_memo_contains("elc"):
-        return _convert_amount(group.first_amount, ex_rate)
+        return convert_amount(group.first_amount, ex_rate)
     return 0.0
 
 
 def _calculate_interest(group: TransactionGroup, ex_rate: float) -> float:
-    """
-    Interest: if group has deposit type AND any memo contains "interest",
-    return the first row's amount (converted if USD).
-    """
+    """Interest: deposit + memo contains 'interest'."""
     if group.has_deposit_type() and group.any_memo_contains("interest"):
-        return _convert_amount(group.first_amount, ex_rate)
+        return convert_amount(group.first_amount, ex_rate)
     return 0.0
 
 
 def _calculate_ped(group: TransactionGroup, ex_rate: float) -> float:
-    """
-    PED: if group has deposit type AND any memo contains "PED",
-    return the first row's amount (converted if USD).
-    """
+    """PED: deposit + memo contains 'ped'."""
     if group.has_deposit_type() and group.any_memo_contains("ped"):
-        return _convert_amount(group.first_amount, ex_rate)
+        return convert_amount(group.first_amount, ex_rate)
     return 0.0
