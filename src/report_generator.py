@@ -324,9 +324,10 @@ def _get_section_type_labels(group: TransactionGroup) -> tuple[str, str]:
     
     elif section == ReportSection.ADVANCE_SETTLEMENT:
         section_label = "Advance_Settlement"
-        if group.any_memo_contains("advance") and not group.any_memo_contains("settlement"):
+        # Only check header memo for advance/settlement keywords
+        if group.memo_contains("advance") and not group.memo_contains("settlement"):
             type_label = "Advance by cash"
-        elif group.any_memo_contains("settlement"):
+        elif group.memo_contains("settlement"):
             type_label = "Settlement"
         else:
             type_label = ""
@@ -343,20 +344,36 @@ def _get_section_type_labels(group: TransactionGroup) -> tuple[str, str]:
         return section_label, type_label
     
     elif section == ReportSection.MANUAL:
-        section_label = "Advance_Settlement"  # Manual groups are typically advance/settlement
         # Find the first entry with a determined nature_type
         active = group.active_entries
+        determined_nature = None
         type_label = ""
+        
         for entry in active:
             if entry.nature_type and entry.nature_type != "manual":
+                determined_nature = entry.nature_type
                 type_label = NATURE_DISPLAY_MAP.get(entry.nature_type, entry.nature_type)
                 break
-        # If no nature found, try to determine from memo
-        if not type_label:
+        
+        # Determine section_label based on the actual nature
+        nature_categories = ["org", "edu", "oper", "nutrition", "edu_infra"]
+        advance_settlement_categories = ["advance", "settlement"]
+        
+        if determined_nature in nature_categories:
+            section_label = "Nature"
+        elif determined_nature in advance_settlement_categories:
+            section_label = "Advance_Settlement"
+        else:
+            # Fallback: try to determine from memo
             if group.any_memo_contains("advance") and not group.any_memo_contains("settlement"):
+                section_label = "Advance_Settlement"
                 type_label = "Advance by cash"
             elif group.any_memo_contains("settlement"):
+                section_label = "Advance_Settlement"
                 type_label = "Settlement"
+            else:
+                section_label = "Nature"
+        
         return section_label, type_label
     
     # Default

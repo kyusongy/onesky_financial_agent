@@ -94,8 +94,8 @@ class TransactionGroup:
 
     @property
     def active_entries(self) -> List[TransactionEntry]:
-        """Get entries that are not ignored."""
-        return [e for e in self.entries if not e.is_ignored]
+        """Get entries that are not ignored and have non-zero amounts."""
+        return [e for e in self.entries if not e.is_ignored and e.amount]
 
     def get_net_amount_vnd(self) -> float:
         """Helper to get value in VND for reporting."""

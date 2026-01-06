@@ -145,56 +145,78 @@ class NatureMapper:
     def _process_group(self, group: TransactionGroup, ex_rate: float) -> dict:
         """
         Process a single group for nature mapping.
-        
+
         Filling logic:
         - If any entry's nature = manual OR is_manual_trigger: mark for manual review
         - If nature != manual AND 1 entry: use entry's nature, fill bank_amount
         - If nature != manual AND >1 entries: fill each entry's amount by its nature
-        
+
         Returns:
             Dict with keys: is_manual, manual_amount, nature_amounts
         """
         result = {"is_manual": False, "manual_amount": 0.0, "nature_amounts": {}}
-        
+
         active_entries = group.active_entries
         if not active_entries:
             return result
-        
+
+        # DEBUG: Print group info
+        bank_amount_converted = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
+        print(f"\n=== DEBUG _process_group (NatureMapper) ===")
+        print(f"Group date: {group.date}, bank: {group.bank_identifier}")
+        print(f"Bank amount: {group.bank_amount}, converted: {bank_amount_converted}")
+        print(f"Active entries count: {len(active_entries)}")
+
         # Assign nature to each entry and check for manual triggers
         for entry in active_entries:
             nature = self.get_nature(entry.account_code)
-            
+
             # If nature is "manual", don't set it as nature_type - let manual_input.py handle it
             # Only set actual nature types (org, edu, oper, etc.)
             if nature and nature != "manual":
                 entry.nature_type = nature
-            
+
             # Check if this is a manual trigger account (1250, 1230, 1252, 1500)
             # or if nature lookup returned "manual"
             if get_account_type(entry.account_code) or nature == "manual":
                 entry.is_manual_trigger = True
-        
+
+            print(f"  Entry: account={entry.account_code}, amount={entry.amount}, nature_type={entry.nature_type}, is_manual_trigger={entry.is_manual_trigger}")
+
         # Check if any entry requires manual review
         if any(e.is_manual_trigger for e in active_entries):
             result["is_manual"] = True
             result["manual_amount"] = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
+            print(f"  -> MANUAL REVIEW required, amount={result['manual_amount']}")
             return result
-        
+
         num_entries = len(active_entries)
-        
+
         if num_entries == 1:
             # Use entry's nature, fill bank_amount
             entry = active_entries[0]
             if entry.nature_type:
                 converted = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
                 result["nature_amounts"][entry.nature_type] = abs(converted)
-        
+                print(f"  -> SINGLE-ENTRY mode: {entry.nature_type} = abs({converted}) = {abs(converted)}")
+
         elif num_entries > 1:
-            # Fill each entry's amount by its nature
+            # Fill each entry's amount by its nature (preserve sign, no abs())
+            # Sum of entry amounts equals the REVERSE of bank_amount
+            print(f"  -> MULTI-ROW mode: adding entry amounts by nature (preserve sign)")
             for entry in active_entries:
                 if entry.nature_type and entry.amount:
-                    amount = abs(convert_amount(entry.amount, group.bank_identifier, ex_rate))
-                    result["nature_amounts"][entry.nature_type] = \
-                        result["nature_amounts"].get(entry.nature_type, 0.0) + amount
-        
+                    amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
+                    old_val = result["nature_amounts"].get(entry.nature_type, 0.0)
+                    result["nature_amounts"][entry.nature_type] = old_val + amount
+                    print(f"    {entry.nature_type}: {old_val} + {amount} = {result['nature_amounts'][entry.nature_type]}")
+
+            # Validation: sum should equal reverse of bank_amount
+            total = sum(result["nature_amounts"].values())
+            expected = -bank_amount_converted
+            print(f"  VALIDATION: sum of amounts = {total}, expected (reverse of bank) = {expected}")
+            if abs(total - expected) > 1:
+                print(f"  WARNING: Mismatch! Difference = {total - expected}")
+
+        print(f"  Final result: {result}")
         return result

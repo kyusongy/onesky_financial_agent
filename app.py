@@ -238,8 +238,19 @@ def main():
                 
                 nature_totals, manual_groups = nature_mapper.process_groups(groups_by_bank, st.session_state.exchange_rates)
                 
+                # DEBUG: Initial nature_totals from nature_mapper
+                print("\n=== DEBUG: nature_totals AFTER nature_mapper.process_groups ===")
+                print(f"VND totals: { {k: v for k, v in nature_totals[BANK_VND].items() if v != 0} }")
+                print(f"USD totals: { {k: v for k, v in nature_totals[BANK_USD].items() if v != 0} }")
+                print(f"Manual groups count: {len(manual_groups)}")
+                
                 # Step 7: Mark processed groups (for avoiding double counting)
                 mark_processed_groups(groups_by_bank, income, advance_settlement, nature_totals)
+                
+                # DEBUG: Check how many groups are marked as processed after this
+                processed_count = sum(1 for grps in groups_by_bank.values() for g in grps if g.is_processed)
+                print(f"\n=== DEBUG: After mark_processed_groups ===")
+                print(f"Total processed groups: {processed_count}")
                 
                 # Step 8: Process manual input groups
                 manual_processor = ManualInputProcessor(
@@ -253,14 +264,26 @@ def main():
                     st.session_state.exchange_rates
                 )
                 
+                # DEBUG: Before merging
+                print("\n=== DEBUG: BEFORE merging manual_nature_totals ===")
+                print(f"nature_totals[VND]: { {k: v for k, v in nature_totals[BANK_VND].items() if v != 0} }")
+                print(f"manual_nature_totals[VND]: { {k: v for k, v in manual_nature_totals[BANK_VND].items() if v != 0} }")
+                
                 # Merge manual nature totals into main nature totals
                 for bank_id in [BANK_USD, BANK_VND]:
                     for key, value in manual_nature_totals[bank_id].items():
                         if key in nature_totals[bank_id]:
+                            old_val = nature_totals[bank_id][key]
                             nature_totals[bank_id][key] += value
+                            if value != 0:
+                                print(f"  MERGE {bank_id} {key}: {old_val} + {value} = {nature_totals[bank_id][key]}")
                         elif key in ["advance", "settlement"]:
                             # Add to advance/settlement section
                             advance_settlement[bank_id][key] += value
+                
+                # DEBUG: After merging
+                print("\n=== DEBUG: AFTER merging - FINAL nature_totals ===")
+                print(f"VND: { {k: v for k, v in nature_totals[BANK_VND].items() if v != 0} }")
                 
                 # Collect all groups for marked transaction output
                 all_groups = []

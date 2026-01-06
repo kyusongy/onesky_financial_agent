@@ -39,36 +39,40 @@ def parse_transaction_file(
     
     for idx in range(header_row_idx + 1, len(df)):
         row = df.iloc[idx]
-        
+
         # Check for bank section markers
         bank_marker = _check_bank_marker(row)
         if bank_marker:
-            # Save current group if exists
-            if current_group_rows:
+            # Save current group if exists (only if it's a valid 29/30 bank)
+            if current_group_rows and current_bank_id in (BANK_USD, BANK_VND):
                 groups.append(_create_group(current_group_rows, current_bank_id, current_date))
-                current_group_rows = []
-            current_bank_id = bank_marker
+            current_group_rows = []
+            current_bank_id = bank_marker  # Could be "OTHER" - groups under this will be skipped
             continue
-        
+
+        # Skip rows under "OTHER" banks
+        if current_bank_id == "OTHER":
+            continue
+
         # Check for empty row (group separator)
         if _is_empty_row(row):
-            if current_group_rows:
+            if current_group_rows and current_bank_id in (BANK_USD, BANK_VND):
                 groups.append(_create_group(current_group_rows, current_bank_id, current_date))
-                current_group_rows = []
-                current_date = None
+            current_group_rows = []
+            current_date = None
             continue
-        
+
         # Parse transaction row as dict
         row_data = _parse_row(row, idx)
-        
+
         # Update date if this row has a date
         if row_data["date"]:
             current_date = row_data["date"]
-        
+
         current_group_rows.append(row_data)
-    
-    # Don't forget the last group
-    if current_group_rows:
+
+    # Don't forget the last group (only if it's a valid 29/30 bank)
+    if current_group_rows and current_bank_id in (BANK_USD, BANK_VND):
         groups.append(_create_group(current_group_rows, current_bank_id, current_date))
     
     # Check if there are USD transactions
@@ -89,18 +93,33 @@ def _find_header_row(df: pd.DataFrame) -> int:
 
 
 def _check_bank_marker(row: pd.Series) -> Optional[str]:
-    """Check if row is a bank section marker."""
+    """
+    Check if row is a bank section marker.
+
+    Returns:
+        BANK_USD for "29 USD" marker
+        BANK_VND for "30 VND" marker
+        "OTHER" for other bank markers - should be ignored
+        None if not a bank marker
+    """
     first_val = row.iloc[0]
     if pd.isna(first_val):
         return None
-    
+
     val_str = str(first_val).lower().strip()
-    
+
+    # Check for 29 USD bank
     if "29" in val_str and "usd" in val_str:
         return BANK_USD
+    # Check for 30 VND bank
     if "30" in val_str and "vnd" in val_str:
         return BANK_VND
-    
+    # Check for other bank markers (any number + currency/bank keywords) - mark as OTHER to ignore
+    # Pattern: contains a number and bank-related keywords
+    import re
+    if re.search(r'\d+', val_str) and any(kw in val_str for kw in ("vnd", "usd", "vietnam", "bank", "elc")):
+        return "OTHER"
+
     return None
 
 
