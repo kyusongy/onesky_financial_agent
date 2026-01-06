@@ -41,14 +41,14 @@ def calculate_advance_settlement(
 
 
 def _calculate_advance(group: TransactionGroup, ex_rate: float) -> float:
-    """Advance: memo contains 'advance' but not 'settlement'."""
-    if group.any_memo_contains("advance") and not group.any_memo_contains("settlement"):
+    """Advance: header memo contains 'advance' but not 'settlement'."""
+    if group.memo_contains("advance") and not group.memo_contains("settlement"):
         return abs(convert_amount(group.bank_amount, group.bank_identifier, ex_rate))
     return 0.0
 
 
 def _calculate_settlement(group: TransactionGroup, ex_rate: float) -> float:
-    """Settlement: memo contains 'settlement'."""
-    if group.any_memo_contains("settlement"):
+    """Settlement: header memo contains 'settlement'."""
+    if group.memo_contains("settlement"):
         return abs(convert_amount(group.bank_amount, group.bank_identifier, ex_rate))
     return 0.0

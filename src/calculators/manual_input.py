@@ -56,10 +56,15 @@ class ManualInputProcessor:
         
         try:
             xlsx = pd.ExcelFile(self.lookup_source)
+            print(f"\n=== DEBUG: Loading Manual.xlsx ===")
+            print(f"Available sheets: {xlsx.sheet_names}")
             for sheet_name in ACCOUNT_TYPES:
                 if sheet_name in xlsx.sheet_names:
                     df = pd.read_excel(self.lookup_source, sheet_name=sheet_name, header=None)
                     tables[sheet_name] = self._parse_sheet(df)
+                    print(f"  Loaded {sheet_name}: {len(tables[sheet_name])} entries")
+                else:
+                    print(f"  Sheet {sheet_name} NOT FOUND")
         except Exception as e:
             print(f"Warning: Could not load manual lookup table: {e}")
         
@@ -106,6 +111,10 @@ class ManualInputProcessor:
         """
         entries = self.lookup_tables.get(account_type, [])
         
+        # DEBUG: Show lookup table info
+        if account_type == "1500":
+            print(f"    [lookup_by_amount] Looking for amount={amount} in {account_type} table ({len(entries)} entries)")
+        
         # First try exact match
         for entry in entries:
             if abs(entry.amount - amount) < 0.01:
@@ -115,6 +124,12 @@ class ManualInputProcessor:
         for entry in entries:
             if abs(abs(entry.amount) - abs(amount)) < 0.01:
                 return entry.nature
+        
+        # DEBUG: Show first few entries if no match found
+        if account_type == "1500" and len(entries) > 0:
+            print(f"    [lookup_by_amount] No match found. First 5 entries in table:")
+            for i, e in enumerate(entries[:5]):
+                print(f"      {i}: amount={e.amount}, nature={e.nature}")
         
         return None
     
@@ -135,8 +150,16 @@ class ManualInputProcessor:
         }
         still_manual: list[TransactionGroup] = []
         
-        for group in manual_groups:
+        print(f"\n=== DEBUG: process_manual_groups ===")
+        print(f"Total manual groups to process: {len(manual_groups)}")
+        
+        processed_count = 0
+        skipped_already_processed = 0
+        
+        for i, group in enumerate(manual_groups):
             if group.is_processed:
+                skipped_already_processed += 1
+                print(f"  [{i}] SKIP (already processed): date={group.date}, section={group.assigned_section}")
                 continue
             
             ex_rate = get_exchange_rate(group, exchange_rates)
@@ -148,15 +171,33 @@ class ManualInputProcessor:
                 result = self._process_1500(group, ex_rate)
             else:
                 result = {"processed": False, "amounts": {}}
+                print(f"  [{i}] SKIP (no account type): date={group.date}")
             
             if result["processed"]:
                 group.is_processed = True
                 group.assigned_section = ReportSection.MANUAL
+                processed_count += 1
                 for nature_key, amount in result["amounts"].items():
                     if nature_key in nature_totals[group.bank_identifier]:
+                        old_val = nature_totals[group.bank_identifier][nature_key]
                         nature_totals[group.bank_identifier][nature_key] += amount
+                        print(f"  [{i}] ADD {nature_key}: {old_val} + {amount} = {nature_totals[group.bank_identifier][nature_key]}")
             else:
                 still_manual.append(group)
+        
+        print(f"\n=== DEBUG: process_manual_groups SUMMARY ===")
+        print(f"Total groups: {len(manual_groups)}")
+        print(f"Skipped (already processed): {skipped_already_processed}")
+        print(f"Processed in this step: {processed_count}")
+        print(f"Still manual: {len(still_manual)}")
+        print(f"Final nature_totals[VND]:")
+        for k, v in nature_totals[BANK_VND].items():
+            if v != 0:
+                print(f"  {k}: {v}")
+        print(f"Final nature_totals[USD]:")
+        for k, v in nature_totals[BANK_USD].items():
+            if v != 0:
+                print(f"  {k}: {v}")
         
         return nature_totals, still_manual
     
@@ -184,7 +225,7 @@ class ManualInputProcessor:
     ) -> dict:
         """
         Process 1250/1230/1252 groups.
-        
+
         For 1-entry groups: look up nature by amount, enter absolute bank value.
         For >1 entries with 1500: defer to 1500 logic.
         For >1 entries without 1500: process each entry individually.
@@ -192,111 +233,202 @@ class ManualInputProcessor:
         result = {"processed": False, "amounts": {}}
         active_entries = group.active_entries
         num_entries = len(active_entries)
-        
+
+        # DEBUG: Print group info
+        bank_amount_converted = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
+        print(f"\n=== DEBUG _process_1250_1230_1252 ===")
+        print(f"Group date: {group.date}, bank: {group.bank_identifier}")
+        print(f"Account type: {account_type}")
+        print(f"Bank amount: {group.bank_amount}, converted: {bank_amount_converted}")
+        print(f"Active entries count: {num_entries}")
+        for entry in active_entries:
+            print(f"  Entry: account={entry.account_code}, amount={entry.amount}, nature_type={entry.nature_type}")
+
         if num_entries == 1:
             entry = active_entries[0]
             if entry.amount:
                 nature = self.lookup_by_amount(account_type, entry.amount)
+                print(f"  -> SINGLE-ENTRY mode: lookup({account_type}, {entry.amount}) = {nature}")
                 if nature:
-                    result["amounts"][nature] = abs(convert_amount(group.bank_amount, group.bank_identifier, ex_rate))
+                    converted = abs(convert_amount(group.bank_amount, group.bank_identifier, ex_rate))
+                    result["amounts"][nature] = converted
                     result["processed"] = True
                     entry.nature_type = nature
-        
+                    print(f"  -> Result: {nature} = abs(bank_amount) = {converted}")
+
         elif num_entries > 1:
             # Check if any entry is 1500
             has_1500 = any(get_account_type(e.account_code) == "1500" for e in active_entries)
-            
+
             if has_1500:
+                print(f"  -> Has 1500 entry, deferring to _process_1500")
                 return self._process_1500(group, ex_rate)
-            
-            # Process each entry individually
+
+            # Process each entry individually (preserve sign for multi-row)
+            print(f"  -> MULTI-ROW mode (no 1500): processing each entry")
             for entry in active_entries:
                 if entry.amount:
                     nature = self.lookup_by_amount(account_type, entry.amount)
+                    print(f"    lookup({account_type}, {entry.amount}) = {nature}")
                     if nature:
-                        amount = abs(convert_amount(entry.amount, group.bank_identifier, ex_rate))
-                        result["amounts"][nature] = result["amounts"].get(nature, 0.0) + amount
+                        amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
+                        old_val = result["amounts"].get(nature, 0.0)
+                        result["amounts"][nature] = old_val + amount
                         entry.nature_type = nature
                         result["processed"] = True
-        
+                        print(f"    {nature}: {old_val} + {amount} = {result['amounts'][nature]}")
+
+            # Validation for multi-row
+            if result["amounts"]:
+                total = sum(result["amounts"].values())
+                expected = -bank_amount_converted
+                print(f"  VALIDATION: sum = {total}, expected (reverse of bank) = {expected}")
+                if abs(total - expected) > 1:
+                    print(f"  WARNING: Mismatch! Difference = {total - expected}")
+
+        print(f"  Final result: {result}")
         return result
     
     def _process_1500(self, group: TransactionGroup, ex_rate: float) -> dict:
         """
         Process 1500 groups.
         
-        1. Negative 1500: look up nature, enter ABSOLUTE BANK AMOUNT
-        2. Positive 1500: if memo contains PIT/SI/HI → Org, else use previous entry's nature
-        3. For multi-entry: enter each entry's amount by nature, subtract positive 1500
+        Single-entry groups (just negative 1500):
+            - Look up nature, enter absolute bank_amount
+        
+        Multi-entry groups:
+            - Add each non-1500 entry's amount (WITH SIGN) to its nature
+            - Add negative 1500 entry's amount (WITH SIGN) to its nature
+            - Subtract positive 1500 amounts from their nature
+            - Validate: sum of nature amounts should equal bank_amount
         """
         result = {"processed": False, "amounts": {}}
-        bank_amount = abs(convert_amount(group.bank_amount, group.bank_identifier, ex_rate))
+        bank_amount_raw = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
+        bank_amount_abs = abs(bank_amount_raw)
         active_entries = group.active_entries
         
+        # DEBUG: Print group info
+        print(f"\n=== DEBUG _process_1500 ===")
+        print(f"Group date: {group.date}, bank: {group.bank_identifier}")
+        print(f"Bank amount: {group.bank_amount}, converted: {bank_amount_raw}")
+        print(f"Active entries count: {len(active_entries)}")
+        
+        # Check if this is a single-entry group (just one negative 1500)
+        is_single_entry = len(active_entries) == 1
+        
         # First pass: determine nature for non-1500 entries
+        # Use existing nature_type from NatureMapper, OR lookup in Manual.xlsx ONLY for manual trigger accounts
+        # Track prev_nature for positive 1500 inheritance
         prev_nature = None
         for entry in active_entries:
             if get_account_type(entry.account_code) != "1500" and entry.amount:
-                for acct_type in ("1250", "1230", "1252"):
-                    nature = self.lookup_by_amount(acct_type, entry.amount)
-                    if nature:
-                        entry.nature_type = nature
-                        prev_nature = nature
-                        break
-        
-        # Second pass: process 1500 entries
+                # Only look up Manual.xlsx for manual trigger accounts (1250/1230/1252)
+                # Don't overwrite nature_type for non-manual accounts (e.g., 71204VN)
+                entry_acct_type = get_account_type(entry.account_code)
+                if entry_acct_type in ("1250", "1230", "1252"):
+                    lookup_nature = self.lookup_by_amount(entry_acct_type, entry.amount)
+                    if lookup_nature:
+                        entry.nature_type = lookup_nature
+
+                # Update prev_nature from existing nature_type (from NatureMapper or lookup)
+                if entry.nature_type:
+                    prev_nature = entry.nature_type
+                    print(f"  Non-1500 entry: account={entry.account_code}, nature={entry.nature_type}, prev_nature updated")
+
+        # Second pass: process 1500 entries and determine their nature
         negative_1500_entries = []
-        positive_1500_by_nature: dict[str, float] = {}
-        
+        positive_1500_entries = []
+
         for entry in active_entries:
             is_1500 = get_account_type(entry.account_code) == "1500"
             if not is_1500 or not entry.amount:
+                # For non-1500 entries, update prev_nature as we iterate (maintains order)
+                if entry.nature_type:
+                    prev_nature = entry.nature_type
                 continue
-            
+
             if entry.amount < 0:
+                print(f"  Negative 1500: account={entry.account_code}, amount={entry.amount}")
                 nature = self.lookup_by_amount("1500", entry.amount)
+                print(f"    Lookup result: {nature}")
                 if nature:
                     entry.nature_type = nature
                     prev_nature = nature
                     negative_1500_entries.append(entry)
+                    print(f"    -> Added to negative_1500_entries")
+                else:
+                    # Default to org if not found
+                    entry.nature_type = "org"
+                    prev_nature = "org"
+                    negative_1500_entries.append(entry)
+                    print(f"    -> Defaulted to org")
             elif entry.amount > 0:
+                # Positive 1500: PIT/SI/HI → org, else inherit from PREVIOUS ROW
                 if any(entry.memo_contains(kw) for kw in ("pit", "si", "hi")):
                     entry.nature_type = "org"
                 elif prev_nature:
                     entry.nature_type = prev_nature
-                
-                if entry.nature_type:
-                    amt = abs(convert_amount(entry.amount, group.bank_identifier, ex_rate))
-                    positive_1500_by_nature[entry.nature_type] = \
-                        positive_1500_by_nature.get(entry.nature_type, 0.0) + amt
+                else:
+                    entry.nature_type = "org"  # Default
+                positive_1500_entries.append(entry)
+                prev_nature = entry.nature_type  # Update for next iteration
+                print(f"  Positive 1500: account={entry.account_code}, amount={entry.amount}, nature={entry.nature_type}")
         
-        # Add negative 1500 amounts using bank_amount
-        for entry in negative_1500_entries:
-            if entry.nature_type:
-                result["amounts"][entry.nature_type] = \
-                    result["amounts"].get(entry.nature_type, 0.0) + bank_amount
-                result["processed"] = True
-        
-        # Add non-1500 entry amounts
-        for entry in active_entries:
-            if not entry.amount or not entry.nature_type:
-                continue
-            is_1500 = get_account_type(entry.account_code) == "1500"
-            if is_1500:
-                continue
-            
-            amount = abs(convert_amount(entry.amount, group.bank_identifier, ex_rate))
-            result["amounts"][entry.nature_type] = \
-                result["amounts"].get(entry.nature_type, 0.0) + amount
+        # Calculate amounts based on single vs multi-entry logic
+        if is_single_entry and negative_1500_entries:
+            # Single-entry: use absolute bank_amount
+            entry = negative_1500_entries[0]
+            result["amounts"][entry.nature_type] = bank_amount_abs
             result["processed"] = True
-        
-        # Subtract positive 1500 amounts
-        for nature, subtract_amt in positive_1500_by_nature.items():
-            if nature in result["amounts"]:
-                result["amounts"][nature] -= subtract_amt
+            print(f"  Single-entry mode: {entry.nature_type} = {bank_amount_abs}")
+        else:
+            # Multi-entry: add each entry's amount WITH SIGN
+            
+            # Add non-1500 entry amounts (preserve sign)
+            for entry in active_entries:
+                if not entry.amount or not entry.nature_type:
+                    continue
+                if get_account_type(entry.account_code) == "1500":
+                    continue
+                
+                amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
+                result["amounts"][entry.nature_type] = \
+                    result["amounts"].get(entry.nature_type, 0.0) + amount
+                result["processed"] = True
+                print(f"  Non-1500 entry: {entry.nature_type} += {amount}")
+            
+            # Add negative 1500 entry amounts (preserve sign - they're negative)
+            for entry in negative_1500_entries:
+                if entry.nature_type and entry.amount:
+                    amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
+                    result["amounts"][entry.nature_type] = \
+                        result["amounts"].get(entry.nature_type, 0.0) + amount
+                    result["processed"] = True
+                    print(f"  Negative 1500: {entry.nature_type} += {amount}")
+            
+            # Subtract positive 1500 amounts
+            for entry in positive_1500_entries:
+                if entry.nature_type and entry.amount:
+                    amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
+                    result["amounts"][entry.nature_type] = \
+                        result["amounts"].get(entry.nature_type, 0.0) - amount
+                    print(f"  Positive 1500 subtract: {entry.nature_type} -= {amount}")
         
         if result["amounts"]:
             result["processed"] = True
+        
+        # DEBUG: Print final result and validate
+        print(f"  Final result: processed={result['processed']}, amounts={result['amounts']}")
+        print(f"  Negative 1500 count: {len(negative_1500_entries)}")
+        
+        # Sanity check: sum of amounts should equal REVERSE of bank_amount (for multi-entry)
+        # e.g., if bank_amount = -14,343,323, sum should be +14,343,323
+        if not is_single_entry and result["amounts"]:
+            total = sum(result["amounts"].values())
+            expected = -bank_amount_raw  # Reverse of bank_amount
+            print(f"  VALIDATION: sum of amounts = {total}, expected (reverse of bank) = {expected}")
+            if abs(total - expected) > 1:  # Allow small rounding error
+                print(f"  WARNING: Mismatch! Difference = {total - expected}")
         
         return result
 
@@ -326,19 +458,25 @@ def _get_processed_section(group: TransactionGroup) -> Optional[ReportSection]:
             return ReportSection.INCOME
         if group.any_memo_contains("interest") or group.any_memo_contains("ped"):
             return ReportSection.INCOME
-    
+
     if group.any_memo_contains("transfer"):
         return ReportSection.INCOME
-    
-    # Advance/Settlement checks
-    if group.any_memo_contains("settlement"):
+
+    # Advance/Settlement checks - ONLY check header memo (bank_memo), not entry memos
+    # This prevents false positives from entries containing "advance" in their memo
+    if group.memo_contains("settlement"):
         return ReportSection.ADVANCE_SETTLEMENT
-    if group.any_memo_contains("advance"):
+    if group.memo_contains("advance"):
         return ReportSection.ADVANCE_SETTLEMENT
-    
-    # Nature check (non-manual)
+
+    # Check if any entry is a manual trigger account (1500/1250/1230/1252)
+    # If so, do NOT mark as NATURE - let manual_input.py handle the complex logic
     active_entries = group.active_entries
-    if any(e.nature_type and e.nature_type != "manual" and not e.is_manual_trigger for e in active_entries):
+    if any(e.is_manual_trigger for e in active_entries):
+        return None  # Leave for manual processing
+
+    # Nature check (non-manual) - only if no manual trigger entries
+    if any(e.nature_type and e.nature_type != "manual" for e in active_entries):
         return ReportSection.NATURE
-    
+
     return None

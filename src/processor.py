@@ -40,9 +40,9 @@ def process_transactions(
         for split_group in split_groups:
             # Step 2: Remove capital rows (mark as ignored)
             cleaned_group = _remove_capital_rows(split_group)
-            
-            # Only add groups with active entries or bank amount
-            if cleaned_group.active_entries or cleaned_group.bank_amount != 0:
+
+            # Only add groups with non-zero bank amount (ignore zero bank_amount transactions)
+            if cleaned_group.bank_amount != 0:
                 processed_groups[cleaned_group.bank_identifier].append(cleaned_group)
     
     return processed_groups
@@ -174,35 +174,33 @@ def _determine_entry_bank(entry: TransactionEntry) -> Optional[str]:
 def _remove_capital_rows(group: TransactionGroup) -> TransactionGroup:
     """
     Remove capital rows and their offset pairs by marking them as ignored.
-    
+
     Capital row identification:
-    - Memo contains 'capital' AND account code starts with '13' (e.g., 1310VN)
-    
+    - Account code starts with '13' (e.g., 1310VN, 1311VN)
+
     For each capital row found:
     1. Mark the capital row as is_ignored
     2. Mark the row immediately before it as is_ignored
     """
     entries = group.entries
     indices_to_ignore: set[int] = set()
-    
-    # Find capital rows: memo contains "capital" AND account starts with "13"
+
+    # Find capital rows: account starts with "13"
     for i, entry in enumerate(entries):
-        if entry.memo_contains("capital"):
-            # Check if account code starts with "13"
-            account_num = entry.get_account_number()
-            if account_num and account_num.lower().startswith("13"):
-                # Mark this row as ignored
-                indices_to_ignore.add(i)
-                
-                # Also mark the row immediately before it (the offset row)
-                if i > 0:
-                    indices_to_ignore.add(i - 1)
-    
+        account_num = entry.get_account_number()
+        if account_num and account_num.lower().startswith("13"):
+            # Mark this row as ignored
+            indices_to_ignore.add(i)
+
+            # Also mark the row immediately before it (the offset row)
+            if i > 0:
+                indices_to_ignore.add(i - 1)
+
     # Mark entries as ignored
     for i in indices_to_ignore:
         if i < len(entries):
             entries[i].is_ignored = True
-    
+
     return group
 
 
