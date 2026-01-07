@@ -280,7 +280,18 @@ def main():
                         elif key in ["advance", "settlement"]:
                             # Add to advance/settlement section
                             advance_settlement[bank_id][key] += value
-                
+
+                # Clear the "manual" tracking category - those amounts are now categorized
+                # Only keep "manual" amount for groups that are still unprocessed (still_manual)
+                for bank_id in [BANK_USD, BANK_VND]:
+                    if "manual" in nature_totals[bank_id]:
+                        # Calculate remaining manual amount from still_manual groups
+                        remaining_manual = sum(
+                            abs(g.bank_amount) for g in still_manual
+                            if g.bank_identifier == bank_id
+                        )
+                        nature_totals[bank_id]["manual"] = remaining_manual
+
                 # DEBUG: After merging
                 print("\n=== DEBUG: AFTER merging - FINAL nature_totals ===")
                 print(f"VND: { {k: v for k, v in nature_totals[BANK_VND].items() if v != 0} }")
