@@ -364,11 +364,11 @@ def _get_section_type_labels(group: TransactionGroup) -> tuple[str, str]:
         elif determined_nature in advance_settlement_categories:
             section_label = "Advance_Settlement"
         else:
-            # Fallback: try to determine from memo
-            if group.any_memo_contains("advance") and not group.any_memo_contains("settlement"):
+            # Fallback: try to determine from header memo only (not entry memos)
+            if group.memo_contains("advance") and not group.memo_contains("settlement"):
                 section_label = "Advance_Settlement"
                 type_label = "Advance by cash"
-            elif group.any_memo_contains("settlement"):
+            elif group.memo_contains("settlement"):
                 section_label = "Advance_Settlement"
                 type_label = "Settlement"
             else:

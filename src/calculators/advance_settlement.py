@@ -48,7 +48,7 @@ def _calculate_advance(group: TransactionGroup, ex_rate: float) -> float:
 
 
 def _calculate_settlement(group: TransactionGroup, ex_rate: float) -> float:
-    """Settlement: header memo contains 'settlement'."""
+    """Settlement: header memo contains 'settlement'. Use original bank_amount (preserve sign)."""
     if group.memo_contains("settlement"):
-        return abs(convert_amount(group.bank_amount, group.bank_identifier, ex_rate))
+        return convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
     return 0.0
