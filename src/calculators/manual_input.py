@@ -22,10 +22,17 @@ from .utils import get_exchange_rate, convert_amount, normalize_nature, get_acco
 # Default path for manual lookup
 DEFAULT_MANUAL_LOOKUP = Path(__file__).parent.parent.parent / "instruction_data" / "templates" / "Manual.xlsx"
 
+# Default path for staff lookup
+DEFAULT_STAFF_LOOKUP = Path(__file__).parent.parent.parent / "instruction_data" / "templates" / "staff_lookup.xlsx"
+
 # Column indices in Manual.xlsx sheets
 MANUAL_COL_AMOUNT = 8
 MANUAL_COL_PROVINCE = 13
 MANUAL_COL_NATURE = 14
+
+# Column indices in staff_lookup.xlsx (after header row)
+STAFF_COL_NAME = 1
+STAFF_COL_NATURE = 2
 
 
 @dataclass
@@ -38,17 +45,25 @@ class ManualLookupEntry:
 
 class ManualInputProcessor:
     """Processes manual input transactions using lookup tables."""
-    
-    def __init__(self, lookup_source: Optional[Union[str, Path, BinaryIO]] = None):
+
+    def __init__(
+        self,
+        lookup_source: Optional[Union[str, Path, BinaryIO]] = None,
+        staff_lookup_source: Optional[Union[str, Path, BinaryIO]] = None
+    ):
         """
-        Initialize with manual lookup file.
-        
+        Initialize with manual lookup file and staff lookup file.
+
         Args:
             lookup_source: Path to Manual.xlsx or file-like object.
                           Uses default if not provided.
+            staff_lookup_source: Path to staff_lookup.xlsx or file-like object.
+                                Uses default if not provided.
         """
         self.lookup_source = lookup_source or DEFAULT_MANUAL_LOOKUP
+        self.staff_lookup_source = staff_lookup_source or DEFAULT_STAFF_LOOKUP
         self.lookup_tables = self._load_lookup_tables()
+        self.staff_lookup = self._load_staff_lookup()
     
     def _load_lookup_tables(self) -> dict[str, list[ManualLookupEntry]]:
         """Load all 4 sheets from Manual.xlsx."""
@@ -97,7 +112,71 @@ class ManualInputProcessor:
                 if isinstance(val, str) and val.lower().strip() == "date":
                     return idx
         return default
-    
+
+    def _load_staff_lookup(self) -> dict[str, str]:
+        """
+        Load staff lookup table from staff_lookup.xlsx.
+
+        Returns:
+            Dictionary mapping staff name (lowercase) to nature (org/edu)
+        """
+        staff_table: dict[str, str] = {}
+
+        try:
+            df = pd.read_excel(self.staff_lookup_source, sheet_name="Staff", header=None)
+            print(f"\n=== DEBUG: Loading staff_lookup.xlsx ===")
+
+            # Find header row (row with "Staff name")
+            header_idx = 0
+            for idx in range(min(10, len(df))):
+                for val in df.iloc[idx].values:
+                    if isinstance(val, str) and "staff name" in val.lower():
+                        header_idx = idx
+                        break
+
+            # Parse data rows
+            for idx in range(header_idx + 1, len(df)):
+                row = df.iloc[idx]
+                name = row.iloc[STAFF_COL_NAME] if len(row) > STAFF_COL_NAME else None
+                nature_raw = row.iloc[STAFF_COL_NATURE] if len(row) > STAFF_COL_NATURE else None
+
+                if pd.notna(name) and pd.notna(nature_raw):
+                    # Store lowercase name for case-insensitive matching
+                    name_key = str(name).strip().lower()
+                    nature = normalize_nature(str(nature_raw))
+                    staff_table[name_key] = nature
+
+            print(f"  Loaded {len(staff_table)} staff entries")
+        except Exception as e:
+            print(f"Warning: Could not load staff lookup table: {e}")
+
+        return staff_table
+
+    def lookup_staff_by_name(self, payee_name: str) -> Optional[str]:
+        """
+        Look up nature by staff name.
+
+        Args:
+            payee_name: The payee/name from the transaction
+
+        Returns:
+            Nature category (org/edu) or None if not found
+        """
+        if not payee_name:
+            return None
+
+        # Try exact match (case-insensitive)
+        name_lower = payee_name.strip().lower()
+        if name_lower in self.staff_lookup:
+            return self.staff_lookup[name_lower]
+
+        # Try partial match - check if any staff name is contained in payee_name
+        for staff_name, nature in self.staff_lookup.items():
+            if staff_name in name_lower or name_lower in staff_name:
+                return nature
+
+        return None
+
     def lookup_by_amount(self, account_type: str, amount: float) -> Optional[str]:
         """
         Look up nature by amount in the specified account type table.
@@ -163,15 +242,27 @@ class ManualInputProcessor:
                 continue
             
             ex_rate = get_exchange_rate(group, exchange_rates)
-            account_type = self._get_group_account_type(group)
-            
-            if account_type in ("1250", "1230", "1252"):
-                result = self._process_1250_1230_1252(group, account_type, ex_rate)
-            elif account_type == "1500":
-                result = self._process_1500(group, ex_rate)
-            else:
-                result = {"processed": False, "amounts": {}}
-                print(f"  [{i}] SKIP (no account type): date={group.date}")
+            result = {"processed": False, "amounts": {}}
+
+            # Priority 1: Check if memo contains "salary" or "bonus" - use staff lookup
+            if self._is_salary_or_bonus_memo(group):
+                result = self._process_salary(group, ex_rate)
+                if result["processed"]:
+                    print(f"  [{i}] SALARY/BONUS: date={group.date}, name={group.payee_name}, result={result['amounts']}")
+                else:
+                    # Salary/bonus memo but staff not found - fall through to account type processing
+                    print(f"  [{i}] SALARY/BONUS memo but staff not found: name={group.payee_name}")
+
+            # Priority 2: Process by account type (if not already processed by salary logic)
+            if not result["processed"]:
+                account_type = self._get_group_account_type(group)
+
+                if account_type in ("1250", "1230", "1252"):
+                    result = self._process_1250_1230_1252(group, account_type, ex_rate)
+                elif account_type == "1500":
+                    result = self._process_1500(group, ex_rate)
+                else:
+                    print(f"  [{i}] SKIP (no account type): date={group.date}")
             
             if result["processed"]:
                 group.is_processed = True
@@ -216,7 +307,50 @@ class ManualInputProcessor:
             if acct_type:
                 return acct_type
         return None
-    
+
+    def _is_salary_or_bonus_memo(self, group: TransactionGroup) -> bool:
+        """
+        Check if header memo contains "salary" or "bonus".
+
+        Handles cases like:
+        - "salary" anywhere in memo
+        - "bonus" anywhere in memo
+        - ".bonus" (with period before bonus)
+        """
+        memo = group.bank_memo.lower() if group.bank_memo else ""
+        if "salary" in memo:
+            return True
+        if "bonus" in memo:
+            return True
+        return False
+
+    def _process_salary(self, group: TransactionGroup, ex_rate: float) -> dict:
+        """
+        Process salary/bonus transactions by looking up staff name.
+
+        If header memo contains "salary" or "bonus", look up payee_name in staff_lookup.xlsx
+        to determine nature (org/edu). Use absolute bank_amount for the result.
+
+        Returns:
+            Dict with keys: processed, amounts
+        """
+        result = {"processed": False, "amounts": {}}
+
+        # Look up staff by payee name
+        nature = self.lookup_staff_by_name(group.payee_name)
+
+        if nature:
+            # Use absolute bank_amount for the nature category
+            converted = abs(convert_amount(group.bank_amount, group.bank_identifier, ex_rate))
+            result["amounts"][nature] = converted
+            result["processed"] = True
+
+            # Mark all entries with this nature for reporting purposes
+            for entry in group.entries:
+                entry.nature_type = nature
+
+        return result
+
     def _process_1250_1230_1252(
         self,
         group: TransactionGroup,
