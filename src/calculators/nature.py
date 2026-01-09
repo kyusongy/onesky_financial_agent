@@ -164,6 +164,14 @@ class NatureMapper:
         """
         result = {"is_manual": False, "manual_amount": 0.0, "nature_amounts": {}}
 
+        # Priority: Check if memo contains "salary" or "bonus" - defer to manual_input.py
+        memo = (group.bank_memo or "").lower()
+        if "salary" in memo or "bonus" in memo:
+            result["is_manual"] = True
+            result["manual_amount"] = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
+            print(f"  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor")
+            return result
+
         active_entries = group.active_entries
         if not active_entries:
             return result

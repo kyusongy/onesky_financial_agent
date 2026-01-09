@@ -5,7 +5,7 @@ Calculates:
 - Contribution: deposit + name contains "onesky"
 - Fund transfer to USD account: memo contains "transfer" AND NOT "ELC"
 - Interest: deposit + memo contains "interest"
-- PED: deposit + memo contains "PED"
+- Cash settlement: memo contains "settlement" AND bank_amount > 0
 - Fund transfer to ELC: memo contains "transfer to ELC"
 
 Note: For grouped transactions, the transaction type (e.g., "deposit") is typically
@@ -66,10 +66,10 @@ def calculate_income(
                 validation_data.set_value(group.original_row_index, "interest", interest)
             result[bank_id]["interest"] += interest
 
-            ped = _calculate_ped(group, ex_rate)
-            if ped != 0.0 and validation_data:
-                validation_data.set_value(group.original_row_index, "ped", ped)
-            result[bank_id]["ped"] += ped
+            cash_settlement = _calculate_cash_settlement(group, ex_rate)
+            if cash_settlement != 0.0 and validation_data:
+                validation_data.set_value(group.original_row_index, "cash_settlement", cash_settlement)
+            result[bank_id]["cash_settlement"] += cash_settlement
 
     return result
 
