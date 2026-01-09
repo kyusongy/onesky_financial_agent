@@ -9,9 +9,12 @@ This module defines the core data structures for the financial reporting system:
 """
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 from enum import Enum
 import uuid
+
+if TYPE_CHECKING:
+    from .validation import ValidationData
 
 
 class ReportSection(Enum):
@@ -180,6 +183,9 @@ class ProcessingResult:
     
     # Exchange rates by date
     exchange_rates: dict[str, float] = field(default_factory=dict)
+
+    # Validation data for per-row tracking
+    validation_data: Optional["ValidationData"] = None
 
     def __post_init__(self):
         # Initialize nested dicts for both bank types

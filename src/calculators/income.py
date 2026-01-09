@@ -14,38 +14,63 @@ We check at the GROUP level for transaction type and look for keywords.
 
 For USD bank, amounts are converted from VND to USD using the exchange rate.
 """
+from typing import Optional
 from ..models import TransactionGroup, BANK_USD, BANK_VND
+from ..validation import ValidationData
 from .utils import get_exchange_rate, convert_amount, init_income_totals
 
 
 def calculate_income(
     groups_by_bank: dict[str, list[TransactionGroup]],
-    exchange_rates: dict[str, float] = None
+    exchange_rates: dict[str, float] = None,
+    validation_data: Optional[ValidationData] = None
 ) -> dict[str, dict[str, float]]:
     """
     Calculate income totals for each bank type.
-    
+
     Args:
         groups_by_bank: Dictionary mapping bank_identifier to list of transaction groups
         exchange_rates: Dictionary of date string to exchange rate (for USD conversion)
-        
+        validation_data: Optional ValidationData to track per-row contributions
+
     Returns:
         Dictionary mapping bank_identifier to income category totals
     """
     result: dict[str, dict[str, float]] = {}
-    
+
     for bank_id, groups in groups_by_bank.items():
         result[bank_id] = init_income_totals()
-        
+
         for group in groups:
             ex_rate = get_exchange_rate(group, exchange_rates)
-            
-            result[bank_id]["contribution"] += _calculate_contribution(group, ex_rate)
-            result[bank_id]["fund_transfer"] += _calculate_fund_transfer(group, ex_rate)
-            result[bank_id]["fund_transfer_elc"] += _calculate_fund_transfer_elc(group, ex_rate)
-            result[bank_id]["interest"] += _calculate_interest(group, ex_rate)
-            result[bank_id]["ped"] += _calculate_ped(group, ex_rate)
-    
+
+            # Calculate each income category and track validation data
+            # For USD banks, use converted amount; for VND banks, use original amount
+            contrib = _calculate_contribution(group, ex_rate)
+            if contrib != 0.0 and validation_data:
+                validation_data.set_value(group.original_row_index, "contribution", contrib)
+            result[bank_id]["contribution"] += contrib
+
+            fund_transfer = _calculate_fund_transfer(group, ex_rate)
+            if fund_transfer != 0.0 and validation_data:
+                validation_data.set_value(group.original_row_index, "fund_transfer", fund_transfer)
+            result[bank_id]["fund_transfer"] += fund_transfer
+
+            fund_transfer_elc = _calculate_fund_transfer_elc(group, ex_rate)
+            if fund_transfer_elc != 0.0 and validation_data:
+                validation_data.set_value(group.original_row_index, "fund_transfer_elc", fund_transfer_elc)
+            result[bank_id]["fund_transfer_elc"] += fund_transfer_elc
+
+            interest = _calculate_interest(group, ex_rate)
+            if interest != 0.0 and validation_data:
+                validation_data.set_value(group.original_row_index, "interest", interest)
+            result[bank_id]["interest"] += interest
+
+            ped = _calculate_ped(group, ex_rate)
+            if ped != 0.0 and validation_data:
+                validation_data.set_value(group.original_row_index, "ped", ped)
+            result[bank_id]["ped"] += ped
+
     return result
 
 

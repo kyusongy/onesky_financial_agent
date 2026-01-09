@@ -10,6 +10,7 @@ from io import BytesIO
 from datetime import datetime
 
 from .models import TransactionGroup, TransactionEntry, ProcessingResult, ReportSection, BANK_USD, BANK_VND
+from .validation import ValidationData, VALIDATION_COLUMNS, VALIDATION_COLUMN_DISPLAY
 from config.mappings import (
     DEFAULT_OUTPUT_TEMPLATE,
     TEMPLATE_COL_VND,
@@ -153,7 +154,8 @@ def generate_marked_transactions(
     original_file: Union[str, Path, BinaryIO],
     all_groups: list[TransactionGroup],
     exchange_rates: dict[str, float],
-    nature_mapper=None
+    nature_mapper=None,
+    validation_data: Optional[ValidationData] = None
 ) -> bytes:
     """
     Generate a processed transaction file with additional columns:
@@ -161,22 +163,26 @@ def generate_marked_transactions(
     - Type (specific category within the section)
     - Amount_in_Respective_Currency
     - Is_Processed
-    
+    - Exchange_Rate
+    - Bank
+    - 12 validation columns for per-row contributions
+
     Args:
         original_file: Path or file-like object of original transaction file
         all_groups: List of all processed transaction groups
         exchange_rates: Dictionary of date string to exchange rate
         nature_mapper: NatureMapper instance for looking up nature categories
-        
+        validation_data: ValidationData instance for per-row validation columns
+
     Returns:
         Bytes of the enhanced Excel file
     """
     wb = load_workbook(original_file)
     ws = wb.active
-    
+
     # Find the last column and add new headers
     max_col = ws.max_column
-    
+
     # Add new column headers (find header row first)
     header_row = 1
     for row in range(1, min(10, ws.max_row + 1)):
@@ -184,16 +190,23 @@ def generate_marked_transactions(
         if cell_val and str(cell_val).lower() == "date":
             header_row = row
             break
-    
-    # New columns
+
+    # New columns - existing 6 columns
     col_report_section = max_col + 1
     col_type = max_col + 2
     col_amount_currency = max_col + 3
     col_is_processed = max_col + 4
     col_exchange_rate = max_col + 5
     col_bank = max_col + 6
-    
-    # Set headers
+
+    # Validation columns (12 columns starting after col_bank)
+    validation_col_start = col_bank + 1
+    validation_col_indices = {
+        col_name: validation_col_start + i
+        for i, col_name in enumerate(VALIDATION_COLUMNS)
+    }
+
+    # Set headers for existing columns
     headers = [
         ("Report_Section", col_report_section),
         ("Type", col_type),
@@ -202,10 +215,17 @@ def generate_marked_transactions(
         ("Exchange_Rate", col_exchange_rate),
         ("Bank", col_bank),
     ]
-    
+
     for header_text, col in headers:
         cell = ws.cell(row=header_row, column=col)
         cell.value = header_text
+        cell.fill = HEADER_FILL
+        cell.font = HEADER_FONT
+
+    # Set headers for validation columns
+    for col_name, col_idx in validation_col_indices.items():
+        cell = ws.cell(row=header_row, column=col_idx)
+        cell.value = VALIDATION_COLUMN_DISPLAY.get(col_name, col_name)
         cell.fill = HEADER_FILL
         cell.font = HEADER_FONT
     
@@ -237,11 +257,11 @@ def generate_marked_transactions(
             ws.cell(row=excel_row, column=col_type).value = type_label
             ws.cell(row=excel_row, column=col_is_processed).value = "Yes" if group.is_processed else "No"
             ws.cell(row=excel_row, column=col_bank).value = bank_label
-            
+
             # Exchange rate (only for USD bank)
             if group.bank_identifier == BANK_USD and ex_rate:
                 ws.cell(row=excel_row, column=col_exchange_rate).value = ex_rate
-            
+
             # Converted amount
             if group.bank_amount:
                 if group.bank_identifier == BANK_USD and ex_rate:
@@ -249,32 +269,39 @@ def generate_marked_transactions(
                     ws.cell(row=excel_row, column=col_amount_currency).value = converted
                 else:
                     ws.cell(row=excel_row, column=col_amount_currency).value = group.bank_amount
-        
+
+            # Fill validation columns for header row
+            if validation_data:
+                for col_name, col_idx in validation_col_indices.items():
+                    val = validation_data.get_value(group.original_row_index, col_name)
+                    if val is not None:
+                        ws.cell(row=excel_row, column=col_idx).value = val
+
         # Fill entry rows
         for entry in group.entries:
             excel_row = entry.original_row_index + 1
-            
+
             if excel_row <= header_row:
                 continue
-            
+
             # Determine entry type based on group's section
             # For INCOME/ADVANCE_SETTLEMENT: always inherit group's type_label
             # For NATURE/MANUAL: use entry's determined nature_type (never "manual")
             entry_type = type_label  # Default to group's type
-            
+
             if group.assigned_section in (ReportSection.NATURE, ReportSection.MANUAL):
                 # Use entry's nature_type if available and not "manual"
                 if entry.nature_type and entry.nature_type != "manual":
                     entry_type = NATURE_DISPLAY_MAP.get(entry.nature_type, entry.nature_type)
-            
+
             ws.cell(row=excel_row, column=col_report_section).value = section_label
             ws.cell(row=excel_row, column=col_type).value = entry_type
             ws.cell(row=excel_row, column=col_is_processed).value = "Yes" if group.is_processed else "No"
             ws.cell(row=excel_row, column=col_bank).value = bank_label
-            
+
             if group.bank_identifier == BANK_USD and ex_rate:
                 ws.cell(row=excel_row, column=col_exchange_rate).value = ex_rate
-            
+
             # Converted amount for entry
             if entry.amount:
                 if group.bank_identifier == BANK_USD and ex_rate:
@@ -282,6 +309,13 @@ def generate_marked_transactions(
                     ws.cell(row=excel_row, column=col_amount_currency).value = converted
                 else:
                     ws.cell(row=excel_row, column=col_amount_currency).value = entry.amount
+
+            # Fill validation columns for entry row
+            if validation_data:
+                for col_name, col_idx in validation_col_indices.items():
+                    val = validation_data.get_value(entry.original_row_index, col_name)
+                    if val is not None:
+                        ws.cell(row=excel_row, column=col_idx).value = val
     
     # Apply highlighting for manual review rows
     for row_idx in highlight_rows:
