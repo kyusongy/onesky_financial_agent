@@ -14,6 +14,7 @@ from src.calculators.nature import NatureMapper
 from src.calculators.manual_input import ManualInputProcessor, mark_processed_groups
 from src.report_generator import ReportGenerator, generate_marked_transactions
 from src.models import ProcessingResult, BANK_USD, BANK_VND
+from src.validation import ValidationData
 
 # Page configuration
 st.set_page_config(
@@ -220,12 +221,15 @@ def main():
                 
                 # Step 3: Process groups (split transfers, remove capital rows)
                 groups_by_bank = process_transactions(groups)
-                
+
+                # Create ValidationData to track per-row contributions
+                validation_data = ValidationData()
+
                 # Step 4: Calculate income (with exchange rates for USD conversion)
-                income = calculate_income(groups_by_bank, st.session_state.exchange_rates)
-                
+                income = calculate_income(groups_by_bank, st.session_state.exchange_rates, validation_data)
+
                 # Step 5: Calculate advance/settlement (with exchange rates for USD conversion)
-                advance_settlement = calculate_advance_settlement(groups_by_bank, st.session_state.exchange_rates)
+                advance_settlement = calculate_advance_settlement(groups_by_bank, st.session_state.exchange_rates, validation_data)
                 
                 # Step 6: Map nature categories (with exchange rates for USD conversion)
                 nature_mapper = NatureMapper(
@@ -236,7 +240,7 @@ def main():
                 
                 st.session_state.nature_mapper = nature_mapper
                 
-                nature_totals, manual_groups = nature_mapper.process_groups(groups_by_bank, st.session_state.exchange_rates)
+                nature_totals, manual_groups = nature_mapper.process_groups(groups_by_bank, st.session_state.exchange_rates, validation_data)
                 
                 # DEBUG: Initial nature_totals from nature_mapper
                 print("\n=== DEBUG: nature_totals AFTER nature_mapper.process_groups ===")
@@ -260,8 +264,9 @@ def main():
                     manual_lookup_file.seek(0)
                 
                 manual_nature_totals, still_manual = manual_processor.process_manual_groups(
-                    manual_groups, 
-                    st.session_state.exchange_rates
+                    manual_groups,
+                    st.session_state.exchange_rates,
+                    validation_data
                 )
                 
                 # DEBUG: Before merging
@@ -310,6 +315,7 @@ def main():
                     manual_groups=still_manual,  # Only groups that still need manual review
                     all_groups=all_groups,
                     exchange_rates=st.session_state.exchange_rates,
+                    validation_data=validation_data,
                 )
                 
                 st.session_state.result = result
@@ -436,7 +442,8 @@ def main():
                     BytesIO(st.session_state.transaction_bytes),
                     result.all_groups,
                     result.exchange_rates,
-                    st.session_state.nature_mapper
+                    st.session_state.nature_mapper,
+                    result.validation_data
                 )
                 
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Optional, BinaryIO, Union
 
 from ..models import TransactionGroup, TransactionEntry, BANK_USD, BANK_VND
+from ..validation import ValidationData
 from .utils import get_exchange_rate, convert_amount, init_nature_totals, get_account_type
 from config.mappings import DEFAULT_NATURE_LOOKUP, NATURE_CATEGORY_MAP
 
@@ -109,15 +110,17 @@ class NatureMapper:
     def process_groups(
         self,
         groups_by_bank: dict[str, list[TransactionGroup]],
-        exchange_rates: dict[str, float] = None
+        exchange_rates: dict[str, float] = None,
+        validation_data: Optional[ValidationData] = None
     ) -> tuple[dict[str, dict[str, float]], list[TransactionGroup]]:
         """
         Process all groups and calculate nature totals.
-        
+
         Args:
             groups_by_bank: Dictionary mapping bank_identifier to list of groups
             exchange_rates: Dictionary of date string to exchange rate (for USD conversion)
-            
+            validation_data: Optional ValidationData to track per-row contributions
+
         Returns:
             Tuple of (nature_totals by bank, list of manual review groups)
         """
@@ -126,12 +129,12 @@ class NatureMapper:
             BANK_VND: init_nature_totals(),
         }
         manual_groups: list[TransactionGroup] = []
-        
+
         for bank_id, groups in groups_by_bank.items():
             for group in groups:
                 ex_rate = get_exchange_rate(group, exchange_rates)
-                result = self._process_group(group, ex_rate)
-                
+                result = self._process_group(group, ex_rate, validation_data)
+
                 if result["is_manual"]:
                     manual_groups.append(group)
                     nature_totals[bank_id]["manual"] += abs(result["manual_amount"])
@@ -139,10 +142,15 @@ class NatureMapper:
                     for nature_key, amount in result["nature_amounts"].items():
                         if nature_key in nature_totals[bank_id]:
                             nature_totals[bank_id][nature_key] += amount
-        
+
         return nature_totals, manual_groups
     
-    def _process_group(self, group: TransactionGroup, ex_rate: float) -> dict:
+    def _process_group(
+        self,
+        group: TransactionGroup,
+        ex_rate: float,
+        validation_data: Optional[ValidationData] = None
+    ) -> dict:
         """
         Process a single group for nature mapping.
 
@@ -199,6 +207,9 @@ class NatureMapper:
                 converted = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
                 result["nature_amounts"][entry.nature_type] = abs(converted)
                 print(f"  -> SINGLE-ENTRY mode: {entry.nature_type} = abs({converted}) = {abs(converted)}")
+                # Validation tracking: header row gets abs(converted) - already in USD for bank 29
+                if validation_data:
+                    validation_data.set_value(group.original_row_index, entry.nature_type, abs(converted))
 
         elif num_entries > 1:
             # Fill each entry's amount by its nature (preserve sign, no abs())
@@ -210,6 +221,9 @@ class NatureMapper:
                     old_val = result["nature_amounts"].get(entry.nature_type, 0.0)
                     result["nature_amounts"][entry.nature_type] = old_val + amount
                     print(f"    {entry.nature_type}: {old_val} + {amount} = {result['nature_amounts'][entry.nature_type]}")
+                    # Validation tracking: each entry row gets converted amount (preserve sign)
+                    if validation_data:
+                        validation_data.set_value(entry.original_row_index, entry.nature_type, amount)
 
             # Validation: sum should equal reverse of bank_amount
             total = sum(result["nature_amounts"].values())

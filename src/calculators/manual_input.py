@@ -16,6 +16,7 @@ from typing import Optional, BinaryIO, Union
 from dataclasses import dataclass
 
 from ..models import TransactionGroup, TransactionEntry, ReportSection, BANK_USD, BANK_VND
+from ..validation import ValidationData
 from .utils import get_exchange_rate, convert_amount, normalize_nature, get_account_type, ACCOUNT_TYPES
 
 
@@ -215,11 +216,17 @@ class ManualInputProcessor:
     def process_manual_groups(
         self,
         manual_groups: list[TransactionGroup],
-        exchange_rates: dict[str, float] = None
+        exchange_rates: dict[str, float] = None,
+        validation_data: Optional[ValidationData] = None
     ) -> tuple[dict[str, dict[str, float]], list[TransactionGroup]]:
         """
         Process manual input groups and calculate nature totals.
-        
+
+        Args:
+            manual_groups: List of transaction groups flagged for manual processing
+            exchange_rates: Dictionary of date string to exchange rate
+            validation_data: Optional ValidationData to track per-row contributions
+
         Returns:
             Tuple of (nature_totals by bank, groups still needing manual review)
         """
@@ -228,25 +235,25 @@ class ManualInputProcessor:
             BANK_VND: self._init_totals(),
         }
         still_manual: list[TransactionGroup] = []
-        
+
         print(f"\n=== DEBUG: process_manual_groups ===")
         print(f"Total manual groups to process: {len(manual_groups)}")
-        
+
         processed_count = 0
         skipped_already_processed = 0
-        
+
         for i, group in enumerate(manual_groups):
             if group.is_processed:
                 skipped_already_processed += 1
                 print(f"  [{i}] SKIP (already processed): date={group.date}, section={group.assigned_section}")
                 continue
-            
+
             ex_rate = get_exchange_rate(group, exchange_rates)
             result = {"processed": False, "amounts": {}}
 
             # Priority 1: Check if memo contains "salary" or "bonus" - use staff lookup
             if self._is_salary_or_bonus_memo(group):
-                result = self._process_salary(group, ex_rate)
+                result = self._process_salary(group, ex_rate, validation_data)
                 if result["processed"]:
                     print(f"  [{i}] SALARY/BONUS: date={group.date}, name={group.payee_name}, result={result['amounts']}")
                 else:
@@ -258,12 +265,12 @@ class ManualInputProcessor:
                 account_type = self._get_group_account_type(group)
 
                 if account_type in ("1250", "1230", "1252"):
-                    result = self._process_1250_1230_1252(group, account_type, ex_rate)
+                    result = self._process_1250_1230_1252(group, account_type, ex_rate, validation_data)
                 elif account_type == "1500":
-                    result = self._process_1500(group, ex_rate)
+                    result = self._process_1500(group, ex_rate, validation_data)
                 else:
                     print(f"  [{i}] SKIP (no account type): date={group.date}")
-            
+
             if result["processed"]:
                 group.is_processed = True
                 group.assigned_section = ReportSection.MANUAL
@@ -275,7 +282,7 @@ class ManualInputProcessor:
                         print(f"  [{i}] ADD {nature_key}: {old_val} + {amount} = {nature_totals[group.bank_identifier][nature_key]}")
             else:
                 still_manual.append(group)
-        
+
         print(f"\n=== DEBUG: process_manual_groups SUMMARY ===")
         print(f"Total groups: {len(manual_groups)}")
         print(f"Skipped (already processed): {skipped_already_processed}")
@@ -289,7 +296,7 @@ class ManualInputProcessor:
         for k, v in nature_totals[BANK_USD].items():
             if v != 0:
                 print(f"  {k}: {v}")
-        
+
         return nature_totals, still_manual
     
     def _init_totals(self) -> dict[str, float]:
@@ -324,7 +331,12 @@ class ManualInputProcessor:
             return True
         return False
 
-    def _process_salary(self, group: TransactionGroup, ex_rate: float) -> dict:
+    def _process_salary(
+        self,
+        group: TransactionGroup,
+        ex_rate: float,
+        validation_data: Optional[ValidationData] = None
+    ) -> dict:
         """
         Process salary/bonus transactions by looking up staff name.
 
@@ -345,6 +357,10 @@ class ManualInputProcessor:
             result["amounts"][nature] = converted
             result["processed"] = True
 
+            # Validation tracking: header row gets converted amount (USD for bank 29)
+            if validation_data:
+                validation_data.set_value(group.original_row_index, nature, converted)
+
             # Mark all entries with this nature for reporting purposes
             for entry in group.entries:
                 entry.nature_type = nature
@@ -355,7 +371,8 @@ class ManualInputProcessor:
         self,
         group: TransactionGroup,
         account_type: str,
-        ex_rate: float
+        ex_rate: float,
+        validation_data: Optional[ValidationData] = None
     ) -> dict:
         """
         Process 1250/1230/1252 groups.
@@ -389,6 +406,9 @@ class ManualInputProcessor:
                     result["processed"] = True
                     entry.nature_type = nature
                     print(f"  -> Result: {nature} = abs(bank_amount) = {converted}")
+                    # Validation tracking: header row gets converted amount (USD for bank 29)
+                    if validation_data:
+                        validation_data.set_value(group.original_row_index, nature, converted)
 
         elif num_entries > 1:
             # Check if any entry is 1500
@@ -396,7 +416,7 @@ class ManualInputProcessor:
 
             if has_1500:
                 print(f"  -> Has 1500 entry, deferring to _process_1500")
-                return self._process_1500(group, ex_rate)
+                return self._process_1500(group, ex_rate, validation_data)
 
             # Process each entry individually (preserve sign for multi-row)
             print(f"  -> MULTI-ROW mode (no 1500): processing each entry")
@@ -411,6 +431,9 @@ class ManualInputProcessor:
                         entry.nature_type = nature
                         result["processed"] = True
                         print(f"    {nature}: {old_val} + {amount} = {result['amounts'][nature]}")
+                        # Validation tracking: each entry row gets converted amount (preserve sign)
+                        if validation_data:
+                            validation_data.set_value(entry.original_row_index, nature, amount)
 
             # Validation for multi-row
             if result["amounts"]:
@@ -423,13 +446,18 @@ class ManualInputProcessor:
         print(f"  Final result: {result}")
         return result
     
-    def _process_1500(self, group: TransactionGroup, ex_rate: float) -> dict:
+    def _process_1500(
+        self,
+        group: TransactionGroup,
+        ex_rate: float,
+        validation_data: Optional[ValidationData] = None
+    ) -> dict:
         """
         Process 1500 groups.
-        
+
         Single-entry groups (just negative 1500):
             - Look up nature, enter absolute bank_amount
-        
+
         Multi-entry groups:
             - Add each non-1500 entry's amount (WITH SIGN) to its nature
             - Add negative 1500 entry's amount (WITH SIGN) to its nature
@@ -440,16 +468,16 @@ class ManualInputProcessor:
         bank_amount_raw = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
         bank_amount_abs = abs(bank_amount_raw)
         active_entries = group.active_entries
-        
+
         # DEBUG: Print group info
         print(f"\n=== DEBUG _process_1500 ===")
         print(f"Group date: {group.date}, bank: {group.bank_identifier}")
         print(f"Bank amount: {group.bank_amount}, converted: {bank_amount_raw}")
         print(f"Active entries count: {len(active_entries)}")
-        
+
         # Check if this is a single-entry group (just one negative 1500)
         is_single_entry = len(active_entries) == 1
-        
+
         # First pass: determine nature for non-1500 entries
         # Use existing nature_type from NatureMapper, OR lookup in Manual.xlsx ONLY for manual trigger accounts
         # Track prev_nature for positive 1500 inheritance
@@ -507,7 +535,7 @@ class ManualInputProcessor:
                 positive_1500_entries.append(entry)
                 prev_nature = entry.nature_type  # Update for next iteration
                 print(f"  Positive 1500: account={entry.account_code}, amount={entry.amount}, nature={entry.nature_type}")
-        
+
         # Calculate amounts based on single vs multi-entry logic
         if is_single_entry and negative_1500_entries:
             # Single-entry: use absolute bank_amount
@@ -515,22 +543,28 @@ class ManualInputProcessor:
             result["amounts"][entry.nature_type] = bank_amount_abs
             result["processed"] = True
             print(f"  Single-entry mode: {entry.nature_type} = {bank_amount_abs}")
+            # Validation tracking: header row gets converted amount (USD for bank 29)
+            if validation_data:
+                validation_data.set_value(group.original_row_index, entry.nature_type, bank_amount_abs)
         else:
             # Multi-entry: add each entry's amount WITH SIGN
-            
+
             # Add non-1500 entry amounts (preserve sign)
             for entry in active_entries:
                 if not entry.amount or not entry.nature_type:
                     continue
                 if get_account_type(entry.account_code) == "1500":
                     continue
-                
+
                 amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
                 result["amounts"][entry.nature_type] = \
                     result["amounts"].get(entry.nature_type, 0.0) + amount
                 result["processed"] = True
                 print(f"  Non-1500 entry: {entry.nature_type} += {amount}")
-            
+                # Validation tracking: entry row gets converted amount (preserve sign)
+                if validation_data:
+                    validation_data.set_value(entry.original_row_index, entry.nature_type, amount)
+
             # Add negative 1500 entry amounts (preserve sign - they're negative)
             for entry in negative_1500_entries:
                 if entry.nature_type and entry.amount:
@@ -539,7 +573,10 @@ class ManualInputProcessor:
                         result["amounts"].get(entry.nature_type, 0.0) + amount
                     result["processed"] = True
                     print(f"  Negative 1500: {entry.nature_type} += {amount}")
-            
+                    # Validation tracking: entry row gets converted amount (negative)
+                    if validation_data:
+                        validation_data.set_value(entry.original_row_index, entry.nature_type, amount)
+
             # Subtract positive 1500 amounts
             for entry in positive_1500_entries:
                 if entry.nature_type and entry.amount:
@@ -547,14 +584,17 @@ class ManualInputProcessor:
                     result["amounts"][entry.nature_type] = \
                         result["amounts"].get(entry.nature_type, 0.0) - amount
                     print(f"  Positive 1500 subtract: {entry.nature_type} -= {amount}")
-        
+                    # Validation tracking: entry row gets NEGATIVE of converted amount (since subtracted)
+                    if validation_data:
+                        validation_data.set_value(entry.original_row_index, entry.nature_type, -amount)
+
         if result["amounts"]:
             result["processed"] = True
-        
+
         # DEBUG: Print final result and validate
         print(f"  Final result: processed={result['processed']}, amounts={result['amounts']}")
         print(f"  Negative 1500 count: {len(negative_1500_entries)}")
-        
+
         # Sanity check: sum of amounts should equal REVERSE of bank_amount (for multi-entry)
         # e.g., if bank_amount = -14,343,323, sum should be +14,343,323
         if not is_single_entry and result["amounts"]:
