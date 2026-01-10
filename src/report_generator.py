@@ -16,7 +16,9 @@ from config.mappings import (
     TEMPLATE_COL_VND,
     TEMPLATE_COL_USD,
     TEMPLATE_ROWS,
+    PROVINCE_TEMPLATE_ROWS,
     NATURE_DISPLAY_MAP,
+    PROVINCE_DISPLAY_MAP,
     INCOME_TYPE_MAP,
 )
 
@@ -43,26 +45,29 @@ class ReportGenerator:
     def generate_report(self, result: ProcessingResult) -> bytes:
         """
         Generate filled report Excel file.
-        
+
         Args:
             result: Processing result containing all calculated values
-            
+
         Returns:
             Bytes of the filled Excel file
         """
         # Load template
         wb = load_workbook(self.template_source)
         ws = wb.active
-        
+
         # Fill income section
         self._fill_income(ws, result)
-        
+
         # Fill advance/settlement section
         self._fill_advance_settlement(ws, result)
-        
+
         # Fill nature section
         self._fill_nature(ws, result)
-        
+
+        # Fill province section
+        self._fill_province(ws, result)
+
         # Save to bytes
         output = BytesIO()
         wb.save(output)
@@ -114,29 +119,47 @@ class ReportGenerator:
         """Fill expenditure by nature section values with totals."""
         for bank_id, values in result.nature_totals.items():
             col = self._get_column(bank_id)
-            
+
             # Org
             self._set_cell(ws, TEMPLATE_ROWS["org"], col, values.get("org", 0))
-            
+
             # Edu
             self._set_cell(ws, TEMPLATE_ROWS["edu"], col, values.get("edu", 0))
-            
+
             # Oper
             self._set_cell(ws, TEMPLATE_ROWS["oper"], col, values.get("oper", 0))
-            
+
             # Nutrition
             self._set_cell(ws, TEMPLATE_ROWS["nutrition"], col, values.get("nutrition", 0))
-            
+
             # Edu Infra
             self._set_cell(ws, TEMPLATE_ROWS["edu_infra"], col, values.get("edu_infra", 0))
-            
+
             # Total for expense section (excluding manual)
             expense_total = sum(v for k, v in values.items() if k != "manual")
             if "expense_total" in TEMPLATE_ROWS:
                 self._set_cell(ws, TEMPLATE_ROWS["expense_total"], col, expense_total)
-            
+
             # Manual
             self._set_cell(ws, TEMPLATE_ROWS["manual"], col, values.get("manual", 0))
+
+    def _fill_province(self, ws, result: ProcessingResult) -> None:
+        """Fill expenditure by province section values with totals."""
+        for bank_id, values in result.province_totals.items():
+            col = self._get_column(bank_id)
+
+            # Fill each province row
+            for province_key, row_idx in PROVINCE_TEMPLATE_ROWS.items():
+                if province_key in ("province_total",):
+                    continue  # Skip total row, handle separately
+                value = values.get(province_key, 0)
+                if value != 0:
+                    self._set_cell(ws, row_idx, col, value)
+
+            # Calculate and set total (excluding province_manual)
+            province_total = sum(v for k, v in values.items() if k != "province_manual")
+            if "province_total" in PROVINCE_TEMPLATE_ROWS:
+                self._set_cell(ws, PROVINCE_TEMPLATE_ROWS["province_total"], col, province_total)
     
     def _get_column(self, bank_id: str) -> int:
         """Get column index for bank type (1-based for openpyxl)."""

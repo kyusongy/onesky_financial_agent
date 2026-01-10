@@ -7,8 +7,8 @@ to each report column. When summed by bank, these should match the report values
 from typing import Optional
 
 
-# The 12 validation column internal keys
-VALIDATION_COLUMNS = [
+# The 12 validation column internal keys for Nature section
+NATURE_VALIDATION_COLUMNS = [
     "contribution",
     "fund_transfer",
     "interest",
@@ -23,8 +23,32 @@ VALIDATION_COLUMNS = [
     "settlement",
 ]
 
+# The 16 province validation column internal keys
+PROVINCE_VALIDATION_COLUMNS = [
+    "elc",
+    "vnelc",
+    "vnhbc",
+    "vndn",
+    "vnqn",
+    "vnhd",
+    "vnqng",
+    "vnmoet",
+    "vnbd",
+    "vnbg",
+    "vnla",
+    "vnhcm",
+    "vnbn",
+    "vnother",
+    "caobang",
+    "province_manual",
+]
+
+# Combined validation columns (nature + province)
+VALIDATION_COLUMNS = NATURE_VALIDATION_COLUMNS + PROVINCE_VALIDATION_COLUMNS
+
 # Display names for Excel headers
 VALIDATION_COLUMN_DISPLAY = {
+    # Nature section columns
     "contribution": "Contribution",
     "fund_transfer": "Fund transfer to USD account",
     "interest": "Interest",
@@ -37,6 +61,23 @@ VALIDATION_COLUMN_DISPLAY = {
     "edu_infra": "Education Infrastructure",
     "advance": "Advance by cash",
     "settlement": "Settlement",
+    # Province section columns
+    "elc": "ELC Operation",
+    "vnelc": "ELC training",
+    "vnhbc": "VN General National Training",
+    "vndn": "Da Nang ICC",
+    "vnqn": "Quang Nam ICC",
+    "vnhd": "Hai Duong ICC",
+    "vnqng": "Quang Ngai ICC",
+    "vnmoet": "Preparation and general of MOET",
+    "vnbd": "Binh Duong MOET",
+    "vnbg": "Bac Giang MOET",
+    "vnla": "Long An MOET",
+    "vnhcm": "HCM MOET",
+    "vnbn": "Bac Ninh MOET",
+    "vnother": "In-country program support",
+    "caobang": "Cao Bang",
+    "province_manual": "Province Manual",
 }
 
 

@@ -165,22 +165,25 @@ class TransactionGroup:
 class ProcessingResult:
     """Result of transaction processing."""
     groups_by_bank: dict[str, list[TransactionGroup]] = field(default_factory=dict)
-    
+
     # Income totals per bank
     income: dict[str, dict[str, float]] = field(default_factory=dict)
-    
+
     # Advance/Settlement totals per bank
     advance_settlement: dict[str, dict[str, float]] = field(default_factory=dict)
-    
+
     # Nature totals per bank
     nature_totals: dict[str, dict[str, float]] = field(default_factory=dict)
-    
+
+    # Province totals per bank
+    province_totals: dict[str, dict[str, float]] = field(default_factory=dict)
+
     # Groups requiring manual review
     manual_groups: list[TransactionGroup] = field(default_factory=list)
-    
+
     # All processed groups (for marked transaction output)
     all_groups: list[TransactionGroup] = field(default_factory=list)
-    
+
     # Exchange rates by date
     exchange_rates: dict[str, float] = field(default_factory=dict)
 
@@ -214,6 +217,25 @@ class ProcessingResult:
                     "edu_infra": 0.0,
                     "manual": 0.0,
                 }
+            if bank not in self.province_totals:
+                self.province_totals[bank] = {
+                    "elc": 0.0,
+                    "vnelc": 0.0,
+                    "vnhbc": 0.0,
+                    "vndn": 0.0,
+                    "vnqn": 0.0,
+                    "vnhd": 0.0,
+                    "vnqng": 0.0,
+                    "vnmoet": 0.0,
+                    "vnbd": 0.0,
+                    "vnbg": 0.0,
+                    "vnla": 0.0,
+                    "vnhcm": 0.0,
+                    "vnbn": 0.0,
+                    "vnother": 0.0,
+                    "caobang": 0.0,
+                    "province_manual": 0.0,
+                }
     
     def get_income_total(self, bank_id: str) -> float:
         """Get total income for a bank type."""
@@ -226,3 +248,8 @@ class ProcessingResult:
     def get_advance_settlement_total(self, bank_id: str) -> float:
         """Get total advance/settlement for a bank type."""
         return sum(self.advance_settlement.get(bank_id, {}).values())
+
+    def get_province_total(self, bank_id: str) -> float:
+        """Get total province expenditure for a bank type (excluding province_manual)."""
+        totals = self.province_totals.get(bank_id, {})
+        return sum(v for k, v in totals.items() if k != "province_manual")
