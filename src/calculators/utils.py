@@ -82,7 +82,7 @@ def init_income_totals() -> dict[str, float]:
         "fund_transfer": 0.0,
         "fund_transfer_elc": 0.0,
         "interest": 0.0,
-        "ped": 0.0,
+        "cash_settlement": 0.0,
     }
 
 

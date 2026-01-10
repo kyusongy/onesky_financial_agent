@@ -285,6 +285,12 @@ def main():
                         elif key in ["advance", "settlement"]:
                             # Add to advance/settlement section
                             advance_settlement[bank_id][key] += value
+                        elif key == "cash_settlement":
+                            # Add to income section (positive settlements)
+                            old_val = income[bank_id].get("cash_settlement", 0)
+                            income[bank_id]["cash_settlement"] = old_val + value
+                            if value != 0:
+                                print(f"  MERGE INCOME {bank_id} {key}: {old_val} + {value} = {income[bank_id]['cash_settlement']}")
 
                 # Clear the "manual" tracking category - those amounts are now categorized
                 # Only keep "manual" amount for groups that are still unprocessed (still_manual)

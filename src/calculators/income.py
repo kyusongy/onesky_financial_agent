@@ -102,8 +102,8 @@ def _calculate_interest(group: TransactionGroup, ex_rate: float) -> float:
     return 0.0
 
 
-def _calculate_ped(group: TransactionGroup, ex_rate: float) -> float:
-    """PED: deposit + memo contains 'ped'."""
-    if group.is_deposit() and group.any_memo_contains("ped"):
+def _calculate_cash_settlement(group: TransactionGroup, ex_rate: float) -> float:
+    """Cash settlement: memo contains 'settlement' AND bank_amount > 0."""
+    if group.memo_contains("settlement") and group.bank_amount > 0:
         return convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
     return 0.0

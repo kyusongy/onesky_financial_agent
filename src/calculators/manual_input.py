@@ -305,6 +305,7 @@ class ManualInputProcessor:
             "org": 0.0, "edu": 0.0, "oper": 0.0,
             "nutrition": 0.0, "edu_infra": 0.0,
             "advance": 0.0, "settlement": 0.0,
+            "cash_settlement": 0.0,
         }
     
     def _get_group_account_type(self, group: TransactionGroup) -> Optional[str]:
@@ -401,6 +402,10 @@ class ManualInputProcessor:
                 nature = self.lookup_by_amount(account_type, entry.amount)
                 print(f"  -> SINGLE-ENTRY mode: lookup({account_type}, {entry.amount}) = {nature}")
                 if nature:
+                    # If lookup returns "settlement" but bank_amount > 0, route to cash_settlement (Income)
+                    if nature == "settlement" and group.bank_amount > 0:
+                        nature = "cash_settlement"
+                        print(f"  -> Positive settlement routed to cash_settlement (Income)")
                     converted = abs(convert_amount(group.bank_amount, group.bank_identifier, ex_rate))
                     result["amounts"][nature] = converted
                     result["processed"] = True
@@ -425,6 +430,10 @@ class ManualInputProcessor:
                     nature = self.lookup_by_amount(account_type, entry.amount)
                     print(f"    lookup({account_type}, {entry.amount}) = {nature}")
                     if nature:
+                        # If lookup returns "settlement" but bank_amount > 0, route to cash_settlement (Income)
+                        if nature == "settlement" and group.bank_amount > 0:
+                            nature = "cash_settlement"
+                            print(f"    -> Positive settlement routed to cash_settlement (Income)")
                         amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
                         old_val = result["amounts"].get(nature, 0.0)
                         result["amounts"][nature] = old_val + amount
@@ -490,6 +499,10 @@ class ManualInputProcessor:
                 if entry_acct_type in ("1250", "1230", "1252"):
                     lookup_nature = self.lookup_by_amount(entry_acct_type, entry.amount)
                     if lookup_nature:
+                        # If lookup returns "settlement" but bank_amount > 0, route to cash_settlement
+                        if lookup_nature == "settlement" and group.bank_amount > 0:
+                            lookup_nature = "cash_settlement"
+                            print(f"    -> Positive settlement routed to cash_settlement (Income)")
                         entry.nature_type = lookup_nature
 
                 # Update prev_nature from existing nature_type (from NatureMapper or lookup)
@@ -514,6 +527,10 @@ class ManualInputProcessor:
                 nature = self.lookup_by_amount("1500", entry.amount)
                 print(f"    Lookup result: {nature}")
                 if nature:
+                    # If lookup returns "settlement" but bank_amount > 0, route to cash_settlement
+                    if nature == "settlement" and group.bank_amount > 0:
+                        nature = "cash_settlement"
+                        print(f"    -> Positive settlement routed to cash_settlement (Income)")
                     entry.nature_type = nature
                     prev_nature = nature
                     negative_1500_entries.append(entry)
@@ -630,15 +647,20 @@ def _get_processed_section(group: TransactionGroup) -> Optional[ReportSection]:
     if group.is_deposit():
         if group.any_name_contains("onesky"):
             return ReportSection.INCOME
-        if group.any_memo_contains("interest") or group.any_memo_contains("ped"):
+        if group.any_memo_contains("interest"):
             return ReportSection.INCOME
 
     if group.any_memo_contains("transfer"):
         return ReportSection.INCOME
 
+    # Cash settlement (positive settlement) goes to Income
+    if group.memo_contains("settlement") and group.bank_amount > 0:
+        return ReportSection.INCOME
+
     # Advance/Settlement checks - ONLY check header memo (bank_memo), not entry memos
     # This prevents false positives from entries containing "advance" in their memo
-    if group.memo_contains("settlement"):
+    # Settlement only goes here if bank_amount <= 0
+    if group.memo_contains("settlement") and group.bank_amount <= 0:
         return ReportSection.ADVANCE_SETTLEMENT
     if group.memo_contains("advance"):
         return ReportSection.ADVANCE_SETTLEMENT

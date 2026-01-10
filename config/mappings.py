@@ -24,7 +24,7 @@ TEMPLATE_ROWS = {
     "contribution": 4,
     "fund_transfer": 5,
     "interest": 6,
-    "ped": 7,
+    "cash_settlement": 7,
     "income_total": 3,
     # Income section I.B - ELC (row 10 in 1-based)
     "fund_transfer_elc": 9,
@@ -73,7 +73,7 @@ INCOME_TYPE_MAP = {
     "fund_transfer": "Fund transfer to USD",
     "fund_transfer_elc": "Fund transfer to ELC",
     "interest": "Interest",
-    "ped": "PED",
+    "cash_settlement": "Cash settlement",
 }
 
 # Transaction type identifiers
