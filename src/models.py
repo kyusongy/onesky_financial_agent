@@ -198,7 +198,7 @@ class ProcessingResult:
                     "fund_transfer": 0.0,
                     "fund_transfer_elc": 0.0,
                     "interest": 0.0,
-                    "ped": 0.0,
+                    "cash_settlement": 0.0,
                 }
             if bank not in self.advance_settlement:
                 self.advance_settlement[bank] = {

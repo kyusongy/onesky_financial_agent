@@ -86,8 +86,8 @@ class ReportGenerator:
             # Interest
             self._set_cell(ws, TEMPLATE_ROWS["interest"], col, values.get("interest", 0))
             
-            # PED
-            self._set_cell(ws, TEMPLATE_ROWS["ped"], col, values.get("ped", 0))
+            # Cash settlement
+            self._set_cell(ws, TEMPLATE_ROWS["cash_settlement"], col, values.get("cash_settlement", 0))
             
             # Total for income section
             income_total = sum(values.values())
@@ -350,8 +350,8 @@ def _get_section_type_labels(group: TransactionGroup) -> tuple[str, str]:
             type_label = "Fund transfer to USD"
         elif group.is_deposit() and group.any_memo_contains("interest"):
             type_label = "Interest"
-        elif group.is_deposit() and group.any_memo_contains("ped"):
-            type_label = "PED"
+        elif group.memo_contains("settlement") and group.bank_amount > 0:
+            type_label = "Cash settlement"
         else:
             type_label = ""
         return section_label, type_label

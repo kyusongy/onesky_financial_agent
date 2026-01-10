@@ -3,9 +3,9 @@ Advance/Settlement section calculator.
 
 Calculates:
 - Advance by cash: memo contains "advance" but NOT "settlement"
-- Settlement: memo contains "settlement"
+- Settlement: memo contains "settlement" AND bank_amount <= 0 (negative settlements only)
 
-Note: Amounts are shown as positive absolute values in the report.
+Note: Positive settlements go to Income section as "Cash settlement".
 For USD bank, amounts are converted from VND to USD using the exchange rate.
 """
 from typing import Optional
@@ -61,7 +61,7 @@ def _calculate_advance(group: TransactionGroup, ex_rate: float) -> float:
 
 
 def _calculate_settlement(group: TransactionGroup, ex_rate: float) -> float:
-    """Settlement: header memo contains 'settlement'. Use original bank_amount (preserve sign)."""
-    if group.memo_contains("settlement"):
+    """Settlement: header memo contains 'settlement' AND bank_amount <= 0. Use original bank_amount (preserve sign)."""
+    if group.memo_contains("settlement") and group.bank_amount <= 0:
         return convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
     return 0.0
