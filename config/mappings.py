@@ -90,3 +90,55 @@ EXCEL_COLUMNS = {
     "account": 7,
     "amount": 8,
 }
+
+# Province section constants
+DEFAULT_ALLOCATION_LOOKUP = DATA_DIR / "allocation_lookup.xlsx"
+DEFAULT_PIT_LOOKUP = DATA_DIR / "PIT_lookup.xlsx"
+
+# Province codes (16 total including manual)
+PROVINCE_CODES = [
+    "elc", "vnelc", "vnhbc", "vndn", "vnqn", "vnhd", "vnqng",
+    "vnmoet", "vnbd", "vnbg", "vnla", "vnhcm", "vnbn", "vnother",
+    "caobang", "province_manual"
+]
+
+# Template row indices for province section (0-based, after header)
+PROVINCE_TEMPLATE_ROWS = {
+    "elc": 19,
+    "vnelc": 20,
+    "vnhbc": 21,
+    "vndn": 22,
+    "vnqn": 23,
+    "vnhd": 24,
+    "vnqng": 25,
+    "vnmoet": 26,
+    "vnbd": 27,
+    "vnbg": 28,
+    "vnla": 29,
+    "vnhcm": 30,
+    "vnbn": 31,
+    "vnother": 32,
+    "caobang": 33,
+    "province_total": 18,  # Section header row for total
+    "province_manual": 41,  # Row 42 for manual province
+}
+
+# Province display names for validation column headers
+PROVINCE_DISPLAY_MAP = {
+    "elc": "ELC Operation",
+    "vnelc": "ELC training",
+    "vnhbc": "VN General National Training",
+    "vndn": "Da Nang ICC",
+    "vnqn": "Quang Nam ICC",
+    "vnhd": "Hai Duong ICC",
+    "vnqng": "Quang Ngai ICC",
+    "vnmoet": "Preparation and general of MOET",
+    "vnbd": "Binh Duong MOET",
+    "vnbg": "Bac Giang MOET",
+    "vnla": "Long An MOET",
+    "vnhcm": "HCM MOET",
+    "vnbn": "Bac Ninh MOET",
+    "vnother": "In-country program support",
+    "caobang": "Cao Bang",
+    "province_manual": "Province Manual",
+}

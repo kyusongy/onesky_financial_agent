@@ -12,6 +12,7 @@ from src.calculators.income import calculate_income
 from src.calculators.advance_settlement import calculate_advance_settlement
 from src.calculators.nature import NatureMapper
 from src.calculators.manual_input import ManualInputProcessor, mark_processed_groups
+from src.calculators.province import ProvinceMapper
 from src.report_generator import ReportGenerator, generate_marked_transactions
 from src.models import ProcessingResult, BANK_USD, BANK_VND
 from src.validation import ValidationData
@@ -306,18 +307,38 @@ def main():
                 # DEBUG: After merging
                 print("\n=== DEBUG: AFTER merging - FINAL nature_totals ===")
                 print(f"VND: { {k: v for k, v in nature_totals[BANK_VND].items() if v != 0} }")
-                
+
+                # Step 9: Calculate province totals
+                province_mapper = ProvinceMapper()
+                province_totals, pit_totals = province_mapper.process_groups(
+                    groups_by_bank,
+                    st.session_state.exchange_rates,
+                    validation_data
+                )
+
+                # Merge PIT totals into province totals
+                for bank_id in [BANK_USD, BANK_VND]:
+                    for province, amount in pit_totals[bank_id].items():
+                        if province in province_totals[bank_id]:
+                            province_totals[bank_id][province] += amount
+
+                # DEBUG: Province totals
+                print("\n=== DEBUG: FINAL province_totals ===")
+                print(f"VND: { {k: v for k, v in province_totals[BANK_VND].items() if v != 0} }")
+                print(f"USD: { {k: v for k, v in province_totals[BANK_USD].items() if v != 0} }")
+
                 # Collect all groups for marked transaction output
                 all_groups = []
                 for bank_groups in groups_by_bank.values():
                     all_groups.extend(bank_groups)
-                
+
                 # Create processing result
                 result = ProcessingResult(
                     groups_by_bank=groups_by_bank,
                     income=income,
                     advance_settlement=advance_settlement,
                     nature_totals=nature_totals,
+                    province_totals=province_totals,
                     manual_groups=still_manual,  # Only groups that still need manual review
                     all_groups=all_groups,
                     exchange_rates=st.session_state.exchange_rates,
@@ -360,7 +381,7 @@ def main():
         
         # Detailed breakdown
         with st.expander("📊 Detailed Breakdown", expanded=True):
-            tab1, tab2, tab3 = st.tabs(["Income", "Advance/Settlement", "By Nature"])
+            tab1, tab2, tab3, tab4 = st.tabs(["Income", "Advance/Settlement", "By Nature", "By Province"])
             
             with tab1:
                 col1, col2 = st.columns(2)
@@ -418,7 +439,26 @@ def main():
                             st.write(f"- {key.upper()}: {val:,.0f}")
                             usd_total += val
                     st.markdown(f"**Total: {usd_total:,.0f}**")
-        
+
+            with tab4:
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.markdown("**VND Bank (30)**")
+                    vnd_total = 0
+                    for key, val in result.province_totals[BANK_VND].items():
+                        if val != 0:
+                            st.write(f"- {key.upper()}: {val:,.0f}")
+                            vnd_total += val
+                    st.markdown(f"**Total: {vnd_total:,.0f}**")
+                with col2:
+                    st.markdown("**USD Bank (29)**")
+                    usd_total = 0
+                    for key, val in result.province_totals[BANK_USD].items():
+                        if val != 0:
+                            st.write(f"- {key.upper()}: {val:,.0f}")
+                            usd_total += val
+                    st.markdown(f"**Total: {usd_total:,.0f}**")
+
         # Download section
         st.markdown('<p class="section-header">📥 Download Results</p>', unsafe_allow_html=True)
         
