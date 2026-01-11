@@ -324,6 +324,13 @@ class ProvinceMapper:
                 if group.assigned_section not in (ReportSection.NATURE, ReportSection.MANUAL):
                     continue
 
+                # Skip groups that were processed as settlement/advance (even if assigned to MANUAL)
+                # These belong to Advance/Settlement or Income sections, not province
+                active_entries = group.active_entries
+                if any(e.nature_type in ("settlement", "cash_settlement", "advance") for e in active_entries):
+                    print(f"  SKIP (settlement/advance): {group.payee_name} - nature_type in entries")
+                    continue
+
                 ex_rate = get_exchange_rate(group, exchange_rates)
 
                 # Check if should ignore (for PIT lookup processing)
@@ -441,19 +448,47 @@ class ProvinceMapper:
 
         elif num_entries > 1:
             # Multi-entry: Process each entry with preserved sign
+            # BUT positive 1500 entries should be SUBTRACTED (same logic as manual_input.py)
+            prev_province = None
+
             for entry in active_entries:
                 if not entry.amount:
                     continue
 
+                # Check if this is a 1500 account
+                account_code = (entry.account_code or "").upper()
+                is_1500 = account_code.startswith("1500")
+                is_positive_1500 = is_1500 and entry.amount > 0
+
+                # Get province from memo
                 province = self._extract_province_from_memo(entry.original_memo)
                 if not province:
-                    province = "province_manual"
+                    if is_positive_1500 and prev_province:
+                        # Positive 1500 inherits province from previous row
+                        province = prev_province
+                    else:
+                        province = "province_manual"
 
                 amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
-                result[province] = result.get(province, 0.0) + amount
 
-                if validation_data:
-                    validation_data.set_value(entry.original_row_index, province, amount)
+                if is_positive_1500:
+                    # Positive 1500: SUBTRACT from province (same as nature logic)
+                    result[province] = result.get(province, 0.0) - amount
+                    if validation_data:
+                        validation_data.set_value(entry.original_row_index, province, -amount)
+                else:
+                    # Normal entry: ADD to province
+                    result[province] = result.get(province, 0.0) + amount
+                    if validation_data:
+                        validation_data.set_value(entry.original_row_index, province, amount)
+                    # Update prev_province for positive 1500 inheritance
+                    prev_province = province
+
+            # Validation: sum should equal reverse of bank_amount
+            result_sum = sum(result.values())
+            expected = abs(bank_amount_converted)
+            if abs(result_sum - expected) > 0.01:  # Allow small floating point difference
+                print(f"  WARNING: Province sum mismatch! sum={result_sum}, expected={expected}, diff={result_sum - expected}")
 
         return result
 
