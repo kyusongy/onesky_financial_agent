@@ -34,6 +34,7 @@ class PITEntry:
     name: str
     memo: str
     amount: float
+    group: int = 1  # 1 or 2 based on position in file (separated by empty row)
 
 
 # Province code patterns for extraction (uppercase for matching)
@@ -175,23 +176,43 @@ class ProvinceMapper:
 
             print(f"  Header row: {header_row}, Name col: {name_col}, Memo col: {memo_col}, Amount col: {amount_col}")
 
+            # Track groups - entries are divided by empty rows
+            current_group = 1
+            found_first_entry = False
+
             for idx in range(header_row + 1, len(df)):
                 row = df.iloc[idx]
                 name = row.iloc[name_col] if len(row) > name_col else None
                 memo = row.iloc[memo_col] if len(row) > memo_col else None
                 amount = row.iloc[amount_col] if len(row) > amount_col else None
 
-                if pd.notna(name) and pd.notna(amount):
+                # Check for empty row (group separator)
+                if pd.isna(name) or str(name).strip() == "":
+                    # Only switch groups if we've already found entries
+                    if found_first_entry and current_group == 1:
+                        current_group = 2
+                        print(f"  Group separator found at row {idx}, switching to group 2")
+                    continue
+
+                if pd.notna(amount):
                     try:
+                        found_first_entry = True
                         entries.append(PITEntry(
                             name=str(name).strip(),
                             memo=str(memo) if pd.notna(memo) else "",
-                            amount=float(amount)
+                            amount=float(amount),
+                            group=current_group
                         ))
                     except (ValueError, TypeError):
                         pass
 
-            print(f"  Loaded {len(entries)} PIT entries")
+            # Debug: show group counts
+            group1_count = sum(1 for e in entries if e.group == 1)
+            group2_count = sum(1 for e in entries if e.group == 2)
+            group1_sum = sum(e.amount for e in entries if e.group == 1)
+            group2_sum = sum(e.amount for e in entries if e.group == 2)
+            print(f"  Loaded {len(entries)} PIT entries (Group 1: {group1_count}, Group 2: {group2_count})")
+            print(f"  Group 1 sum: {group1_sum:,.0f}, Group 2 sum: {group2_sum:,.0f}")
         except Exception as e:
             print(f"Warning: Could not load PIT lookup table: {e}")
 
@@ -506,8 +527,11 @@ class ProvinceMapper:
         3. If not found: Find province in memo
         4. If not found AND memo contains "consultant": Province_Manual
 
-        After processing, record aggregated amounts on the first ignored group's row
-        for validation column tracking in the processed transaction file.
+        PIT entries are divided into groups (separated by empty rows in PIT_lookup.xlsx):
+        - Group 1 sum matches Vietnam Tax Company transaction
+        - Group 2 sum matches Service Center transaction
+
+        Validation data is recorded on respective transaction rows based on group matching.
 
         Args:
             ignored_groups: List of ignored transaction groups (Vietnam Tax/PIT, Service Center/SI/HI/UI)
@@ -523,11 +547,18 @@ class ProvinceMapper:
 
         print(f"\n=== DEBUG: Processing {len(self.pit_entries)} PIT entries ===")
 
+        # Track province amounts by group for validation
+        group_province_totals: dict[int, dict[str, float]] = {
+            1: {code: 0.0 for code in PROVINCE_CODES},
+            2: {code: 0.0 for code in PROVINCE_CODES},
+        }
+
         for entry in self.pit_entries:
             if entry.amount == 0:
                 continue
 
             amount_abs = abs(entry.amount)
+            group = entry.group
 
             # Try allocation lookup first
             allocations = self._lookup_allocation(entry.name)
@@ -537,30 +568,56 @@ class ProvinceMapper:
                     if percentage > 0:
                         distributed = amount_abs * percentage
                         pit_totals[bank_id][province] += distributed
-                print(f"  PIT (allocation): {entry.name} -> distributed to {list(allocations.keys())}")
+                        group_province_totals[group][province] += distributed
+                print(f"  PIT (allocation) G{group}: {entry.name} -> distributed to {list(allocations.keys())}")
             else:
                 # Try province from memo
                 province = self._extract_province_from_memo(entry.memo)
 
                 if province:
                     pit_totals[bank_id][province] += amount_abs
-                    print(f"  PIT (memo): {entry.name} -> {province}: {amount_abs}")
+                    group_province_totals[group][province] += amount_abs
+                    print(f"  PIT (memo) G{group}: {entry.name} -> {province}: {amount_abs}")
                 elif "consultant" in entry.memo.lower():
                     pit_totals[bank_id]["province_manual"] += amount_abs
-                    print(f"  PIT (consultant): {entry.name} -> province_manual: {amount_abs}")
+                    group_province_totals[group]["province_manual"] += amount_abs
+                    print(f"  PIT (consultant) G{group}: {entry.name} -> province_manual: {amount_abs}")
                 else:
                     # Default fallback
                     pit_totals[bank_id]["province_manual"] += amount_abs
-                    print(f"  PIT (fallback): {entry.name} -> province_manual: {amount_abs}")
+                    group_province_totals[group]["province_manual"] += amount_abs
+                    print(f"  PIT (fallback) G{group}: {entry.name} -> province_manual: {amount_abs}")
 
-        # Record aggregated PIT amounts on the first ignored group's row for validation tracking
-        if validation_data and ignored_groups:
-            first_group = ignored_groups[0]
-            print(f"\n=== DEBUG: Recording PIT validation on row {first_group.original_row_index} ===")
-            for province in PROVINCE_CODES:
-                amount = pit_totals[bank_id].get(province, 0.0)
-                if amount != 0:
-                    validation_data.set_value(first_group.original_row_index, province, amount)
-                    print(f"  Set validation: row={first_group.original_row_index}, {province}={amount}")
+        # Match PIT groups to ignored transactions by bank_amount
+        group1_sum = sum(abs(e.amount) for e in self.pit_entries if e.group == 1)
+        group2_sum = sum(abs(e.amount) for e in self.pit_entries if e.group == 2)
+
+        print(f"\n=== DEBUG: Matching PIT groups to transactions ===")
+        print(f"  Group 1 sum: {group1_sum:,.0f}")
+        print(f"  Group 2 sum: {group2_sum:,.0f}")
+
+        group_to_transaction: dict[int, TransactionGroup] = {}
+        for ig in ignored_groups:
+            bank_abs = abs(ig.bank_amount)
+            print(f"  Ignored transaction: row={ig.original_row_index}, name='{ig.payee_name}', amount={bank_abs:,.0f}")
+            if abs(bank_abs - group1_sum) < 1.0:
+                group_to_transaction[1] = ig
+                print(f"    -> Matched to Group 1")
+            elif abs(bank_abs - group2_sum) < 1.0:
+                group_to_transaction[2] = ig
+                print(f"    -> Matched to Group 2")
+
+        # Record validation data on respective transaction rows
+        if validation_data:
+            print(f"\n=== DEBUG: Recording PIT validation on respective rows ===")
+            for group_num, province_amounts in group_province_totals.items():
+                if group_num in group_to_transaction:
+                    row_index = group_to_transaction[group_num].original_row_index
+                    for province, amount in province_amounts.items():
+                        if amount != 0:
+                            validation_data.set_value(row_index, province, amount)
+                            print(f"  Set validation: row={row_index}, G{group_num}, {province}={amount:,.0f}")
+                else:
+                    print(f"  WARNING: No matching transaction for Group {group_num}")
 
         return pit_totals
