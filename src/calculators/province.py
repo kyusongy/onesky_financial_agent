@@ -82,25 +82,26 @@ class ProvinceMapper:
         allocation_table: dict[str, AllocationEntry] = {}
 
         try:
-            df = pd.read_excel(self.allocation_source, sheet_name="Lookup2_Allocation", header=None)
-            print(f"\n=== DEBUG: Loading allocation_lookup.xlsx ===")
+            df = pd.read_excel(self.allocation_source, sheet_name="salary allocation-v2", header=None)
+            print(f"\n=== DEBUG: Loading allocation.xlsx ===")
 
-            # Province column mapping (columns 3-8 based on exploration)
-            # D=VNELC, E=VNDN, F=VNQN, G=VNHD, H=VNQNg, I=VNMOET
+            # Province column mapping (columns 4-9 based on dec_test file)
+            # Added STT column at beginning, so all indices shifted +1
+            # E=VNELC, F=VNDN, G=VNQN, H=VNHD, I=VNQNg, J=VNMOET
             province_cols = {
-                3: "vnelc",
-                4: "vndn",
-                5: "vnqn",
-                6: "vnhd",
-                7: "vnqng",
-                8: "vnmoet",
+                4: "vnelc",
+                5: "vndn",
+                6: "vnqn",
+                7: "vnhd",
+                8: "vnqng",
+                9: "vnmoet",
             }
 
             header_row = 4  # Row 5 in 1-based (0-indexed row 4)
 
             for idx in range(header_row + 1, len(df)):
                 row = df.iloc[idx]
-                name = row.iloc[0]
+                name = row.iloc[1]  # Name column shifted from 0 to 1
 
                 if pd.isna(name) or str(name).strip() == "":
                     continue
@@ -143,8 +144,8 @@ class ProvinceMapper:
         entries: list[PITEntry] = []
 
         try:
-            df = pd.read_excel(self.pit_source, header=None)
-            print(f"\n=== DEBUG: Loading PIT_lookup.xlsx ===")
+            df = pd.read_excel(self.pit_source, sheet_name="PIT+SI payment", header=None)
+            print(f"\n=== DEBUG: Loading pit.xlsx ===")
             print(f"  Shape: {df.shape}")
 
             # Find header row by looking for "Name" or "Memo"
