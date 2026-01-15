@@ -21,15 +21,18 @@ from .utils import get_exchange_rate, convert_amount, normalize_nature, get_acco
 
 
 # Default path for manual lookup
-DEFAULT_MANUAL_LOOKUP = Path(__file__).parent.parent.parent / "instruction_data" / "templates" / "Manual.xlsx"
+DEFAULT_MANUAL_LOOKUP = Path(__file__).parent.parent.parent / "instruction_data" / "templates" / "dec_test" / "manual.xlsx"
 
 # Default path for staff lookup
-DEFAULT_STAFF_LOOKUP = Path(__file__).parent.parent.parent / "instruction_data" / "templates" / "staff_lookup.xlsx"
+DEFAULT_STAFF_LOOKUP = Path(__file__).parent.parent.parent / "instruction_data" / "templates" / "dec_test" / "staff.xlsx"
 
-# Column indices in Manual.xlsx sheets
-MANUAL_COL_AMOUNT = 8
-MANUAL_COL_PROVINCE = 13
-MANUAL_COL_NATURE = 14
+# Column indices in manual.xlsx "manual mapping" sheet (0-indexed)
+MANUAL_COL_AMOUNT = 8           # Column I - Amount
+MANUAL_COL_GL_ACCOUNT = 14      # Column O - GL account (for filtering by account type)
+MANUAL_COL_PROVINCE = 15        # Column P - Cash Flow by provinces
+MANUAL_COL_PACCOM = 16          # Column Q - Cash Flow by PACCOM (nature)
+MANUAL_COL_ADVANCE = 19         # Column T - Advance
+MANUAL_COL_SETTLEMENT = 20      # Column U - Settlement
 
 # Column indices in staff_lookup.xlsx (after header row)
 STAFF_COL_NAME = 1
@@ -67,51 +70,79 @@ class ManualInputProcessor:
         self.staff_lookup = self._load_staff_lookup()
     
     def _load_lookup_tables(self) -> dict[str, list[ManualLookupEntry]]:
-        """Load all 4 sheets from Manual.xlsx."""
+        """Load lookup entries from consolidated 'manual mapping' sheet."""
         tables = {acct: [] for acct in ACCOUNT_TYPES}
-        
+
         try:
-            xlsx = pd.ExcelFile(self.lookup_source)
-            print(f"\n=== DEBUG: Loading Manual.xlsx ===")
-            print(f"Available sheets: {xlsx.sheet_names}")
-            for sheet_name in ACCOUNT_TYPES:
-                if sheet_name in xlsx.sheet_names:
-                    df = pd.read_excel(self.lookup_source, sheet_name=sheet_name, header=None)
-                    tables[sheet_name] = self._parse_sheet(df)
-                    print(f"  Loaded {sheet_name}: {len(tables[sheet_name])} entries")
-                else:
-                    print(f"  Sheet {sheet_name} NOT FOUND")
+            df = pd.read_excel(self.lookup_source, sheet_name="manual mapping", header=None)
+            print(f"\n=== DEBUG: Loading manual.xlsx (consolidated) ===")
+            print(f"  Shape: {df.shape}")
+
+            header_idx = self._find_header_row(df)
+            print(f"  Header row: {header_idx}")
+
+            for idx in range(header_idx + 1, len(df)):
+                row = df.iloc[idx]
+                gl_account = str(row.iloc[MANUAL_COL_GL_ACCOUNT]) if len(row) > MANUAL_COL_GL_ACCOUNT and pd.notna(row.iloc[MANUAL_COL_GL_ACCOUNT]) else ""
+                amount = row.iloc[MANUAL_COL_AMOUNT] if len(row) > MANUAL_COL_AMOUNT else None
+
+                # Determine account type from GL account string
+                account_type = None
+                for acct in ACCOUNT_TYPES:
+                    if acct in gl_account:
+                        account_type = acct
+                        break
+
+                if not account_type or pd.isna(amount):
+                    continue
+
+                # Determine nature from row
+                nature = self._extract_nature_from_row(row)
+                province = row.iloc[MANUAL_COL_PROVINCE] if len(row) > MANUAL_COL_PROVINCE else None
+
+                if nature:
+                    tables[account_type].append(ManualLookupEntry(
+                        amount=float(amount),
+                        nature=normalize_nature(nature),
+                        province=str(province) if pd.notna(province) else None,
+                    ))
+
+            for acct, entries in tables.items():
+                print(f"  Loaded {acct}: {len(entries)} entries")
         except Exception as e:
             print(f"Warning: Could not load manual lookup table: {e}")
-        
+
         return tables
-    
-    def _parse_sheet(self, df: pd.DataFrame) -> list[ManualLookupEntry]:
-        """Parse a single sheet from Manual.xlsx."""
-        entries = []
-        header_idx = self._find_header_row(df)
-        
-        for idx in range(header_idx + 1, len(df)):
-            row = df.iloc[idx]
-            amount = row.iloc[MANUAL_COL_AMOUNT] if len(row) > MANUAL_COL_AMOUNT else None
-            nature_raw = row.iloc[MANUAL_COL_NATURE] if len(row) > MANUAL_COL_NATURE else None
-            province = row.iloc[MANUAL_COL_PROVINCE] if len(row) > MANUAL_COL_PROVINCE else None
-            
-            if pd.notna(amount) and pd.notna(nature_raw):
-                entries.append(ManualLookupEntry(
-                    amount=float(amount),
-                    nature=normalize_nature(str(nature_raw)),
-                    province=str(province) if pd.notna(province) else None,
-                ))
-        
-        return entries
-    
-    def _find_header_row(self, df: pd.DataFrame, default: int = 7) -> int:
-        """Find header row containing 'Date'."""
+
+    def _extract_nature_from_row(self, row) -> Optional[str]:
+        """Extract nature value from row, checking multiple columns."""
+        # Check Settlement column
+        settlement = row.iloc[MANUAL_COL_SETTLEMENT] if len(row) > MANUAL_COL_SETTLEMENT else None
+        if pd.notna(settlement) and settlement != 0:
+            return "settlement"
+
+        # Check Advance column
+        advance = row.iloc[MANUAL_COL_ADVANCE] if len(row) > MANUAL_COL_ADVANCE else None
+        if pd.notna(advance) and advance != 0:
+            return "advance"
+
+        # Check PACCOM nature column
+        paccom = row.iloc[MANUAL_COL_PACCOM] if len(row) > MANUAL_COL_PACCOM else None
+        if pd.notna(paccom) and str(paccom).strip():
+            paccom_str = str(paccom).lower()
+            if "refer" not in paccom_str:  # Skip "refer sheet..." entries
+                return str(paccom)
+
+        return None
+
+    def _find_header_row(self, df: pd.DataFrame, default: int = 4) -> int:
+        """Find header row containing 'Date' or 'Transaction date'."""
         for idx in range(min(15, len(df))):
             for val in df.iloc[idx].values:
-                if isinstance(val, str) and val.lower().strip() == "date":
-                    return idx
+                if isinstance(val, str):
+                    val_lower = val.lower().strip()
+                    if val_lower in ("date", "transaction date"):
+                        return idx
         return default
 
     def _load_staff_lookup(self) -> dict[str, str]:
