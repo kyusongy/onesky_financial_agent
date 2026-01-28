@@ -62,6 +62,9 @@ class ReportGenerator:
         # Fill advance/settlement section
         self._fill_advance_settlement(ws, result)
 
+        # Fill payable section (NEW: for 1500 accounts)
+        self._fill_payable(ws, result)
+
         # Fill nature section
         self._fill_nature(ws, result)
 
@@ -103,17 +106,29 @@ class ReportGenerator:
         """Fill advance/settlement section values with totals."""
         for bank_id, values in result.advance_settlement.items():
             col = self._get_column(bank_id)
-            
+
             # Advance
             self._set_cell(ws, TEMPLATE_ROWS["advance"], col, values.get("advance", 0))
-            
+
             # Settlement
             self._set_cell(ws, TEMPLATE_ROWS["settlement"], col, values.get("settlement", 0))
-            
-            # Total for advance/settlement section
+
+            # Total for advance/settlement section (excluding payable which is separate)
             total = sum(values.values())
+            # Add payable to the section total
+            payable_val = result.payable_totals.get(bank_id, {}).get("payable", 0)
+            total += payable_val
             if "advance_settlement_total" in TEMPLATE_ROWS:
                 self._set_cell(ws, TEMPLATE_ROWS["advance_settlement_total"], col, total)
+
+    def _fill_payable(self, ws, result: ProcessingResult) -> None:
+        """Fill payable section values (row 38 for 1500 accounts)."""
+        for bank_id, values in result.payable_totals.items():
+            col = self._get_column(bank_id)
+
+            # Payable
+            if "payable" in TEMPLATE_ROWS:
+                self._set_cell(ws, TEMPLATE_ROWS["payable"], col, values.get("payable", 0))
     
     def _fill_nature(self, ws, result: ProcessingResult) -> None:
         """Fill expenditure by nature section values with totals."""
@@ -414,7 +429,7 @@ def _get_section_type_labels(group: TransactionGroup) -> tuple[str, str]:
         
         # Determine section_label based on the actual nature
         nature_categories = ["org", "edu", "oper", "nutrition", "edu_infra"]
-        advance_settlement_categories = ["advance", "settlement"]
+        advance_settlement_categories = ["advance", "settlement", "payable"]
         
         if determined_nature in nature_categories:
             section_label = "Nature"

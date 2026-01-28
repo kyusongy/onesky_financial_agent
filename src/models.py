@@ -22,6 +22,7 @@ class ReportSection(Enum):
     INCOME = "Income"
     ADVANCE_SETTLEMENT = "Advance_Settlement"
     NATURE = "Nature"
+    PAYABLE = "Payable"  # NEW: For 1500 accounts
     MANUAL = "Manual"
     IGNORE = "Ignore"  # For "Transfer" out-legs or internal logic
 
@@ -172,6 +173,9 @@ class ProcessingResult:
     # Advance/Settlement totals per bank
     advance_settlement: dict[str, dict[str, float]] = field(default_factory=dict)
 
+    # Payable totals per bank (NEW: for 1500 accounts)
+    payable_totals: dict[str, dict[str, float]] = field(default_factory=dict)
+
     # Nature totals per bank
     nature_totals: dict[str, dict[str, float]] = field(default_factory=dict)
 
@@ -207,6 +211,10 @@ class ProcessingResult:
                 self.advance_settlement[bank] = {
                     "advance": 0.0,
                     "settlement": 0.0,
+                }
+            if bank not in self.payable_totals:
+                self.payable_totals[bank] = {
+                    "payable": 0.0,
                 }
             if bank not in self.nature_totals:
                 self.nature_totals[bank] = {
@@ -248,6 +256,10 @@ class ProcessingResult:
     def get_advance_settlement_total(self, bank_id: str) -> float:
         """Get total advance/settlement for a bank type."""
         return sum(self.advance_settlement.get(bank_id, {}).values())
+
+    def get_payable_total(self, bank_id: str) -> float:
+        """Get total payable for a bank type."""
+        return sum(self.payable_totals.get(bank_id, {}).values())
 
     def get_province_total(self, bank_id: str) -> float:
         """Get total province expenditure for a bank type (excluding province_manual)."""

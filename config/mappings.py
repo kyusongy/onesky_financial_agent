@@ -6,9 +6,11 @@ from pathlib import Path
 # Base paths
 PROJECT_ROOT = Path(__file__).parent.parent
 DATA_DIR = PROJECT_ROOT / "instruction_data" / "templates"
-DEFAULT_NATURE_LOOKUP = DATA_DIR / "nature_lookup.xlsx"
+TEMPLATE_DIR = DATA_DIR / "dec_final"
+DEFAULT_NATURE_LOOKUP = TEMPLATE_DIR / "Nature.xlsx"
 DEFAULT_OUTPUT_TEMPLATE = DATA_DIR / "output_template.xlsx"
-DEFAULT_MANUAL_LOOKUP = DATA_DIR / "dec_test" / "manual.xlsx"
+DEFAULT_STAFF_ALLOCATION_LOOKUP = TEMPLATE_DIR / "Staff_&_Allocation.xlsx"
+DEFAULT_PIT_LOOKUP = TEMPLATE_DIR / "PIT_SI.xlsx"
 
 # Bank identifiers (string format)
 BANK_USD = "29"  # USD Bank
@@ -35,9 +37,10 @@ TEMPLATE_ROWS = {
     "nutrition": 15,
     "edu_infra": 16,
     "expense_total": 11,
-    # Advance/Settlement section
+    # Advance/Settlement/Payable section
     "advance": 36,
     "settlement": 37,
+    "payable": 38,  # NEW: Payable section for 1500 accounts
     "advance_settlement_total": 35,
     # Manual input
     "manual": 40,
@@ -53,6 +56,10 @@ NATURE_CATEGORY_MAP = {
     "manual input": "manual",
     "advance by cash": "advance",
     "reimbursement": "settlement",
+    # New mappings for dec_final Nature.xlsx
+    "advance": "advance",
+    "settlement": "settlement",
+    "payable": "payable",
 }
 
 # Nature display names for marked transactions
@@ -65,6 +72,7 @@ NATURE_DISPLAY_MAP = {
     "edu_infra": "Education Infrastructure",
     "advance": "Advance by cash",
     "settlement": "Settlement",
+    "payable": "Payable",
 }
 
 # Income type display names
@@ -92,8 +100,8 @@ EXCEL_COLUMNS = {
 }
 
 # Province section constants
-DEFAULT_ALLOCATION_LOOKUP = DATA_DIR / "dec_test" / "allocation.xlsx"
-DEFAULT_PIT_LOOKUP = DATA_DIR / "dec_test" / "pit.xlsx"
+# Note: DEFAULT_STAFF_ALLOCATION_LOOKUP and DEFAULT_PIT_LOOKUP defined above with TEMPLATE_DIR
+DEFAULT_ALLOCATION_LOOKUP = DEFAULT_STAFF_ALLOCATION_LOOKUP  # Alias for backwards compatibility
 
 # Province codes (16 total including manual)
 PROVINCE_CODES = [

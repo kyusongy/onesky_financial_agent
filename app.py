@@ -116,28 +116,38 @@ def main():
         )
         
         st.markdown("---")
-        
+
         # Optional: Custom lookup tables
         st.markdown("### ⚙️ Optional Settings")
         nature_lookup_file = st.file_uploader(
-            "Custom Nature Lookup Table",
+            "Custom Nature Lookup (Nature.xlsx)",
             type=["xlsx"],
-            help="Optional: Upload a custom nature lookup table to override the default",
+            help="Optional: Upload a custom Nature.xlsx to override the default (contains account → nature mapping)",
             key="nature_upload"
         )
-        
+
         if nature_lookup_file:
             st.success("✓ Custom nature lookup loaded")
-        
-        manual_lookup_file = st.file_uploader(
-            "Custom Manual Input Lookup",
+
+        staff_allocation_file = st.file_uploader(
+            "Custom Staff & Allocation Lookup",
             type=["xlsx"],
-            help="Optional: Upload a custom Manual.xlsx to override the default (contains 1250/1230/1252/1500 sheets)",
-            key="manual_upload"
+            help="Optional: Upload a custom Staff_&_Allocation.xlsx to override the default (contains staff nature + province allocation)",
+            key="staff_allocation_upload"
         )
-        
-        if manual_lookup_file:
-            st.success("✓ Custom manual lookup loaded")
+
+        if staff_allocation_file:
+            st.success("✓ Custom staff allocation loaded")
+
+        pit_file = st.file_uploader(
+            "Custom PIT/SI Lookup",
+            type=["xlsx"],
+            help="Optional: Upload a custom PIT_SI.xlsx to override the default (contains PIT/SI payment entries)",
+            key="pit_upload"
+        )
+
+        if pit_file:
+            st.success("✓ Custom PIT/SI lookup loaded")
     
     # Main content area
     if transaction_file is None:
@@ -259,10 +269,10 @@ def main():
                 
                 # Step 8: Process manual input groups
                 manual_processor = ManualInputProcessor(
-                    BytesIO(manual_lookup_file.read()) if manual_lookup_file else None
+                    BytesIO(staff_allocation_file.read()) if staff_allocation_file else None
                 )
-                if manual_lookup_file:
-                    manual_lookup_file.seek(0)
+                if staff_allocation_file:
+                    staff_allocation_file.seek(0)
                 
                 manual_nature_totals, still_manual = manual_processor.process_manual_groups(
                     manual_groups,
@@ -275,23 +285,38 @@ def main():
                 print(f"nature_totals[VND]: { {k: v for k, v in nature_totals[BANK_VND].items() if v != 0} }")
                 print(f"manual_nature_totals[VND]: { {k: v for k, v in manual_nature_totals[BANK_VND].items() if v != 0} }")
                 
-                # Merge manual nature totals into main nature totals
+                # Initialize payable_totals as its own section
+                payable_totals = {
+                    BANK_USD: {"payable": 0.0},
+                    BANK_VND: {"payable": 0.0},
+                }
+
+                # Merge manual nature totals into respective sections
                 for bank_id in [BANK_USD, BANK_VND]:
                     for key, value in manual_nature_totals[bank_id].items():
-                        if key in nature_totals[bank_id]:
-                            old_val = nature_totals[bank_id][key]
-                            nature_totals[bank_id][key] += value
+                        if key == "payable":
+                            # Add to payable section (row 38) - its own section
+                            old_val = payable_totals[bank_id]["payable"]
+                            payable_totals[bank_id]["payable"] = old_val + value
                             if value != 0:
-                                print(f"  MERGE {bank_id} {key}: {old_val} + {value} = {nature_totals[bank_id][key]}")
+                                print(f"  MERGE PAYABLE {bank_id} {key}: {old_val} + {value} = {payable_totals[bank_id]['payable']}")
                         elif key in ["advance", "settlement"]:
-                            # Add to advance/settlement section
-                            advance_settlement[bank_id][key] += value
+                            # Add to advance/settlement section (row 36-37)
+                            old_val = advance_settlement[bank_id].get(key, 0)
+                            advance_settlement[bank_id][key] = old_val + value
+                            if value != 0:
+                                print(f"  MERGE ADV/SETTLE {bank_id} {key}: {old_val} + {value} = {advance_settlement[bank_id][key]}")
                         elif key == "cash_settlement":
                             # Add to income section (positive settlements)
                             old_val = income[bank_id].get("cash_settlement", 0)
                             income[bank_id]["cash_settlement"] = old_val + value
                             if value != 0:
                                 print(f"  MERGE INCOME {bank_id} {key}: {old_val} + {value} = {income[bank_id]['cash_settlement']}")
+                        elif key in nature_totals[bank_id]:
+                            old_val = nature_totals[bank_id][key]
+                            nature_totals[bank_id][key] += value
+                            if value != 0:
+                                print(f"  MERGE {bank_id} {key}: {old_val} + {value} = {nature_totals[bank_id][key]}")
 
                 # Clear the "manual" tracking category - those amounts are now categorized
                 # Only keep "manual" amount for groups that are still unprocessed (still_manual)
@@ -305,11 +330,20 @@ def main():
                         nature_totals[bank_id]["manual"] = remaining_manual
 
                 # DEBUG: After merging
-                print("\n=== DEBUG: AFTER merging - FINAL nature_totals ===")
-                print(f"VND: { {k: v for k, v in nature_totals[BANK_VND].items() if v != 0} }")
+                print("\n=== DEBUG: AFTER merging - FINAL totals ===")
+                print(f"nature_totals[VND]: { {k: v for k, v in nature_totals[BANK_VND].items() if v != 0} }")
+                print(f"advance_settlement[VND]: { {k: v for k, v in advance_settlement[BANK_VND].items() if v != 0} }")
+                print(f"payable_totals[VND]: { {k: v for k, v in payable_totals[BANK_VND].items() if v != 0} }")
 
                 # Step 9: Calculate province totals
-                province_mapper = ProvinceMapper()
+                province_mapper = ProvinceMapper(
+                    allocation_source=BytesIO(staff_allocation_file.read()) if staff_allocation_file else None,
+                    pit_source=BytesIO(pit_file.read()) if pit_file else None
+                )
+                if staff_allocation_file:
+                    staff_allocation_file.seek(0)
+                if pit_file:
+                    pit_file.seek(0)
                 province_totals, pit_totals = province_mapper.process_groups(
                     groups_by_bank,
                     st.session_state.exchange_rates,
@@ -337,6 +371,7 @@ def main():
                     groups_by_bank=groups_by_bank,
                     income=income,
                     advance_settlement=advance_settlement,
+                    payable_totals=payable_totals,
                     nature_totals=nature_totals,
                     province_totals=province_totals,
                     manual_groups=still_manual,  # Only groups that still need manual review
@@ -381,8 +416,8 @@ def main():
         
         # Detailed breakdown
         with st.expander("📊 Detailed Breakdown", expanded=True):
-            tab1, tab2, tab3, tab4 = st.tabs(["Income", "Advance/Settlement", "By Nature", "By Province"])
-            
+            tab1, tab2, tab3, tab4, tab5 = st.tabs(["Income", "Advance/Settlement", "Payable", "By Nature", "By Province"])
+
             with tab1:
                 col1, col2 = st.columns(2)
                 with col1:
@@ -401,7 +436,7 @@ def main():
                             st.write(f"- {key.replace('_', ' ').title()}: {val:,.0f}")
                             usd_total += val
                     st.markdown(f"**Total: {usd_total:,.0f}**")
-            
+
             with tab2:
                 col1, col2 = st.columns(2)
                 with col1:
@@ -420,8 +455,27 @@ def main():
                             st.write(f"- {key.title()}: {val:,.0f}")
                             usd_total += val
                     st.markdown(f"**Total: {usd_total:,.0f}**")
-            
+
             with tab3:
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.markdown("**VND Bank (30)**")
+                    vnd_total = 0
+                    for key, val in result.payable_totals[BANK_VND].items():
+                        if val != 0:
+                            st.write(f"- {key.title()}: {val:,.0f}")
+                            vnd_total += val
+                    st.markdown(f"**Total: {vnd_total:,.0f}**")
+                with col2:
+                    st.markdown("**USD Bank (29)**")
+                    usd_total = 0
+                    for key, val in result.payable_totals[BANK_USD].items():
+                        if val != 0:
+                            st.write(f"- {key.title()}: {val:,.0f}")
+                            usd_total += val
+                    st.markdown(f"**Total: {usd_total:,.0f}**")
+
+            with tab4:
                 col1, col2 = st.columns(2)
                 with col1:
                     st.markdown("**VND Bank (30)**")
@@ -440,7 +494,7 @@ def main():
                             usd_total += val
                     st.markdown(f"**Total: {usd_total:,.0f}**")
 
-            with tab4:
+            with tab5:
                 col1, col2 = st.columns(2)
                 with col1:
                     st.markdown("**VND Bank (30)**")

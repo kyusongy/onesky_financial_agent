@@ -75,6 +75,13 @@ def init_advance_settlement_totals() -> dict[str, float]:
     }
 
 
+def init_payable_totals() -> dict[str, float]:
+    """Initialize payable totals dictionary (for 1500 accounts)."""
+    return {
+        "payable": 0.0,
+    }
+
+
 def init_income_totals() -> dict[str, float]:
     """Initialize income totals dictionary."""
     return {
@@ -118,11 +125,16 @@ def is_manual_account(account_number: Optional[str]) -> bool:
 NATURE_NORMALIZATION_MAP = {
     "advance": "advance",
     "settlement": "settlement",
+    "payable": "payable",
     "org": "org",
     "edu": "edu",
     "oper": "oper",
     "nutrition": "nutrition",
     "infra": "edu_infra",
+    # Mappings for dec_final Nature.xlsx values
+    "organisational capacity building": "org",
+    "education quality improvement": "edu",
+    "program operation": "oper",
 }
 
 

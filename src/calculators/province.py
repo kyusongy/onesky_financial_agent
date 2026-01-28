@@ -18,7 +18,7 @@ from dataclasses import dataclass
 from ..models import TransactionGroup, TransactionEntry, ReportSection, BANK_USD, BANK_VND
 from ..validation import ValidationData
 from .utils import get_exchange_rate, convert_amount
-from config.mappings import DEFAULT_ALLOCATION_LOOKUP, DEFAULT_PIT_LOOKUP, PROVINCE_CODES
+from config.mappings import DEFAULT_STAFF_ALLOCATION_LOOKUP, DEFAULT_PIT_LOOKUP, PROVINCE_CODES
 
 
 @dataclass
@@ -56,25 +56,26 @@ class ProvinceMapper:
         Initialize with lookup tables.
 
         Args:
-            allocation_source: Path to allocation_lookup.xlsx or file-like object.
+            allocation_source: Path to Staff_&_Allocation.xlsx or file-like object.
                               Uses default if not provided.
-            pit_source: Path to PIT_lookup.xlsx or file-like object.
+            pit_source: Path to PIT_SI.xlsx or file-like object.
                        Uses default if not provided.
         """
-        self.allocation_source = allocation_source or DEFAULT_ALLOCATION_LOOKUP
+        self.allocation_source = allocation_source or DEFAULT_STAFF_ALLOCATION_LOOKUP
         self.pit_source = pit_source or DEFAULT_PIT_LOOKUP
         self.allocation_table = self._load_allocation_table()
         self.pit_entries = self._load_pit_lookup()
 
     def _load_allocation_table(self) -> dict[str, AllocationEntry]:
         """
-        Load allocation lookup from allocation_lookup.xlsx.
+        Load allocation lookup from Staff_&_Allocation.xlsx.
 
-        Structure:
-        - Sheet: Lookup2_Allocation
-        - Header row: 4 (0-indexed, i.e., row 5 in Excel)
-        - Column 0: Name
-        - Columns 3-8: Province allocations (VNELC, VNDN, VNQN, VNHD, VNQNg, VNMOET)
+        Structure (dec_final):
+        - Sheet: "Lookup3_Staff & allocation"
+        - Header row: 1 (0-indexed)
+        - Column A (0): Staff Name
+        - Column B (1): PACCOM nature (org/edu) - not used here
+        - Columns C-K (2-10): Province allocations (VNELC, VNDN, VNQN, VNHD, VNQNg, VNHCM, VNLA, VNBN, VNMOET)
 
         Returns:
             Dictionary mapping lowercase name to AllocationEntry
@@ -82,26 +83,39 @@ class ProvinceMapper:
         allocation_table: dict[str, AllocationEntry] = {}
 
         try:
-            df = pd.read_excel(self.allocation_source, sheet_name="salary allocation-v2", header=None)
-            print(f"\n=== DEBUG: Loading allocation.xlsx ===")
+            # Try dec_final format first
+            df = pd.read_excel(
+                self.allocation_source,
+                sheet_name="Lookup3_Staff & allocation",
+                header=None
+            )
+            print(f"\n=== DEBUG: Loading Staff_&_Allocation.xlsx (province allocation) ===")
+            print(f"  Shape: {df.shape}")
 
-            # Province column mapping (columns 4-9 based on dec_test file)
-            # Added STT column at beginning, so all indices shifted +1
-            # E=VNELC, F=VNDN, G=VNQN, H=VNHD, I=VNQNg, J=VNMOET
-            province_cols = {
-                4: "vnelc",
-                5: "vndn",
-                6: "vnqn",
-                7: "vnhd",
-                8: "vnqng",
-                9: "vnmoet",
-            }
+            # Find header row (row with "Staff Name")
+            header_idx = 1  # Default for dec_final format
+            for idx in range(min(10, len(df))):
+                for val in df.iloc[idx].values:
+                    if isinstance(val, str) and "staff name" in val.lower():
+                        header_idx = idx
+                        break
 
-            header_row = 4  # Row 5 in 1-based (0-indexed row 4)
+            # Get province column names from header row dynamically
+            header_row = df.iloc[header_idx]
+            province_cols: dict[int, str] = {}
+            for col_idx in range(2, len(header_row)):
+                col_name = header_row.iloc[col_idx]
+                if pd.notna(col_name) and str(col_name).strip():
+                    # Normalize province code to lowercase
+                    province_code = str(col_name).strip().lower()
+                    province_cols[col_idx] = province_code
 
-            for idx in range(header_row + 1, len(df)):
+            print(f"  Province columns: {province_cols}")
+
+            # Parse data rows
+            for idx in range(header_idx + 1, len(df)):
                 row = df.iloc[idx]
-                name = row.iloc[1]  # Name column shifted from 0 to 1
+                name = row.iloc[0] if len(row) > 0 else None
 
                 if pd.isna(name) or str(name).strip() == "":
                     continue
@@ -123,6 +137,52 @@ class ProvinceMapper:
                     )
 
             print(f"  Loaded {len(allocation_table)} allocation entries")
+            return allocation_table
+
+        except Exception as e:
+            print(f"  Could not load dec_final format: {e}")
+            print(f"  Falling back to legacy format...")
+
+        # Fallback to legacy format (dec_test allocation.xlsx)
+        try:
+            df = pd.read_excel(self.allocation_source, sheet_name="salary allocation-v2", header=None)
+            print(f"\n=== DEBUG: Loading allocation.xlsx (legacy) ===")
+
+            province_cols = {
+                4: "vnelc",
+                5: "vndn",
+                6: "vnqn",
+                7: "vnhd",
+                8: "vnqng",
+                9: "vnmoet",
+            }
+
+            header_row = 4
+
+            for idx in range(header_row + 1, len(df)):
+                row = df.iloc[idx]
+                name = row.iloc[1]
+
+                if pd.isna(name) or str(name).strip() == "":
+                    continue
+
+                allocations = {}
+                for col_idx, province_key in province_cols.items():
+                    val = row.iloc[col_idx] if len(row) > col_idx else 0
+                    if pd.notna(val) and val != 0:
+                        try:
+                            allocations[province_key] = float(val)
+                        except (ValueError, TypeError):
+                            pass
+
+                if allocations:
+                    name_key = str(name).strip().lower()
+                    allocation_table[name_key] = AllocationEntry(
+                        name=str(name).strip(),
+                        allocations=allocations
+                    )
+
+            print(f"  Loaded {len(allocation_table)} allocation entries")
         except Exception as e:
             print(f"Warning: Could not load allocation lookup table: {e}")
 
@@ -130,13 +190,18 @@ class ProvinceMapper:
 
     def _load_pit_lookup(self) -> list[PITEntry]:
         """
-        Load PIT lookup from PIT_lookup.xlsx.
+        Load PIT lookup from PIT_SI.xlsx.
 
-        Structure:
-        - Header row: varies, find by looking for "Name" header
-        - Column with Name
-        - Column with Memo (contains province codes)
-        - Column with Amount
+        Structure (dec_final - 5 columns):
+        - Column A (0): Staff Name (company name for grouping)
+        - Column B (1): Transaction Date
+        - Column C (2): Name (individual staff name)
+        - Column D (3): Memo/Description (contains province codes)
+        - Column E (4): Amount
+
+        Entries are grouped by company name:
+        - "Service Center for Foreign Affairs" → SI/HI transactions
+        - "Vietnam Tax Company" → PIT transactions
 
         Returns:
             List of PITEntry objects
@@ -145,75 +210,80 @@ class ProvinceMapper:
 
         try:
             df = pd.read_excel(self.pit_source, sheet_name="PIT+SI payment", header=None)
-            print(f"\n=== DEBUG: Loading pit.xlsx ===")
+            print(f"\n=== DEBUG: Loading PIT_SI.xlsx ===")
             print(f"  Shape: {df.shape}")
 
-            # Find header row by looking for "Name" or "Memo"
+            # Find header row (row with column names like "Staff Name")
             header_row = 0
-            name_col = None
-            memo_col = None
-            amount_col = None
-
-            for idx in range(min(10, len(df))):
+            for idx in range(min(5, len(df))):
                 row = df.iloc[idx]
-                for col_idx, val in enumerate(row.values):
-                    if pd.notna(val) and isinstance(val, str):
-                        val_lower = val.lower().strip()
-                        if "name" in val_lower:
-                            name_col = col_idx
-                            header_row = idx
-                        elif "memo" in val_lower:
-                            memo_col = col_idx
-                        elif "amount" in val_lower:
-                            amount_col = col_idx
+                if pd.notna(row.iloc[0]) and "staff name" in str(row.iloc[0]).lower():
+                    header_row = idx
+                    break
 
-            # Default column positions if not found
-            if name_col is None:
-                name_col = 7
-            if memo_col is None:
-                memo_col = 8
-            if amount_col is None:
-                amount_col = 10
+            print(f"  Header row: {header_row}")
 
-            print(f"  Header row: {header_row}, Name col: {name_col}, Memo col: {memo_col}, Amount col: {amount_col}")
+            # dec_final format: 5 fixed columns
+            # Column 0: Staff Name (company), Column 2: Name (person), Column 3: Memo, Column 4: Amount
+            company_col = 0
+            name_col = 2
+            memo_col = 3
+            amount_col = 4
 
-            # Track groups - entries are divided by empty rows
-            current_group = 1
-            found_first_entry = False
+            # Group by company name
+            current_company = None
 
             for idx in range(header_row + 1, len(df)):
                 row = df.iloc[idx]
+                company = row.iloc[company_col] if len(row) > company_col else None
                 name = row.iloc[name_col] if len(row) > name_col else None
                 memo = row.iloc[memo_col] if len(row) > memo_col else None
                 amount = row.iloc[amount_col] if len(row) > amount_col else None
 
-                # Check for empty row (group separator)
-                if pd.isna(name) or str(name).strip() == "":
-                    # Only switch groups if we've already found entries
-                    if found_first_entry and current_group == 1:
-                        current_group = 2
-                        print(f"  Group separator found at row {idx}, switching to group 2")
+                # Skip separator/instruction rows
+                if pd.isna(company) or str(company).strip() == "-":
+                    continue
+                if pd.notna(company) and "input payment" in str(company).lower():
                     continue
 
-                if pd.notna(amount):
-                    try:
-                        found_first_entry = True
-                        entries.append(PITEntry(
-                            name=str(name).strip(),
-                            memo=str(memo) if pd.notna(memo) else "",
-                            amount=float(amount),
-                            group=current_group
-                        ))
-                    except (ValueError, TypeError):
-                        pass
+                # Track company for grouping
+                company_str = str(company).strip().lower() if pd.notna(company) else ""
+
+                # Determine group based on company name
+                if "service center" in company_str:
+                    group = 1  # SI/HI/UI transactions
+                elif "vietnam tax" in company_str:
+                    group = 2  # PIT transactions
+                else:
+                    continue  # Skip unknown companies
+
+                # Skip if no valid amount
+                if pd.isna(amount) or amount == 0:
+                    continue
+
+                # Get name - could be in company column or name column
+                person_name = str(name).strip() if pd.notna(name) else ""
+                if not person_name:
+                    continue
+
+                try:
+                    entries.append(PITEntry(
+                        name=person_name,
+                        memo=str(memo) if pd.notna(memo) else "",
+                        amount=float(amount),
+                        group=group
+                    ))
+                except (ValueError, TypeError):
+                    pass
 
             # Debug: show group counts
             group1_count = sum(1 for e in entries if e.group == 1)
             group2_count = sum(1 for e in entries if e.group == 2)
             group1_sum = sum(e.amount for e in entries if e.group == 1)
             group2_sum = sum(e.amount for e in entries if e.group == 2)
-            print(f"  Loaded {len(entries)} PIT entries (Group 1: {group1_count}, Group 2: {group2_count})")
-            print(f"  Group 1 sum: {group1_sum:,.0f}, Group 2 sum: {group2_sum:,.0f}")
+            print(f"  Loaded {len(entries)} PIT entries")
+            print(f"  Group 1 (Service Center - SI/HI): {group1_count} entries, sum: {group1_sum:,.0f}")
+            print(f"  Group 2 (Vietnam Tax - PIT): {group2_count} entries, sum: {group2_sum:,.0f}")
         except Exception as e:
             print(f"Warning: Could not load PIT lookup table: {e}")
 
@@ -346,11 +416,11 @@ class ProvinceMapper:
                 if group.assigned_section not in (ReportSection.NATURE, ReportSection.MANUAL):
                     continue
 
-                # Skip groups that were processed as settlement/advance (even if assigned to MANUAL)
-                # These belong to Advance/Settlement or Income sections, not province
+                # Skip groups that were processed as settlement/advance/payable (even if assigned to MANUAL)
+                # These belong to Advance/Settlement/Payable or Income sections, not province
                 active_entries = group.active_entries
-                if any(e.nature_type in ("settlement", "cash_settlement", "advance") for e in active_entries):
-                    print(f"  SKIP (settlement/advance): {group.payee_name} - nature_type in entries")
+                if any(e.nature_type in ("settlement", "cash_settlement", "advance", "payable") for e in active_entries):
+                    print(f"  SKIP (settlement/advance/payable): {group.payee_name} - nature_type in entries")
                     continue
 
                 ex_rate = get_exchange_rate(group, exchange_rates)
