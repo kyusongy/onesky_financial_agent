@@ -7,7 +7,7 @@ to each report column. When summed by bank, these should match the report values
 from typing import Optional
 
 
-# The 12 validation column internal keys for Nature section
+# The 13 validation column internal keys for Nature section (including payable)
 NATURE_VALIDATION_COLUMNS = [
     "contribution",
     "fund_transfer",
@@ -21,6 +21,7 @@ NATURE_VALIDATION_COLUMNS = [
     "edu_infra",
     "advance",
     "settlement",
+    "payable",  # NEW: For 1500 accounts
 ]
 
 # The 16 province validation column internal keys
@@ -61,6 +62,7 @@ VALIDATION_COLUMN_DISPLAY = {
     "edu_infra": "Education Infrastructure",
     "advance": "Advance by cash",
     "settlement": "Settlement",
+    "payable": "Payable",
     # Province section columns
     "elc": "ELC Operation",
     "vnelc": "ELC training",

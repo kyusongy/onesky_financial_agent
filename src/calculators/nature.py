@@ -31,15 +31,56 @@ class NatureMapper:
         self.lookup_table = self._load_lookup_table(lookup_source)
     
     def _load_lookup_table(
-        self, 
+        self,
         source: Optional[Union[str, Path, BinaryIO]]
     ) -> dict[str, str]:
-        """Load and parse the nature lookup table."""
+        """
+        Load and parse the nature lookup table.
+
+        For dec_final format (Nature.xlsx):
+        - Sheet: "Lookup1_AcctList"
+        - Column A (0): Account No.
+        - Column B (1): PACCOM nature
+        """
         if source is None:
             source = DEFAULT_NATURE_LOOKUP
-        
+
+        # Try to load with new dec_final format first
+        try:
+            df = pd.read_excel(source, sheet_name="Lookup1_AcctList", header=None, engine='openpyxl')
+            print(f"=== DEBUG: Loaded Nature.xlsx (dec_final format) ===")
+
+            # Find header row (contains "Account No.")
+            header_idx = 0
+            for idx in range(min(10, len(df))):
+                row = df.iloc[idx]
+                for val in row.values:
+                    if isinstance(val, str) and "account no" in val.lower():
+                        header_idx = idx
+                        break
+
+            # Parse: Column A = Account No., Column B = Nature
+            lookup: dict[str, str] = {}
+            for idx in range(header_idx + 1, len(df)):
+                row = df.iloc[idx]
+                account_no = row.iloc[0] if len(row) > 0 else None
+                nature = row.iloc[1] if len(row) > 1 else None
+
+                if pd.notna(account_no) and pd.notna(nature):
+                    account_key = str(account_no).strip().lower()
+                    nature_value = str(nature).strip().lower()
+                    lookup[account_key] = nature_value
+
+            print(f"  Loaded {len(lookup)} account mappings")
+            return lookup
+
+        except Exception as e:
+            print(f"  Could not load dec_final format: {e}")
+            print(f"  Falling back to legacy format...")
+
+        # Fallback to legacy format (old nature_lookup.xlsx)
         df = pd.read_excel(source, header=None, engine='openpyxl')
-        
+
         # Find the header row (contains "Account No.")
         header_idx = 3  # Default
         for idx in range(min(10, len(df))):
@@ -48,21 +89,21 @@ class NatureMapper:
                 if isinstance(val, str) and "account no" in val.lower():
                     header_idx = idx
                     break
-        
+
         # Parse the lookup table
         # Column 1: Account No., Column 7: Nature category
         lookup: dict[str, str] = {}
-        
+
         for idx in range(header_idx + 1, len(df)):
             row = df.iloc[idx]
             account_no = row.iloc[1] if len(row) > 1 else None
             nature = row.iloc[7] if len(row) > 7 else None
-            
+
             if pd.notna(account_no) and pd.notna(nature):
                 account_key = str(account_no).strip().lower()
                 nature_value = str(nature).strip().lower()
                 lookup[account_key] = nature_value
-        
+
         return lookup
     
     def get_nature(self, account_number: Optional[str]) -> Optional[str]:
