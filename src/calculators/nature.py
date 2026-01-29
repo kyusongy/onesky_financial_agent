@@ -205,14 +205,6 @@ class NatureMapper:
         """
         result = {"is_manual": False, "manual_amount": 0.0, "nature_amounts": {}}
 
-        # Priority: Check if memo contains "salary" or "bonus" - defer to manual_input.py
-        memo = (group.bank_memo or "").lower()
-        if "salary" in memo or "bonus" in memo:
-            result["is_manual"] = True
-            result["manual_amount"] = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
-            print(f"  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor")
-            return result
-
         active_entries = group.active_entries
         if not active_entries:
             return result
@@ -224,7 +216,8 @@ class NatureMapper:
         print(f"Bank amount: {group.bank_amount}, converted: {bank_amount_converted}")
         print(f"Active entries count: {len(active_entries)}")
 
-        # Assign nature to each entry and check for manual triggers
+        # Assign nature to each entry and check for manual triggers FIRST
+        # (before salary/bonus check, so entries have correct nature_type/is_manual_trigger)
         for entry in active_entries:
             nature = self.get_nature(entry.account_code)
 
@@ -239,6 +232,15 @@ class NatureMapper:
                 entry.is_manual_trigger = True
 
             print(f"  Entry: account={entry.account_code}, amount={entry.amount}, nature_type={entry.nature_type}, is_manual_trigger={entry.is_manual_trigger}")
+
+        # Priority: Check if memo contains "salary" or "bonus" - defer to manual_input.py
+        # (done AFTER entry assignment so entries have correct nature_type for 1500 handling)
+        memo = (group.bank_memo or "").lower()
+        if "salary" in memo or "bonus" in memo:
+            result["is_manual"] = True
+            result["manual_amount"] = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
+            print(f"  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor")
+            return result
 
         # Check if any entry requires manual review
         if any(e.is_manual_trigger for e in active_entries):
