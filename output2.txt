@@ -1,0 +1,3791 @@
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8501
+  Network URL: http://152.23.71.246:8501
+
+  For better performance, install the Watchdog module:
+
+  $ xcode-select --install
+  $ pip install watchdog
+            
+=== DEBUG: Loaded Nature.xlsx (dec_final format) ===
+  Loaded 84 account mappings
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-19 00:00:00, bank: 29
+Bank amount: 2612500000.0, converted: 100000.0
+Active entries count: 1
+  Entry: account=2102VN, amount=2612500000.0, nature_type=None, is_manual_trigger=False
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-25 00:00:00, bank: 29
+Bank amount: -28986.0, converted: -1.0999962050776062
+Active entries count: 1
+  Entry: account=73209VN, amount=28986.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-1.0999962050776062) = 1.0999962050776062
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 1.0999962050776062}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -233777511.0, converted: -233777511.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-233777511.0, nature_type=payable, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-233777511.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -133287384.0, converted: -133287384.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-133287384.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -49904969.0, converted: -49904969.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-49904969.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -59216675.0, converted: -59216675.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-59216675.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -48775785.0, converted: -48775785.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-48775785.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -37368280.0, converted: -37368280.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-37368280.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -23847441.0, converted: -23847441.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-23847441.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -55105618.0, converted: -55105618.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-55105618.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -18048578.0, converted: -18048578.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-18048578.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -44358120.0, converted: -44358120.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-44358120.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -42307054.0, converted: -42307054.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-42307054.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -44358120.0, converted: -44358120.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-44358120.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -35890994.0, converted: -35890994.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-35890994.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -61168244.0, converted: -61168244.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-61168244.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -14345077.0, converted: -14345077.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-14345077.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -17414807.0, converted: -17414807.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-17414807.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -21481151.0, converted: -21481151.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-21481151.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -16025922.0, converted: -16025922.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-16025922.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -16901497.0, converted: -16901497.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-16901497.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -15563147.0, converted: -15563147.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-15563147.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -17283147.0, converted: -17283147.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-17283147.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -15367626.0, converted: -15367626.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-15367626.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -15367626.0, converted: -15367626.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-15367626.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -7308468.0, converted: -7308468.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-7308468.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -71597889.0, converted: -71597889.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-71597889.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -14750376.0, converted: -14750376.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-14750376.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -14293250.0, converted: -14293250.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-14293250.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -4247727.0, converted: -4247727.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-4247727.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -14968356.0, converted: -14968356.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-14968356.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -14293250.0, converted: -14293250.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-14293250.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -14293250.0, converted: -14293250.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-14293250.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -3659092.0, converted: -3659092.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-3659092.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -136400.0, converted: -136400.0
+Active entries count: 1
+  Entry: account=73209VN, amount=136400.0, nature_type=oper, is_manual_trigger=False
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-08 00:00:00, bank: 30
+Bank amount: -6664331.0, converted: -6664331.0
+Active entries count: 2
+  Entry: account=1500VN, amount=-5703791.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71102VN, amount=960540.0, nature_type=org, is_manual_trigger=False
+  -> MANUAL REVIEW required, amount=-6664331.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -16000000.0, converted: -16000000.0
+Active entries count: 1
+  Entry: account=1230VN, amount=16000000.0, nature_type=advance, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-16000000.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -9162400.0, converted: -9162400.0
+Active entries count: 2
+  Entry: account=72105VN, amount=4082000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=72105VN, amount=5080400.0, nature_type=edu, is_manual_trigger=False
+  -> MULTI-ROW mode: adding entry amounts by nature (preserve sign)
+    edu: 0.0 + 4082000.0 = 4082000.0
+    edu: 4082000.0 + 5080400.0 = 9162400.0
+  VALIDATION: sum of amounts = 9162400.0, expected (reverse of bank) = 9162400.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 9162400.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -1735000.0, converted: -1735000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=1735000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-1735000.0) = 1735000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 1735000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -3798000.0, converted: -3798000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=3798000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-3798000.0) = 3798000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 3798000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -265550.0, converted: -265550.0
+Active entries count: 1
+  Entry: account=73208VN, amount=265550.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-265550.0) = 265550.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 265550.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -7736000.0, converted: -7736000.0
+Active entries count: 1
+  Entry: account=73102VN, amount=7736000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-7736000.0) = 7736000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 7736000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -5872000.0, converted: -5872000.0
+Active entries count: 1
+  Entry: account=73205VN, amount=5872000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-5872000.0) = 5872000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 5872000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -480000.0, converted: -480000.0
+Active entries count: 1
+  Entry: account=73205VN, amount=480000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-480000.0) = 480000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 480000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -1013100.0, converted: -1013100.0
+Active entries count: 1
+  Entry: account=73208VN, amount=1013100.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-1013100.0) = 1013100.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 1013100.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -891000.0, converted: -891000.0
+Active entries count: 1
+  Entry: account=73208VN, amount=891000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-891000.0) = 891000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 891000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -126710.0, converted: -126710.0
+Active entries count: 1
+  Entry: account=73203VN, amount=126710.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-126710.0) = 126710.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 126710.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-16 00:00:00, bank: 30
+Bank amount: -431220000.0, converted: -431220000.0
+Active entries count: 1
+  Entry: account=1250VN, amount=431220000.0, nature_type=advance, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-431220000.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-16 00:00:00, bank: 30
+Bank amount: -142303.0, converted: -142303.0
+Active entries count: 1
+  Entry: account=73209VN, amount=142303.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-142303.0) = 142303.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 142303.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-16 00:00:00, bank: 30
+Bank amount: -349550000.0, converted: -349550000.0
+Active entries count: 1
+  Entry: account=1250VN, amount=349550000.0, nature_type=advance, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-349550000.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-16 00:00:00, bank: 30
+Bank amount: -115352.0, converted: -115352.0
+Active entries count: 1
+  Entry: account=73209VN, amount=115352.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-115352.0) = 115352.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 115352.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-16 00:00:00, bank: 30
+Bank amount: -501350000.0, converted: -501350000.0
+Active entries count: 1
+  Entry: account=1250VN, amount=501350000.0, nature_type=advance, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-501350000.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-16 00:00:00, bank: 30
+Bank amount: -220594.0, converted: -220594.0
+Active entries count: 1
+  Entry: account=73209VN, amount=220594.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-220594.0) = 220594.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 220594.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-18 00:00:00, bank: 30
+Bank amount: 842500.0, converted: 842500.0
+Active entries count: 1
+  Entry: account=1230VN, amount=-842500.0, nature_type=advance, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=842500.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-19 00:00:00, bank: 30
+Bank amount: -1187584.0, converted: -1187584.0
+Active entries count: 1
+  Entry: account=73205VN, amount=1187584.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-1187584.0) = 1187584.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 1187584.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-19 00:00:00, bank: 30
+Bank amount: -2.0, converted: -2.0
+Active entries count: 1
+  Entry: account=73205VN, amount=2.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-2.0) = 2.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 2.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-19 00:00:00, bank: 30
+Bank amount: -6000000.0, converted: -6000000.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-6000000.0, nature_type=payable, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-6000000.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -1050001.0, converted: -1050001.0
+Active entries count: 1
+  Entry: account=73102VN, amount=1050001.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-1050001.0) = 1050001.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 1050001.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -4527360.0, converted: -4527360.0
+Active entries count: 1
+  Entry: account=72102VN, amount=4527360.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-4527360.0) = 4527360.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 4527360.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -23625000.0, converted: -23625000.0
+Active entries count: 2
+  Entry: account=71209VN, amount=26250000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=2625000.0, nature_type=payable, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-23625000.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11603050.0, converted: -11603050.0
+Active entries count: 3
+  Entry: account=72105VN, amount=5672350.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=73102VN, amount=2242800.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=73205VN, amount=3687900.0, nature_type=oper, is_manual_trigger=False
+  -> MULTI-ROW mode: adding entry amounts by nature (preserve sign)
+    edu: 0.0 + 5672350.0 = 5672350.0
+    edu: 5672350.0 + 2242800.0 = 7915150.0
+    oper: 0.0 + 3687900.0 = 3687900.0
+  VALIDATION: sum of amounts = 11603050.0, expected (reverse of bank) = 11603050.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 7915150.0, 'oper': 3687900.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -5990000.0, converted: -5990000.0
+Active entries count: 2
+  Entry: account=72102VN, amount=4190000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=73103VN, amount=1800000.0, nature_type=edu, is_manual_trigger=False
+  -> MULTI-ROW mode: adding entry amounts by nature (preserve sign)
+    edu: 0.0 + 4190000.0 = 4190000.0
+    edu: 4190000.0 + 1800000.0 = 5990000.0
+  VALIDATION: sum of amounts = 5990000.0, expected (reverse of bank) = 5990000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 5990000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -4218400.0, converted: -4218400.0
+Active entries count: 2
+  Entry: account=73208VN, amount=369400.0, nature_type=oper, is_manual_trigger=False
+  Entry: account=72105VN, amount=3849000.0, nature_type=edu, is_manual_trigger=False
+  -> MULTI-ROW mode: adding entry amounts by nature (preserve sign)
+    oper: 0.0 + 369400.0 = 369400.0
+    edu: 0.0 + 3849000.0 = 3849000.0
+  VALIDATION: sum of amounts = 4218400.0, expected (reverse of bank) = 4218400.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 369400.0, 'edu': 3849000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -6178594.0, converted: -6178594.0
+Active entries count: 3
+  Entry: account=73205VN, amount=872050.0, nature_type=oper, is_manual_trigger=False
+  Entry: account=73208VN, amount=253170.0, nature_type=oper, is_manual_trigger=False
+  Entry: account=73205VN, amount=5053374.0, nature_type=oper, is_manual_trigger=False
+  -> MULTI-ROW mode: adding entry amounts by nature (preserve sign)
+    oper: 0.0 + 872050.0 = 872050.0
+    oper: 872050.0 + 253170.0 = 1125220.0
+    oper: 1125220.0 + 5053374.0 = 6178594.0
+  VALIDATION: sum of amounts = 6178594.0, expected (reverse of bank) = 6178594.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 6178594.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -365000.0, converted: -365000.0
+Active entries count: 1
+  Entry: account=73205VN, amount=365000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-365000.0) = 365000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 365000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -3037000.0, converted: -3037000.0
+Active entries count: 1
+  Entry: account=73102VN, amount=3037000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-3037000.0) = 3037000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 3037000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -826350.0, converted: -826350.0
+Active entries count: 1
+  Entry: account=73102VN, amount=826350.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-826350.0) = 826350.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 826350.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -15189000.0, converted: -15189000.0
+Active entries count: 1
+  Entry: account=72102VN, amount=15189000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-15189000.0) = 15189000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 15189000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -10074601.0, converted: -10074601.0
+Active entries count: 1
+  Entry: account=72102VN, amount=10074601.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-10074601.0) = 10074601.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 10074601.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -14980000.0, converted: -14980000.0
+Active entries count: 2
+  Entry: account=72102VN, amount=7040000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=72102VN, amount=7940000.0, nature_type=edu, is_manual_trigger=False
+  -> MULTI-ROW mode: adding entry amounts by nature (preserve sign)
+    edu: 0.0 + 7040000.0 = 7040000.0
+    edu: 7040000.0 + 7940000.0 = 14980000.0
+  VALIDATION: sum of amounts = 14980000.0, expected (reverse of bank) = 14980000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 14980000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -850000.0, converted: -850000.0
+Active entries count: 1
+  Entry: account=72102VN, amount=850000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-850000.0) = 850000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 850000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -583200.0, converted: -583200.0
+Active entries count: 1
+  Entry: account=72105VN, amount=583200.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-583200.0) = 583200.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 583200.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -13719780.0, converted: -13719780.0
+Active entries count: 2
+  Entry: account=73102VN, amount=13304600.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=73205VN, amount=415180.0, nature_type=oper, is_manual_trigger=False
+  -> MULTI-ROW mode: adding entry amounts by nature (preserve sign)
+    edu: 0.0 + 13304600.0 = 13304600.0
+    oper: 0.0 + 415180.0 = 415180.0
+  VALIDATION: sum of amounts = 13719780.0, expected (reverse of bank) = 13719780.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 13304600.0, 'oper': 415180.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -297000.0, converted: -297000.0
+Active entries count: 1
+  Entry: account=73205VN, amount=297000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-297000.0) = 297000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 297000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -4468621.0, converted: -4468621.0
+Active entries count: 3
+  Entry: account=73205VN, amount=3823200.0, nature_type=oper, is_manual_trigger=False
+  Entry: account=73205VN, amount=162000.0, nature_type=oper, is_manual_trigger=False
+  Entry: account=73208VN, amount=483421.0, nature_type=oper, is_manual_trigger=False
+  -> MULTI-ROW mode: adding entry amounts by nature (preserve sign)
+    oper: 0.0 + 3823200.0 = 3823200.0
+    oper: 3823200.0 + 162000.0 = 3985200.0
+    oper: 3985200.0 + 483421.0 = 4468621.0
+  VALIDATION: sum of amounts = 4468621.0, expected (reverse of bank) = 4468621.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 4468621.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -1980000.0, converted: -1980000.0
+Active entries count: 1
+  Entry: account=72102VN, amount=1980000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-1980000.0) = 1980000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 1980000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -2592000.0, converted: -2592000.0
+Active entries count: 1
+  Entry: account=72102VN, amount=2592000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-2592000.0) = 2592000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 2592000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -30590100.0, converted: -30590100.0
+Active entries count: 8
+  Entry: account=72102VN, amount=20240000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=72102VN, amount=13749000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=1230VN, amount=201100.0, nature_type=advance, is_manual_trigger=True
+  Entry: account=1500VN, amount=332000.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=1500VN, amount=990000.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=1500VN, amount=378000.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=1500VN, amount=940000.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=1230VN, amount=-960000.0, nature_type=advance, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-30590100.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -22250000.0, converted: -22250000.0
+Active entries count: 1
+  Entry: account=72102VN, amount=22250000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-22250000.0) = 22250000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 22250000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -8538200.0, converted: -8538200.0
+Active entries count: 1
+  Entry: account=72105VN, amount=8538200.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-8538200.0) = 8538200.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 8538200.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -5286000.0, converted: -5286000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=5286000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-5286000.0) = 5286000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 5286000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -2106000.0, converted: -2106000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=2106000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-2106000.0) = 2106000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 2106000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -48380000.0, converted: -48380000.0
+Active entries count: 1
+  Entry: account=73205VN, amount=48380000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-48380000.0) = 48380000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 48380000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -1296000.0, converted: -1296000.0
+Active entries count: 1
+  Entry: account=73205VN, amount=1296000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-1296000.0) = 1296000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 1296000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -5253880.0, converted: -5253880.0
+Active entries count: 1
+  Entry: account=72105VN, amount=5253880.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-5253880.0) = 5253880.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 5253880.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -5435000.0, converted: -5435000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=5435000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-5435000.0) = 5435000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 5435000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -5184000.0, converted: -5184000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=5184000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-5184000.0) = 5184000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 5184000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -1728000.0, converted: -1728000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=1728000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-1728000.0) = 1728000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 1728000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -672000.0, converted: -672000.0
+Active entries count: 1
+  Entry: account=73102VN, amount=672000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-672000.0) = 672000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 672000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -4250000.0, converted: -4250000.0
+Active entries count: 1
+  Entry: account=73205VN, amount=4250000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-4250000.0) = 4250000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 4250000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -7583200.0, converted: -7583200.0
+Active entries count: 1
+  Entry: account=1250VN, amount=7583200.0, nature_type=advance, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-7583200.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -17284000.0, converted: -17284000.0
+Active entries count: 1
+  Entry: account=1250VN, amount=17284000.0, nature_type=advance, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-17284000.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -3284000.0, converted: -3284000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=3284000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-3284000.0) = 3284000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 3284000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-25 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-29 00:00:00, bank: 30
+Bank amount: -235096633.0, converted: -235096633.0
+Active entries count: 1
+  Entry: account=1500VN, amount=-235096633.0, nature_type=payable, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-235096633.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-29 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -3923217.0, converted: -3923217.0
+Active entries count: 3
+  Entry: account=73208VN, amount=688217.0, nature_type=oper, is_manual_trigger=False
+  Entry: account=72105VN, amount=1617500.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=72105VN, amount=1617500.0, nature_type=edu, is_manual_trigger=False
+  -> MULTI-ROW mode: adding entry amounts by nature (preserve sign)
+    oper: 0.0 + 688217.0 = 688217.0
+    edu: 0.0 + 1617500.0 = 1617500.0
+    edu: 1617500.0 + 1617500.0 = 3235000.0
+  VALIDATION: sum of amounts = 3923217.0, expected (reverse of bank) = 3923217.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 688217.0, 'edu': 3235000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -750000.0, converted: -750000.0
+Active entries count: 1
+  Entry: account=72102VN, amount=750000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-750000.0) = 750000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 750000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -3902000.0, converted: -3902000.0
+Active entries count: 2
+  Entry: account=72105VN, amount=1951000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=72105VN, amount=1951000.0, nature_type=edu, is_manual_trigger=False
+  -> MULTI-ROW mode: adding entry amounts by nature (preserve sign)
+    edu: 0.0 + 1951000.0 = 1951000.0
+    edu: 1951000.0 + 1951000.0 = 3902000.0
+  VALIDATION: sum of amounts = 3902000.0, expected (reverse of bank) = 3902000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 3902000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -14755200.0, converted: -14755200.0
+Active entries count: 2
+  Entry: account=72105VN, amount=7377600.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=72105VN, amount=7377600.0, nature_type=edu, is_manual_trigger=False
+  -> MULTI-ROW mode: adding entry amounts by nature (preserve sign)
+    edu: 0.0 + 7377600.0 = 7377600.0
+    edu: 7377600.0 + 7377600.0 = 14755200.0
+  VALIDATION: sum of amounts = 14755200.0, expected (reverse of bank) = 14755200.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 14755200.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -3526182.0, converted: -3526182.0
+Active entries count: 1
+  Entry: account=73102VN, amount=3526182.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-3526182.0) = 3526182.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 3526182.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -622500.0, converted: -622500.0
+Active entries count: 1
+  Entry: account=73208VN, amount=622500.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-622500.0) = 622500.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 622500.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -190581.0, converted: -190581.0
+Active entries count: 1
+  Entry: account=73208VN, amount=190581.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-190581.0) = 190581.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 190581.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -10542000.0, converted: -10542000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=10542000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-10542000.0) = 10542000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 10542000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -4961640.0, converted: -4961640.0
+Active entries count: 1
+  Entry: account=72105VN, amount=4961640.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-4961640.0) = 4961640.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 4961640.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -36987960.0, converted: -36987960.0
+Active entries count: 2
+  Entry: account=73205VN, amount=51987960.0, nature_type=oper, is_manual_trigger=False
+  Entry: account=1250VN, amount=-15000000.0, nature_type=advance, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-36987960.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -17684994.0, converted: -17684994.0
+Active entries count: 2
+  Entry: account=71103VN, amount=19649993.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=1964999.0, nature_type=payable, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-17684994.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -960000.0, converted: -960000.0
+Active entries count: 1
+  Entry: account=73205VN, amount=960000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-960000.0) = 960000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 960000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -440000.0, converted: -440000.0
+Active entries count: 1
+  Entry: account=73208VN, amount=440000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-440000.0) = 440000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 440000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -49200000.0, converted: -49200000.0
+Active entries count: 2
+  Entry: account=1250VN, amount=41000000.0, nature_type=advance, is_manual_trigger=True
+  Entry: account=73203VN, amount=8200000.0, nature_type=edu, is_manual_trigger=False
+  -> MANUAL REVIEW required, amount=-49200000.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -7356000.0, converted: -7356000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=7356000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-7356000.0) = 7356000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 7356000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: 5520000.0, converted: 5520000.0
+Active entries count: 1
+  Entry: account=1230VN, amount=-5520000.0, nature_type=advance, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=5520000.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: 30000576.0, converted: 30000576.0
+Active entries count: 1
+  Entry: account=1230VN, amount=-30000576.0, nature_type=advance, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=30000576.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: 289551.0, converted: 289551.0
+Active entries count: 1
+  Entry: account=31002VN, amount=289551.0, nature_type=None, is_manual_trigger=False
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -36000000.0, converted: -36000000.0
+Active entries count: 12
+  Entry: account=73102VN, amount=40000000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=1500VN, amount=1000000.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=1500VN, amount=400000.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=1500VN, amount=400000.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=1500VN, amount=200000.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=1500VN, amount=600000.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=1500VN, amount=200000.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=1500VN, amount=200000.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=1500VN, amount=200000.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=1500VN, amount=200000.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=1500VN, amount=400000.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=1500VN, amount=200000.0, nature_type=payable, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-36000000.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -101200.0, converted: -101200.0
+Active entries count: 1
+  Entry: account=73209VN, amount=101200.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-101200.0) = 101200.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 101200.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -10979795.0, converted: -10979795.0
+Active entries count: 5
+  Entry: account=72105VN, amount=1057847.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=72102VN, amount=2260000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=72102VN, amount=3053948.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=72102VN, amount=3925000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=72105VN, amount=683000.0, nature_type=edu, is_manual_trigger=False
+  -> MULTI-ROW mode: adding entry amounts by nature (preserve sign)
+    edu: 0.0 + 1057847.0 = 1057847.0
+    edu: 1057847.0 + 2260000.0 = 3317847.0
+    edu: 3317847.0 + 3053948.0 = 6371795.0
+    edu: 6371795.0 + 3925000.0 = 10296795.0
+    edu: 10296795.0 + 683000.0 = 10979795.0
+  VALIDATION: sum of amounts = 10979795.0, expected (reverse of bank) = 10979795.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 10979795.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -35910000.0, converted: -35910000.0
+Active entries count: 1
+  Entry: account=73103VN, amount=35910000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-35910000.0) = 35910000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 35910000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -4239000.0, converted: -4239000.0
+Active entries count: 1
+  Entry: account=73203VN, amount=4239000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-4239000.0) = 4239000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 4239000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -24975000.0, converted: -24975000.0
+Active entries count: 2
+  Entry: account=71132VN, amount=27750000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=2775000.0, nature_type=payable, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-24975000.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -5676000.0, converted: -5676000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=5676000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-5676000.0) = 5676000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 5676000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -25914122.0, converted: -25914122.0
+Active entries count: 3
+  Entry: account=71132VN, amount=48000000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=4800000.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=1230VN, amount=-17285878.0, nature_type=advance, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-25914122.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -900000.0, converted: -900000.0
+Active entries count: 1
+  Entry: account=73102VN, amount=900000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-900000.0) = 900000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 900000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -12600000.0, converted: -12600000.0
+Active entries count: 2
+  Entry: account=71209VN, amount=14000000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=1400000.0, nature_type=payable, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-12600000.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11080256.0, converted: -11080256.0
+Active entries count: 2
+  Entry: account=73102VN, amount=11084000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=1230VN, amount=-3744.0, nature_type=advance, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-11080256.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -563600.0, converted: -563600.0
+Active entries count: 1
+  Entry: account=73103VN, amount=563600.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-563600.0) = 563600.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 563600.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -18563000.0, converted: -18563000.0
+Active entries count: 1
+  Entry: account=73102VN, amount=18563000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-18563000.0) = 18563000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 18563000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -1150000.0, converted: -1150000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=1150000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-1150000.0) = 1150000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 1150000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -664370.0, converted: -664370.0
+Active entries count: 1
+  Entry: account=73208VN, amount=664370.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-664370.0) = 664370.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 664370.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -828800.0, converted: -828800.0
+Active entries count: 2
+  Entry: account=1250VN, amount=-7583200.0, nature_type=advance, is_manual_trigger=True
+  Entry: account=72105VN, amount=8412000.0, nature_type=edu, is_manual_trigger=False
+  -> MANUAL REVIEW required, amount=-828800.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -5595000.0, converted: -5595000.0
+Active entries count: 1
+  Entry: account=72102VN, amount=5595000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-5595000.0) = 5595000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 5595000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -96557542.0, converted: -96557542.0
+Active entries count: 2
+  Entry: account=1250VN, amount=155409188.0, nature_type=advance, is_manual_trigger=True
+  Entry: account=1230VN, amount=-58851646.0, nature_type=advance, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-96557542.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -31864.0, converted: -31864.0
+Active entries count: 1
+  Entry: account=73209VN, amount=31864.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-31864.0) = 31864.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 31864.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -9000000.0, converted: -9000000.0
+Active entries count: 1
+  Entry: account=1230VN, amount=9000000.0, nature_type=advance, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-9000000.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -1566000.0, converted: -1566000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=1566000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-1566000.0) = 1566000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 1566000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -1750000.0, converted: -1750000.0
+Active entries count: 1
+  Entry: account=72102VN, amount=1750000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-1750000.0) = 1750000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 1750000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -2260000.0, converted: -2260000.0
+Active entries count: 2
+  Entry: account=72105VN, amount=2460000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=1500VN, amount=200000.0, nature_type=payable, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-2260000.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -2260000.0, converted: -2260000.0
+Active entries count: 2
+  Entry: account=72105VN, amount=2460000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=1500VN, amount=200000.0, nature_type=payable, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-2260000.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -1000000.0, converted: -1000000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=1000000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-1000000.0) = 1000000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 1000000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -1840000.0, converted: -1840000.0
+Active entries count: 1
+  Entry: account=72102VN, amount=1840000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-1840000.0) = 1840000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 1840000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -34650000.0, converted: -34650000.0
+Active entries count: 2
+  Entry: account=72102VN, amount=38500000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=1500VN, amount=3850000.0, nature_type=payable, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-34650000.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -14175000.0, converted: -14175000.0
+Active entries count: 2
+  Entry: account=72102VN, amount=15750000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=1500VN, amount=1575000.0, nature_type=payable, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-14175000.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -14550000.0, converted: -14550000.0
+Active entries count: 1
+  Entry: account=72102VN, amount=14550000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-14550000.0) = 14550000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 14550000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11025000.0, converted: -11025000.0
+Active entries count: 2
+  Entry: account=72102VN, amount=12250000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=1500VN, amount=1225000.0, nature_type=payable, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-11025000.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -6998400.0, converted: -6998400.0
+Active entries count: 2
+  Entry: account=73205VN, amount=3499200.0, nature_type=oper, is_manual_trigger=False
+  Entry: account=73102VN, amount=3499200.0, nature_type=edu, is_manual_trigger=False
+  -> MULTI-ROW mode: adding entry amounts by nature (preserve sign)
+    oper: 0.0 + 3499200.0 = 3499200.0
+    edu: 0.0 + 3499200.0 = 3499200.0
+  VALIDATION: sum of amounts = 6998400.0, expected (reverse of bank) = 6998400.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 3499200.0, 'edu': 3499200.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -12658000.0, converted: -12658000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=12658000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-12658000.0) = 12658000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 12658000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -8383499.0, converted: -8383499.0
+Active entries count: 1
+  Entry: account=72105VN, amount=8383499.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-8383499.0) = 8383499.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 8383499.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -10281068.0, converted: -10281068.0
+Active entries count: 2
+  Entry: account=72105VN, amount=11423409.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=1500VN, amount=1142341.0, nature_type=payable, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-10281068.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -4431990.0, converted: -4431990.0
+Active entries count: 5
+  Entry: account=1250VN, amount=-53960000.0, nature_type=advance, is_manual_trigger=True
+  Entry: account=72105VN, amount=3116000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=72105VN, amount=18030000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=72105VN, amount=28970284.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=72105VN, amount=8275706.0, nature_type=edu, is_manual_trigger=False
+  -> MANUAL REVIEW required, amount=-4431990.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -20911800.0, converted: -20911800.0
+Active entries count: 4
+  Entry: account=72102VN, amount=5152800.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=72102VN, amount=17710000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=1500VN, amount=1338000.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=1500VN, amount=613000.0, nature_type=payable, is_manual_trigger=True
+  -> MANUAL REVIEW required, amount=-20911800.0
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -6113300.0, converted: -6113300.0
+Active entries count: 1
+  Entry: account=72105VN, amount=6113300.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-6113300.0) = 6113300.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 6113300.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -34445000.0, converted: -34445000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=34445000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-34445000.0) = 34445000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 34445000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -2928000.0, converted: -2928000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=2928000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-2928000.0) = 2928000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 2928000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -1512000.0, converted: -1512000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=1512000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-1512000.0) = 1512000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 1512000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11000.0, converted: -11000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -9030000.0, converted: -9030000.0
+Active entries count: 1
+  Entry: account=72105VN, amount=9030000.0, nature_type=edu, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: edu = abs(-9030000.0) = 9030000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'edu': 9030000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -22000.0, converted: -22000.0
+Active entries count: 1
+  Entry: account=73209VN, amount=22000.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-22000.0) = 22000.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 22000.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -140800.0, converted: -140800.0
+Active entries count: 1
+  Entry: account=73209VN, amount=140800.0, nature_type=oper, is_manual_trigger=False
+  -> SINGLE-ENTRY mode: oper = abs(-140800.0) = 140800.0
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 140800.0}}
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -228862088.0, converted: -228862088.0
+Active entries count: 5
+  Entry: account=71202VN, amount=204971712.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71202VN, amount=6285600.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71202VN, amount=136647808.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71202VN, amount=4190400.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=123233432.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -42281523.0, converted: -42281523.0
+Active entries count: 9
+  Entry: account=71401VN, amount=32748155.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71409VN, amount=-2546474.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71401VN, amount=32748155.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71409VN, amount=-2546474.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=18121839.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71409VN, amount=5092948.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71409VN, amount=5120474.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71409VN, amount=5120474.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=15333896.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -45901717.0, converted: -45901717.0
+Active entries count: 6
+  Entry: account=71105VN, amount=73050550.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71119VN, amount=-5167566.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=21981267.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71119VN, amount=5167566.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71119VN, amount=10315566.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=15483132.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -38262451.0, converted: -38262451.0
+Active entries count: 9
+  Entry: account=71301VN, amount=19475775.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71399VN, amount=-1659554.49, nature_type=org, is_manual_trigger=False
+  Entry: account=71301VN, amount=39541725.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71399VN, amount=-3369398.51, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=15726096.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71399VN, amount=5028953.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71399VN, amount=3358394.49, nature_type=org, is_manual_trigger=False
+  Entry: account=71399VN, amount=6818558.51, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=15205906.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -29939735.0, converted: -29939735.0
+Active entries count: 9
+  Entry: account=71204VN, amount=14585191.5, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=-1512703.5, nature_type=org, is_manual_trigger=False
+  Entry: account=71204VN, amount=29612358.5, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=-3071246.5, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=9673865.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71219VN, amount=4583950.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=3097440.39, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=6288742.61, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=13970133.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -19960822.0, converted: -19960822.0
+Active entries count: 6
+  Entry: account=71121VN, amount=28092330.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=-2913596.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=5217912.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71139VN, amount=2913596.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=5965935.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=8879531.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -42244681.0, converted: -42244681.0
+Active entries count: 6
+  Entry: account=71101VN, amount=64630720.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=-5084398.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=17301641.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71139VN, amount=5084398.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=10232398.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=15316796.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -15751305.0, converted: -15751305.0
+Active entries count: 6
+  Entry: account=71121VN, amount=20249560.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=-2100183.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=2398072.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71139VN, amount=2100183.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=4300375.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=6400558.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -35395021.0, converted: -35395021.0
+Active entries count: 9
+  Entry: account=71206VN, amount=43646720.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=-3987925.6, nature_type=org, is_manual_trigger=False
+  Entry: account=71206VN, amount=10911680.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=-996981.4, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=14178472.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71219VN, amount=4984907.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=8106325.6, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=2026581.4, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=15117814.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -33853631.0, converted: -33853631.0
+Active entries count: 6
+  Entry: account=71208VN, amount=51830480.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=-4957962.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=13018887.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71219VN, amount=4957962.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=10105962.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=15063924.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -35395021.0, converted: -35395021.0
+Active entries count: 6
+  Entry: account=71208VN, amount=54558400.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=-4984907.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=14178472.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71219VN, amount=4984907.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=10132907.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=15117814.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -29271246.0, converted: -29271246.0
+Active entries count: 9
+  Entry: account=71205VN, amount=22295500.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=-2312378.5, nature_type=org, is_manual_trigger=False
+  Entry: account=71205VN, amount=22295500.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=-2312378.5, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=10694997.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71219VN, amount=4624757.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=4734870.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=4734870.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=14094497.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -47329616.0, converted: -47329616.0
+Active entries count: 9
+  Entry: account=71401VN, amount=37836775.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71409VN, amount=-2596737.5, nature_type=org, is_manual_trigger=False
+  Entry: account=71401VN, amount=37836775.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71409VN, amount=-2596737.5, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=23150459.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71409VN, amount=5193475.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71409VN, amount=5170737.5, nature_type=org, is_manual_trigger=False
+  Entry: account=71409VN, amount=5170737.5, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=15534950.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -25903126.0, converted: -25903126.0
+Active entries count: 8
+  Entry: account=71132VN, amount=27695200.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71132VN, amount=2790000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=72102VN, amount=360000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=71139VN, amount=-1307523.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=3634551.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71139VN, amount=1307523.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=2677309.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=3984832.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -31428164.0, converted: -31428164.0
+Active entries count: 8
+  Entry: account=71132VN, amount=34443200.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71132VN, amount=2790000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=72102VN, amount=540000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=71139VN, amount=-1661793.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=4683243.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71139VN, amount=1661793.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=3402719.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=5064512.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -36827182.0, converted: -36827182.0
+Active entries count: 8
+  Entry: account=71132VN, amount=43517200.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71132VN, amount=2790000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=72102VN, amount=440000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=71139VN, amount=-2138178.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=7781840.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71139VN, amount=2138178.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=4378174.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=6516352.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -29256433.0, converted: -29256433.0
+Active entries count: 8
+  Entry: account=71132VN, amount=31317200.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71132VN, amount=2790000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=72102VN, amount=440000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=71139VN, amount=-1497678.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=3793089.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71139VN, amount=1497678.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=3066674.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=4564352.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -22684398.0, converted: -22684398.0
+Active entries count: 8
+  Entry: account=71132VN, amount=24693475.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71132VN, amount=2790000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=72102VN, amount=1100000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=71139VN, amount=-1653603.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=4245474.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71139VN, amount=1653603.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=3385949.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=5039552.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -18908965.0, converted: -18908965.0
+Active entries count: 4
+  Entry: account=71132VN, amount=19664834.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71132VN, amount=1141364.0, nature_type=org, is_manual_trigger=False
+  Entry: account=72102VN, amount=350000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=1500VN, amount=2247233.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -29118768.0, converted: -29118768.0
+Active entries count: 8
+  Entry: account=71132VN, amount=28227200.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71132VN, amount=2790000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=72102VN, amount=3390000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=71139VN, amount=-1335453.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=3952979.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71139VN, amount=1335453.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=2734499.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=4069952.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -27151457.0, converted: -27151457.0
+Active entries count: 7
+  Entry: account=71132VN, amount=31317200.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71132VN, amount=2790000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=-1497678.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=5458065.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71139VN, amount=1497678.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=3066674.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=4564352.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -26746434.0, converted: -26746434.0
+Active entries count: 7
+  Entry: account=71132VN, amount=30777169.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71132VN, amount=2790000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=-1497678.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=5323057.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71139VN, amount=1497678.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=3066674.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=4564352.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -7294563.0, converted: -7294563.0
+Active entries count: 2
+  Entry: account=71302VN, amount=8105070.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=810507.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -57979262.0, converted: -57979262.0
+Active entries count: 3
+  Entry: account=71201VN, amount=78690000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71201VN, amount=10371270.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=31082008.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -24175739.0, converted: -24175739.0
+Active entries count: 8
+  Entry: account=71132VN, amount=25211900.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71132VN, amount=2790000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=72102VN, amount=1510000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=71139VN, amount=-1182678.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=4153483.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71139VN, amount=1182678.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=2421674.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=3604352.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -17163416.0, converted: -17163416.0
+Active entries count: 7
+  Entry: account=71132VN, amount=18263333.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71132VN, amount=2790000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=-1365000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=2524917.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71139VN, amount=1365000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=2795000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=4160000.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -4475000.0, converted: -4475000.0
+Active entries count: 5
+  Entry: account=71204VN, amount=5000000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=-525000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=525000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=1075000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=1600000.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -20927138.0, converted: -20927138.0
+Active entries count: 8
+  Entry: account=71132VN, amount=20996117.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71132VN, amount=2790000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=72102VN, amount=1830000.0, nature_type=edu, is_manual_trigger=False
+  Entry: account=71139VN, amount=-1304625.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=3384354.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71139VN, amount=1304625.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=2671375.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=3976000.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -15963376.0, converted: -15963376.0
+Active entries count: 7
+  Entry: account=71132VN, amount=16763283.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71132VN, amount=2790000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=-1365000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=2224907.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71139VN, amount=1365000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=2795000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=4160000.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -15963376.0, converted: -15963376.0
+Active entries count: 7
+  Entry: account=71132VN, amount=16763283.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71132VN, amount=2790000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=-1365000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=2224907.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71139VN, amount=1365000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=2795000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=4160000.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -14070727.0, converted: -14070727.0
+Active entries count: 7
+  Entry: account=71132VN, amount=13000000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71132VN, amount=2790000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=-1365000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=354273.0, nature_type=payable, is_manual_trigger=True
+  Entry: account=71139VN, amount=1365000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71139VN, amount=2795000.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=4160000.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG _process_group (NatureMapper) ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -7868384.0, converted: -7868384.0
+Active entries count: 5
+  Entry: account=71122VN, amount=9636674.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=-1768290.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=1768290.0, nature_type=org, is_manual_trigger=False
+  Entry: account=71219VN, amount=3620784.0, nature_type=org, is_manual_trigger=False
+  Entry: account=1500VN, amount=5389074.0, nature_type=payable, is_manual_trigger=True
+  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
+
+=== DEBUG: nature_totals AFTER nature_mapper.process_groups ===
+VND totals: {'edu': 400922868.0, 'oper': 88718912.0, 'manual': 4357217468.0}
+USD totals: {'oper': 1.0999962050776062}
+Manual groups count: 98
+
+=== DEBUG: After mark_processed_groups ===
+Total processed groups: 205
+
+=== DEBUG: Loading Staff_&_Allocation.xlsx ===
+  Shape: (42, 11)
+  Province columns: {2: 'vnelc', 3: 'vndn', 4: 'vnqn', 5: 'vnhd', 6: 'vnqng', 7: 'vnhcm', 8: 'vnla', 9: 'vnbn', 10: 'vnmoet'}
+  Loaded 40 staff entries
+  Loaded 40 allocation entries
+
+=== DEBUG: process_manual_groups ===
+Total manual groups to process: 98
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -233777511.0, converted: -233777511.0
+Active entries: 1
+  Entry: account=1500VN, amount=-233777511.0, nature=payable
+  -> SINGLE PAYABLE: 233777511.0
+  Final result: {'processed': True, 'amounts': {'payable': 233777511.0}}
+  [0] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 233777511.0}
+  [0] ADD payable: 0.0 + 233777511.0 = 233777511.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [1] SALARY/BONUS memo but staff not found: name=Hien Thi Hien Vo
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -133287384.0, converted: -133287384.0
+Active entries: 1
+  Entry: account=1500VN, amount=-133287384.0, nature=payable
+  -> SINGLE PAYABLE: 133287384.0
+  Final result: {'processed': True, 'amounts': {'payable': 133287384.0}}
+  [1] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 133287384.0}
+  [1] ADD payable: 233777511.0 + 133287384.0 = 367064895.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [2] SALARY/BONUS memo but staff not found: name=Thuy Thi Bich Thuy Tran
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -49904969.0, converted: -49904969.0
+Active entries: 1
+  Entry: account=1500VN, amount=-49904969.0, nature=payable
+  -> SINGLE PAYABLE: 49904969.0
+  Final result: {'processed': True, 'amounts': {'payable': 49904969.0}}
+  [2] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 49904969.0}
+  [2] ADD payable: 367064895.0 + 49904969.0 = 416969864.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [3] SALARY/BONUS memo but staff not found: name=Tran Thi Que Chi
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -59216675.0, converted: -59216675.0
+Active entries: 1
+  Entry: account=1500VN, amount=-59216675.0, nature=payable
+  -> SINGLE PAYABLE: 59216675.0
+  Final result: {'processed': True, 'amounts': {'payable': 59216675.0}}
+  [3] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 59216675.0}
+  [3] ADD payable: 416969864.0 + 59216675.0 = 476186539.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [4] SALARY/BONUS memo but staff not found: name=Maggie Huyen Nguyen
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -48775785.0, converted: -48775785.0
+Active entries: 1
+  Entry: account=1500VN, amount=-48775785.0, nature=payable
+  -> SINGLE PAYABLE: 48775785.0
+  Final result: {'processed': True, 'amounts': {'payable': 48775785.0}}
+  [4] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 48775785.0}
+  [4] ADD payable: 476186539.0 + 48775785.0 = 524962324.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [5] SALARY/BONUS memo but staff not found: name=Nguyen Hong Kim
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -37368280.0, converted: -37368280.0
+Active entries: 1
+  Entry: account=1500VN, amount=-37368280.0, nature=payable
+  -> SINGLE PAYABLE: 37368280.0
+  Final result: {'processed': True, 'amounts': {'payable': 37368280.0}}
+  [5] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 37368280.0}
+  [5] ADD payable: 524962324.0 + 37368280.0 = 562330604.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [6] SALARY/BONUS memo but staff not found: name=Hoang Thi Kieu Oanh
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -23847441.0, converted: -23847441.0
+Active entries: 1
+  Entry: account=1500VN, amount=-23847441.0, nature=payable
+  -> SINGLE PAYABLE: 23847441.0
+  Final result: {'processed': True, 'amounts': {'payable': 23847441.0}}
+  [6] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 23847441.0}
+  [6] ADD payable: 562330604.0 + 23847441.0 = 586178045.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [7] SALARY/BONUS memo but staff not found: name=Pham Thi  Dieu Loan
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -55105618.0, converted: -55105618.0
+Active entries: 1
+  Entry: account=1500VN, amount=-55105618.0, nature=payable
+  -> SINGLE PAYABLE: 55105618.0
+  Final result: {'processed': True, 'amounts': {'payable': 55105618.0}}
+  [7] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 55105618.0}
+  [7] ADD payable: 586178045.0 + 55105618.0 = 641283663.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [8] SALARY/BONUS memo but staff not found: name=Phan Doan Kim Nhung
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -18048578.0, converted: -18048578.0
+Active entries: 1
+  Entry: account=1500VN, amount=-18048578.0, nature=payable
+  -> SINGLE PAYABLE: 18048578.0
+  Final result: {'processed': True, 'amounts': {'payable': 18048578.0}}
+  [8] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 18048578.0}
+  [8] ADD payable: 641283663.0 + 18048578.0 = 659332241.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [9] SALARY/BONUS memo but staff not found: name=Truong Thi Hai
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -44358120.0, converted: -44358120.0
+Active entries: 1
+  Entry: account=1500VN, amount=-44358120.0, nature=payable
+  -> SINGLE PAYABLE: 44358120.0
+  Final result: {'processed': True, 'amounts': {'payable': 44358120.0}}
+  [9] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 44358120.0}
+  [9] ADD payable: 659332241.0 + 44358120.0 = 703690361.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [10] SALARY/BONUS memo but staff not found: name=Bui Thi Huong
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -42307054.0, converted: -42307054.0
+Active entries: 1
+  Entry: account=1500VN, amount=-42307054.0, nature=payable
+  -> SINGLE PAYABLE: 42307054.0
+  Final result: {'processed': True, 'amounts': {'payable': 42307054.0}}
+  [10] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 42307054.0}
+  [10] ADD payable: 703690361.0 + 42307054.0 = 745997415.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [11] SALARY/BONUS memo but staff not found: name=Huynh My Ngoc
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -44358120.0, converted: -44358120.0
+Active entries: 1
+  Entry: account=1500VN, amount=-44358120.0, nature=payable
+  -> SINGLE PAYABLE: 44358120.0
+  Final result: {'processed': True, 'amounts': {'payable': 44358120.0}}
+  [11] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 44358120.0}
+  [11] ADD payable: 745997415.0 + 44358120.0 = 790355535.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [12] SALARY/BONUS memo but staff not found: name=Nguyen Thi Thanh Thanh
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -35890994.0, converted: -35890994.0
+Active entries: 1
+  Entry: account=1500VN, amount=-35890994.0, nature=payable
+  -> SINGLE PAYABLE: 35890994.0
+  Final result: {'processed': True, 'amounts': {'payable': 35890994.0}}
+  [12] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 35890994.0}
+  [12] ADD payable: 790355535.0 + 35890994.0 = 826246529.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [13] SALARY/BONUS memo but staff not found: name=Phan Thi Thao Nguyen
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -61168244.0, converted: -61168244.0
+Active entries: 1
+  Entry: account=1500VN, amount=-61168244.0, nature=payable
+  -> SINGLE PAYABLE: 61168244.0
+  Final result: {'processed': True, 'amounts': {'payable': 61168244.0}}
+  [13] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 61168244.0}
+  [13] ADD payable: 826246529.0 + 61168244.0 = 887414773.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [14] SALARY/BONUS memo but staff not found: name=Mai Thi Kim Hang
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -14345077.0, converted: -14345077.0
+Active entries: 1
+  Entry: account=1500VN, amount=-14345077.0, nature=payable
+  -> SINGLE PAYABLE: 14345077.0
+  Final result: {'processed': True, 'amounts': {'payable': 14345077.0}}
+  [14] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 14345077.0}
+  [14] ADD payable: 887414773.0 + 14345077.0 = 901759850.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [15] SALARY/BONUS memo but staff not found: name=Pham Thi Huyen
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -17414807.0, converted: -17414807.0
+Active entries: 1
+  Entry: account=1500VN, amount=-17414807.0, nature=payable
+  -> SINGLE PAYABLE: 17414807.0
+  Final result: {'processed': True, 'amounts': {'payable': 17414807.0}}
+  [15] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 17414807.0}
+  [15] ADD payable: 901759850.0 + 17414807.0 = 919174657.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [16] SALARY/BONUS memo but staff not found: name=Vo Thi Quynh Thi
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -21481151.0, converted: -21481151.0
+Active entries: 1
+  Entry: account=1500VN, amount=-21481151.0, nature=payable
+  -> SINGLE PAYABLE: 21481151.0
+  Final result: {'processed': True, 'amounts': {'payable': 21481151.0}}
+  [16] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 21481151.0}
+  [16] ADD payable: 919174657.0 + 21481151.0 = 940655808.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [17] SALARY/BONUS memo but staff not found: name=Nguyen Thi Tram Anh
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -16025922.0, converted: -16025922.0
+Active entries: 1
+  Entry: account=1500VN, amount=-16025922.0, nature=payable
+  -> SINGLE PAYABLE: 16025922.0
+  Final result: {'processed': True, 'amounts': {'payable': 16025922.0}}
+  [17] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 16025922.0}
+  [17] ADD payable: 940655808.0 + 16025922.0 = 956681730.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [18] SALARY/BONUS memo but staff not found: name=Ho Thi Mong Thu
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -16901497.0, converted: -16901497.0
+Active entries: 1
+  Entry: account=1500VN, amount=-16901497.0, nature=payable
+  -> SINGLE PAYABLE: 16901497.0
+  Final result: {'processed': True, 'amounts': {'payable': 16901497.0}}
+  [18] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 16901497.0}
+  [18] ADD payable: 956681730.0 + 16901497.0 = 973583227.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [19] SALARY/BONUS memo but staff not found: name=Truong Thi Diem Phuong
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -15563147.0, converted: -15563147.0
+Active entries: 1
+  Entry: account=1500VN, amount=-15563147.0, nature=payable
+  -> SINGLE PAYABLE: 15563147.0
+  Final result: {'processed': True, 'amounts': {'payable': 15563147.0}}
+  [19] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 15563147.0}
+  [19] ADD payable: 973583227.0 + 15563147.0 = 989146374.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [20] SALARY/BONUS memo but staff not found: name=Vu Thi Thu Thuy
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -17283147.0, converted: -17283147.0
+Active entries: 1
+  Entry: account=1500VN, amount=-17283147.0, nature=payable
+  -> SINGLE PAYABLE: 17283147.0
+  Final result: {'processed': True, 'amounts': {'payable': 17283147.0}}
+  [20] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 17283147.0}
+  [20] ADD payable: 989146374.0 + 17283147.0 = 1006429521.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [21] SALARY/BONUS memo but staff not found: name=Nguyen Thi Nhung
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -15367626.0, converted: -15367626.0
+Active entries: 1
+  Entry: account=1500VN, amount=-15367626.0, nature=payable
+  -> SINGLE PAYABLE: 15367626.0
+  Final result: {'processed': True, 'amounts': {'payable': 15367626.0}}
+  [21] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 15367626.0}
+  [21] ADD payable: 1006429521.0 + 15367626.0 = 1021797147.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [22] SALARY/BONUS memo but staff not found: name=Mai Anh Thu
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -15367626.0, converted: -15367626.0
+Active entries: 1
+  Entry: account=1500VN, amount=-15367626.0, nature=payable
+  -> SINGLE PAYABLE: 15367626.0
+  Final result: {'processed': True, 'amounts': {'payable': 15367626.0}}
+  [22] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 15367626.0}
+  [22] ADD payable: 1021797147.0 + 15367626.0 = 1037164773.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [23] SALARY/BONUS memo but staff not found: name=Dang Thanh Canh
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -7308468.0, converted: -7308468.0
+Active entries: 1
+  Entry: account=1500VN, amount=-7308468.0, nature=payable
+  -> SINGLE PAYABLE: 7308468.0
+  Final result: {'processed': True, 'amounts': {'payable': 7308468.0}}
+  [23] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 7308468.0}
+  [23] ADD payable: 1037164773.0 + 7308468.0 = 1044473241.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [24] SALARY/BONUS memo but staff not found: name=Le Thi Thu Hanh
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -71597889.0, converted: -71597889.0
+Active entries: 1
+  Entry: account=1500VN, amount=-71597889.0, nature=payable
+  -> SINGLE PAYABLE: 71597889.0
+  Final result: {'processed': True, 'amounts': {'payable': 71597889.0}}
+  [24] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 71597889.0}
+  [24] ADD payable: 1044473241.0 + 71597889.0 = 1116071130.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [25] SALARY/BONUS memo but staff not found: name=Nguyen Thi Thuy Na
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -14750376.0, converted: -14750376.0
+Active entries: 1
+  Entry: account=1500VN, amount=-14750376.0, nature=payable
+  -> SINGLE PAYABLE: 14750376.0
+  Final result: {'processed': True, 'amounts': {'payable': 14750376.0}}
+  [25] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 14750376.0}
+  [25] ADD payable: 1116071130.0 + 14750376.0 = 1130821506.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [26] SALARY/BONUS memo but staff not found: name=Nguyen Thi Thuy Van
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -14293250.0, converted: -14293250.0
+Active entries: 1
+  Entry: account=1500VN, amount=-14293250.0, nature=payable
+  -> SINGLE PAYABLE: 14293250.0
+  Final result: {'processed': True, 'amounts': {'payable': 14293250.0}}
+  [26] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 14293250.0}
+  [26] ADD payable: 1130821506.0 + 14293250.0 = 1145114756.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [27] SALARY/BONUS memo but staff not found: name=Nguyen Thi Hai
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -4247727.0, converted: -4247727.0
+Active entries: 1
+  Entry: account=1500VN, amount=-4247727.0, nature=payable
+  -> SINGLE PAYABLE: 4247727.0
+  Final result: {'processed': True, 'amounts': {'payable': 4247727.0}}
+  [27] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 4247727.0}
+  [27] ADD payable: 1145114756.0 + 4247727.0 = 1149362483.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [28] SALARY/BONUS memo but staff not found: name=Phạm Thị Nhị Ca
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -14968356.0, converted: -14968356.0
+Active entries: 1
+  Entry: account=1500VN, amount=-14968356.0, nature=payable
+  -> SINGLE PAYABLE: 14968356.0
+  Final result: {'processed': True, 'amounts': {'payable': 14968356.0}}
+  [28] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 14968356.0}
+  [28] ADD payable: 1149362483.0 + 14968356.0 = 1164330839.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [29] SALARY/BONUS memo but staff not found: name=Mai Thi Mong Tuyen
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -14293250.0, converted: -14293250.0
+Active entries: 1
+  Entry: account=1500VN, amount=-14293250.0, nature=payable
+  -> SINGLE PAYABLE: 14293250.0
+  Final result: {'processed': True, 'amounts': {'payable': 14293250.0}}
+  [29] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 14293250.0}
+  [29] ADD payable: 1164330839.0 + 14293250.0 = 1178624089.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [30] SALARY/BONUS memo but staff not found: name=Nguyen Dang Hai Sam
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -14293250.0, converted: -14293250.0
+Active entries: 1
+  Entry: account=1500VN, amount=-14293250.0, nature=payable
+  -> SINGLE PAYABLE: 14293250.0
+  Final result: {'processed': True, 'amounts': {'payable': 14293250.0}}
+  [30] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 14293250.0}
+  [30] ADD payable: 1178624089.0 + 14293250.0 = 1192917339.0
+  -> SALARY/BONUS: all entries are 1500, skipping to payable processing
+  [31] SALARY/BONUS memo but staff not found: name=Nguyen Thi Huong
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -3659092.0, converted: -3659092.0
+Active entries: 1
+  Entry: account=1500VN, amount=-3659092.0, nature=payable
+  -> SINGLE PAYABLE: 3659092.0
+  Final result: {'processed': True, 'amounts': {'payable': 3659092.0}}
+  [31] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 3659092.0}
+  [31] ADD payable: 1192917339.0 + 3659092.0 = 1196576431.0
+  [32] SKIP (already processed): date=2025-12-02 00:00:00, section=ReportSection.NATURE
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-08 00:00:00, bank: 30
+Bank amount: -6664331.0, converted: -6664331.0
+Active entries: 2
+  Entry: account=1500VN, amount=-5703791.0, nature=payable
+  Entry: account=71102VN, amount=960540.0, nature=org
+  -> OTHER entry: org += 960540.0
+  -> PAYABLE (negative) entry: payable += abs(-5703791.0)
+  Final result: {'processed': True, 'amounts': {'org': 960540.0, 'payable': 5703791.0}}
+  [33] ACCOUNT NATURE: date=2025-12-08 00:00:00, result={'org': 960540.0, 'payable': 5703791.0}
+  [33] ADD org: 0.0 + 960540.0 = 960540.0
+  [33] ADD payable: 1196576431.0 + 5703791.0 = 1202280222.0
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-12 00:00:00, bank: 30
+Bank amount: -16000000.0, converted: -16000000.0
+Active entries: 1
+  Entry: account=1230VN, amount=16000000.0, nature=advance
+  -> SINGLE ADVANCE: 16000000.0
+  Final result: {'processed': True, 'amounts': {'advance': 16000000.0}}
+  [34] ACCOUNT NATURE: date=2025-12-12 00:00:00, result={'advance': 16000000.0}
+  [34] ADD advance: 0.0 + 16000000.0 = 16000000.0
+  [35] SKIP (already processed): date=2025-12-16 00:00:00, section=ReportSection.ADVANCE_SETTLEMENT
+  [36] SKIP (already processed): date=2025-12-16 00:00:00, section=ReportSection.ADVANCE_SETTLEMENT
+  [37] SKIP (already processed): date=2025-12-16 00:00:00, section=ReportSection.ADVANCE_SETTLEMENT
+  [38] SKIP (already processed): date=2025-12-18 00:00:00, section=ReportSection.INCOME
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-19 00:00:00, bank: 30
+Bank amount: -6000000.0, converted: -6000000.0
+Active entries: 1
+  Entry: account=1500VN, amount=-6000000.0, nature=payable
+  -> SINGLE PAYABLE: 6000000.0
+  Final result: {'processed': True, 'amounts': {'payable': 6000000.0}}
+  [39] ACCOUNT NATURE: date=2025-12-19 00:00:00, result={'payable': 6000000.0}
+  [39] ADD payable: 1202280222.0 + 6000000.0 = 1208280222.0
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -23625000.0, converted: -23625000.0
+Active entries: 2
+  Entry: account=71209VN, amount=26250000.0, nature=org
+  Entry: account=1500VN, amount=2625000.0, nature=payable
+  -> OTHER entry: org += 26250000.0
+  -> PAYABLE (positive) entry: payable -= 2625000.0
+  Final result: {'processed': True, 'amounts': {'org': 26250000.0, 'payable': -2625000.0}}
+  [40] ACCOUNT NATURE: date=2025-12-22 00:00:00, result={'org': 26250000.0, 'payable': -2625000.0}
+  [40] ADD org: 960540.0 + 26250000.0 = 27210540.0
+  [40] ADD payable: 1208280222.0 + -2625000.0 = 1205655222.0
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-22 00:00:00, bank: 30
+Bank amount: -30590100.0, converted: -30590100.0
+Active entries: 8
+  Entry: account=72102VN, amount=20240000.0, nature=edu
+  Entry: account=72102VN, amount=13749000.0, nature=edu
+  Entry: account=1230VN, amount=201100.0, nature=advance
+  Entry: account=1500VN, amount=332000.0, nature=payable
+  Entry: account=1500VN, amount=990000.0, nature=payable
+  Entry: account=1500VN, amount=378000.0, nature=payable
+  Entry: account=1500VN, amount=940000.0, nature=payable
+  Entry: account=1230VN, amount=-960000.0, nature=advance
+  -> OTHER entry: edu += 20240000.0
+  -> OTHER entry: edu += 13749000.0
+  -> ADVANCE entry: advance += abs(201100.0)
+  -> ADVANCE entry: advance += abs(-960000.0)
+  -> PAYABLE (positive) entry: payable -= 332000.0
+  -> PAYABLE (positive) entry: payable -= 990000.0
+  -> PAYABLE (positive) entry: payable -= 378000.0
+  -> PAYABLE (positive) entry: payable -= 940000.0
+  Final result: {'processed': True, 'amounts': {'edu': 33989000.0, 'advance': 1161100.0, 'payable': -2640000.0}}
+  [41] ACCOUNT NATURE: date=2025-12-22 00:00:00, result={'edu': 33989000.0, 'advance': 1161100.0, 'payable': -2640000.0}
+  [41] ADD edu: 0.0 + 33989000.0 = 33989000.0
+  [41] ADD advance: 16000000.0 + 1161100.0 = 17161100.0
+  [41] ADD payable: 1205655222.0 + -2640000.0 = 1203015222.0
+  [42] SKIP (already processed): date=2025-12-22 00:00:00, section=ReportSection.ADVANCE_SETTLEMENT
+  [43] SKIP (already processed): date=2025-12-22 00:00:00, section=ReportSection.ADVANCE_SETTLEMENT
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-29 00:00:00, bank: 30
+Bank amount: -235096633.0, converted: -235096633.0
+Active entries: 1
+  Entry: account=1500VN, amount=-235096633.0, nature=payable
+  -> SINGLE PAYABLE: 235096633.0
+  Final result: {'processed': True, 'amounts': {'payable': 235096633.0}}
+  [44] ACCOUNT NATURE: date=2025-12-29 00:00:00, result={'payable': 235096633.0}
+  [44] ADD payable: 1203015222.0 + 235096633.0 = 1438111855.0
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -36987960.0, converted: -36987960.0
+Active entries: 2
+  Entry: account=73205VN, amount=51987960.0, nature=oper
+  Entry: account=1250VN, amount=-15000000.0, nature=advance
+  -> OTHER entry: oper += 51987960.0
+  -> ADVANCE entry: advance += abs(-15000000.0)
+  Final result: {'processed': True, 'amounts': {'oper': 51987960.0, 'advance': 15000000.0}}
+  [45] ACCOUNT NATURE: date=2025-12-30 00:00:00, result={'oper': 51987960.0, 'advance': 15000000.0}
+  [45] ADD oper: 0.0 + 51987960.0 = 51987960.0
+  [45] ADD advance: 17161100.0 + 15000000.0 = 32161100.0
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -17684994.0, converted: -17684994.0
+Active entries: 2
+  Entry: account=71103VN, amount=19649993.0, nature=org
+  Entry: account=1500VN, amount=1964999.0, nature=payable
+  -> OTHER entry: org += 19649993.0
+  -> PAYABLE (positive) entry: payable -= 1964999.0
+  Final result: {'processed': True, 'amounts': {'org': 19649993.0, 'payable': -1964999.0}}
+  [46] ACCOUNT NATURE: date=2025-12-30 00:00:00, result={'org': 19649993.0, 'payable': -1964999.0}
+  [46] ADD org: 27210540.0 + 19649993.0 = 46860533.0
+  [46] ADD payable: 1438111855.0 + -1964999.0 = 1436146856.0
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-30 00:00:00, bank: 30
+Bank amount: -49200000.0, converted: -49200000.0
+Active entries: 2
+  Entry: account=1250VN, amount=41000000.0, nature=advance
+  Entry: account=73203VN, amount=8200000.0, nature=edu
+  -> OTHER entry: edu += 8200000.0
+  -> ADVANCE entry: advance += abs(41000000.0)
+  Final result: {'processed': True, 'amounts': {'edu': 8200000.0, 'advance': 41000000.0}}
+  [47] ACCOUNT NATURE: date=2025-12-30 00:00:00, result={'edu': 8200000.0, 'advance': 41000000.0}
+  [47] ADD edu: 33989000.0 + 8200000.0 = 42189000.0
+  [47] ADD advance: 32161100.0 + 41000000.0 = 73161100.0
+  [48] SKIP (already processed): date=2025-12-30 00:00:00, section=ReportSection.INCOME
+  [49] SKIP (already processed): date=2025-12-30 00:00:00, section=ReportSection.INCOME
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -36000000.0, converted: -36000000.0
+Active entries: 12
+  Entry: account=73102VN, amount=40000000.0, nature=edu
+  Entry: account=1500VN, amount=1000000.0, nature=payable
+  Entry: account=1500VN, amount=400000.0, nature=payable
+  Entry: account=1500VN, amount=400000.0, nature=payable
+  Entry: account=1500VN, amount=200000.0, nature=payable
+  Entry: account=1500VN, amount=600000.0, nature=payable
+  Entry: account=1500VN, amount=200000.0, nature=payable
+  Entry: account=1500VN, amount=200000.0, nature=payable
+  Entry: account=1500VN, amount=200000.0, nature=payable
+  Entry: account=1500VN, amount=200000.0, nature=payable
+  Entry: account=1500VN, amount=400000.0, nature=payable
+  Entry: account=1500VN, amount=200000.0, nature=payable
+  -> OTHER entry: edu += 40000000.0
+  -> PAYABLE (positive) entry: payable -= 1000000.0
+  -> PAYABLE (positive) entry: payable -= 400000.0
+  -> PAYABLE (positive) entry: payable -= 400000.0
+  -> PAYABLE (positive) entry: payable -= 200000.0
+  -> PAYABLE (positive) entry: payable -= 600000.0
+  -> PAYABLE (positive) entry: payable -= 200000.0
+  -> PAYABLE (positive) entry: payable -= 200000.0
+  -> PAYABLE (positive) entry: payable -= 200000.0
+  -> PAYABLE (positive) entry: payable -= 200000.0
+  -> PAYABLE (positive) entry: payable -= 400000.0
+  -> PAYABLE (positive) entry: payable -= 200000.0
+  Final result: {'processed': True, 'amounts': {'edu': 40000000.0, 'payable': -4000000.0}}
+  [50] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 40000000.0, 'payable': -4000000.0}
+  [50] ADD edu: 42189000.0 + 40000000.0 = 82189000.0
+  [50] ADD payable: 1436146856.0 + -4000000.0 = 1432146856.0
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -24975000.0, converted: -24975000.0
+Active entries: 2
+  Entry: account=71132VN, amount=27750000.0, nature=org
+  Entry: account=1500VN, amount=2775000.0, nature=payable
+  -> OTHER entry: org += 27750000.0
+  -> PAYABLE (positive) entry: payable -= 2775000.0
+  Final result: {'processed': True, 'amounts': {'org': 27750000.0, 'payable': -2775000.0}}
+  [51] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'org': 27750000.0, 'payable': -2775000.0}
+  [51] ADD org: 46860533.0 + 27750000.0 = 74610533.0
+  [51] ADD payable: 1432146856.0 + -2775000.0 = 1429371856.0
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -25914122.0, converted: -25914122.0
+Active entries: 3
+  Entry: account=71132VN, amount=48000000.0, nature=org
+  Entry: account=1500VN, amount=4800000.0, nature=payable
+  Entry: account=1230VN, amount=-17285878.0, nature=advance
+  -> OTHER entry: org += 48000000.0
+  -> ADVANCE entry: advance += abs(-17285878.0)
+  -> PAYABLE (positive) entry: payable -= 4800000.0
+  Final result: {'processed': True, 'amounts': {'org': 48000000.0, 'advance': 17285878.0, 'payable': -4800000.0}}
+  [52] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'org': 48000000.0, 'advance': 17285878.0, 'payable': -4800000.0}
+  [52] ADD org: 74610533.0 + 48000000.0 = 122610533.0
+  [52] ADD advance: 73161100.0 + 17285878.0 = 90446978.0
+  [52] ADD payable: 1429371856.0 + -4800000.0 = 1424571856.0
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -12600000.0, converted: -12600000.0
+Active entries: 2
+  Entry: account=71209VN, amount=14000000.0, nature=org
+  Entry: account=1500VN, amount=1400000.0, nature=payable
+  -> OTHER entry: org += 14000000.0
+  -> PAYABLE (positive) entry: payable -= 1400000.0
+  Final result: {'processed': True, 'amounts': {'org': 14000000.0, 'payable': -1400000.0}}
+  [53] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'org': 14000000.0, 'payable': -1400000.0}
+  [53] ADD org: 122610533.0 + 14000000.0 = 136610533.0
+  [53] ADD payable: 1424571856.0 + -1400000.0 = 1423171856.0
+  [54] SKIP (already processed): date=2025-12-31 00:00:00, section=ReportSection.ADVANCE_SETTLEMENT
+  [55] SKIP (already processed): date=2025-12-31 00:00:00, section=ReportSection.ADVANCE_SETTLEMENT
+  [56] SKIP (already processed): date=2025-12-31 00:00:00, section=ReportSection.ADVANCE_SETTLEMENT
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -9000000.0, converted: -9000000.0
+Active entries: 1
+  Entry: account=1230VN, amount=9000000.0, nature=advance
+  -> SINGLE ADVANCE: 9000000.0
+  Final result: {'processed': True, 'amounts': {'advance': 9000000.0}}
+  [57] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'advance': 9000000.0}
+  [57] ADD advance: 90446978.0 + 9000000.0 = 99446978.0
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -2260000.0, converted: -2260000.0
+Active entries: 2
+  Entry: account=72105VN, amount=2460000.0, nature=edu
+  Entry: account=1500VN, amount=200000.0, nature=payable
+  -> OTHER entry: edu += 2460000.0
+  -> PAYABLE (positive) entry: payable -= 200000.0
+  Final result: {'processed': True, 'amounts': {'edu': 2460000.0, 'payable': -200000.0}}
+  [58] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 2460000.0, 'payable': -200000.0}
+  [58] ADD edu: 82189000.0 + 2460000.0 = 84649000.0
+  [58] ADD payable: 1423171856.0 + -200000.0 = 1422971856.0
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -2260000.0, converted: -2260000.0
+Active entries: 2
+  Entry: account=72105VN, amount=2460000.0, nature=edu
+  Entry: account=1500VN, amount=200000.0, nature=payable
+  -> OTHER entry: edu += 2460000.0
+  -> PAYABLE (positive) entry: payable -= 200000.0
+  Final result: {'processed': True, 'amounts': {'edu': 2460000.0, 'payable': -200000.0}}
+  [59] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 2460000.0, 'payable': -200000.0}
+  [59] ADD edu: 84649000.0 + 2460000.0 = 87109000.0
+  [59] ADD payable: 1422971856.0 + -200000.0 = 1422771856.0
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -34650000.0, converted: -34650000.0
+Active entries: 2
+  Entry: account=72102VN, amount=38500000.0, nature=edu
+  Entry: account=1500VN, amount=3850000.0, nature=payable
+  -> OTHER entry: edu += 38500000.0
+  -> PAYABLE (positive) entry: payable -= 3850000.0
+  Final result: {'processed': True, 'amounts': {'edu': 38500000.0, 'payable': -3850000.0}}
+  [60] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 38500000.0, 'payable': -3850000.0}
+  [60] ADD edu: 87109000.0 + 38500000.0 = 125609000.0
+  [60] ADD payable: 1422771856.0 + -3850000.0 = 1418921856.0
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -14175000.0, converted: -14175000.0
+Active entries: 2
+  Entry: account=72102VN, amount=15750000.0, nature=edu
+  Entry: account=1500VN, amount=1575000.0, nature=payable
+  -> OTHER entry: edu += 15750000.0
+  -> PAYABLE (positive) entry: payable -= 1575000.0
+  Final result: {'processed': True, 'amounts': {'edu': 15750000.0, 'payable': -1575000.0}}
+  [61] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 15750000.0, 'payable': -1575000.0}
+  [61] ADD edu: 125609000.0 + 15750000.0 = 141359000.0
+  [61] ADD payable: 1418921856.0 + -1575000.0 = 1417346856.0
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -11025000.0, converted: -11025000.0
+Active entries: 2
+  Entry: account=72102VN, amount=12250000.0, nature=edu
+  Entry: account=1500VN, amount=1225000.0, nature=payable
+  -> OTHER entry: edu += 12250000.0
+  -> PAYABLE (positive) entry: payable -= 1225000.0
+  Final result: {'processed': True, 'amounts': {'edu': 12250000.0, 'payable': -1225000.0}}
+  [62] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 12250000.0, 'payable': -1225000.0}
+  [62] ADD edu: 141359000.0 + 12250000.0 = 153609000.0
+  [62] ADD payable: 1417346856.0 + -1225000.0 = 1416121856.0
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -10281068.0, converted: -10281068.0
+Active entries: 2
+  Entry: account=72105VN, amount=11423409.0, nature=edu
+  Entry: account=1500VN, amount=1142341.0, nature=payable
+  -> OTHER entry: edu += 11423409.0
+  -> PAYABLE (positive) entry: payable -= 1142341.0
+  Final result: {'processed': True, 'amounts': {'edu': 11423409.0, 'payable': -1142341.0}}
+  [63] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 11423409.0, 'payable': -1142341.0}
+  [63] ADD edu: 153609000.0 + 11423409.0 = 165032409.0
+  [63] ADD payable: 1416121856.0 + -1142341.0 = 1414979515.0
+  [64] SKIP (already processed): date=2025-12-31 00:00:00, section=ReportSection.ADVANCE_SETTLEMENT
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-31 00:00:00, bank: 30
+Bank amount: -20911800.0, converted: -20911800.0
+Active entries: 4
+  Entry: account=72102VN, amount=5152800.0, nature=edu
+  Entry: account=72102VN, amount=17710000.0, nature=edu
+  Entry: account=1500VN, amount=1338000.0, nature=payable
+  Entry: account=1500VN, amount=613000.0, nature=payable
+  -> OTHER entry: edu += 5152800.0
+  -> OTHER entry: edu += 17710000.0
+  -> PAYABLE (positive) entry: payable -= 1338000.0
+  -> PAYABLE (positive) entry: payable -= 613000.0
+  Final result: {'processed': True, 'amounts': {'edu': 22862800.0, 'payable': -1951000.0}}
+  [65] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 22862800.0, 'payable': -1951000.0}
+  [65] ADD edu: 165032409.0 + 22862800.0 = 187895209.0
+  [65] ADD payable: 1414979515.0 + -1951000.0 = 1413028515.0
+  -> SALARY/1500 (positive): payable -= 123233432.0
+  -> SALARY split: org=105628656.0, payable=-123233432.0
+  [66] SALARY/BONUS: date=2025-12-31 00:00:00, name=Hien Thi Hien Vo, result={'payable': -123233432.0, 'org': 105628656.0}
+  [66] ADD payable: 1413028515.0 + -123233432.0 = 1289795083.0
+  [66] ADD org: 136610533.0 + 105628656.0 = 242239189.0
+  -> SALARY/1500 (positive): payable -= 18121839.0
+  -> SALARY/1500 (positive): payable -= 15333896.0
+  -> SALARY split: org=8825788.0, payable=-33455735.0
+  [67] SALARY/BONUS: date=2025-12-31 00:00:00, name=Thuy Thi Bich Thuy Tran, result={'payable': -33455735.0, 'org': 8825788.0}
+  [67] ADD payable: 1289795083.0 + -33455735.0 = 1256339348.0
+  [67] ADD org: 242239189.0 + 8825788.0 = 251064977.0
+  -> SALARY/1500 (positive): payable -= 21981267.0
+  -> SALARY/1500 (positive): payable -= 15483132.0
+  -> SALARY split: edu=8437318.0, payable=-37464399.0
+  [68] SALARY/BONUS: date=2025-12-31 00:00:00, name=Tran Thi Que Chi, result={'payable': -37464399.0, 'edu': 8437318.0}
+  [68] ADD payable: 1256339348.0 + -37464399.0 = 1218874949.0
+  [68] ADD edu: 187895209.0 + 8437318.0 = 196332527.0
+  -> SALARY/1500 (positive): payable -= 15726096.0
+  -> SALARY/1500 (positive): payable -= 15205906.0
+  -> SALARY split: org=7330449.0, payable=-30932002.0
+  [69] SALARY/BONUS: date=2025-12-31 00:00:00, name=Maggie Huyen Nguyen, result={'payable': -30932002.0, 'org': 7330449.0}
+  [69] ADD payable: 1218874949.0 + -30932002.0 = 1187942947.0
+  [69] ADD org: 251064977.0 + 7330449.0 = 258395426.0
+  -> SALARY/1500 (positive): payable -= 9673865.0
+  -> SALARY/1500 (positive): payable -= 13970133.0
+  -> SALARY split: org=6295737.0, payable=-23643998.0
+  [70] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Hong Kim, result={'payable': -23643998.0, 'org': 6295737.0}
+  [70] ADD payable: 1187942947.0 + -23643998.0 = 1164298949.0
+  [70] ADD org: 258395426.0 + 6295737.0 = 264691163.0
+  -> SALARY/1500 (positive): payable -= 5217912.0
+  -> SALARY/1500 (positive): payable -= 8879531.0
+  -> SALARY split: edu=5863379.0, payable=-14097443.0
+  [71] SALARY/BONUS: date=2025-12-31 00:00:00, name=Hoang Thi Kieu Oanh, result={'payable': -14097443.0, 'edu': 5863379.0}
+  [71] ADD payable: 1164298949.0 + -14097443.0 = 1150201506.0
+  [71] ADD edu: 196332527.0 + 5863379.0 = 202195906.0
+  -> SALARY/1500 (positive): payable -= 17301641.0
+  -> SALARY/1500 (positive): payable -= 15316796.0
+  -> SALARY split: edu=9626244.0, payable=-32618437.0
+  [72] SALARY/BONUS: date=2025-12-31 00:00:00, name=Pham Thi  Dieu Loan, result={'payable': -32618437.0, 'edu': 9626244.0}
+  [72] ADD payable: 1150201506.0 + -32618437.0 = 1117583069.0
+  [72] ADD edu: 202195906.0 + 9626244.0 = 211822150.0
+  -> SALARY/1500 (positive): payable -= 2398072.0
+  -> SALARY/1500 (positive): payable -= 6400558.0
+  -> SALARY split: edu=6952675.0, payable=-8798630.0
+  [73] SALARY/BONUS: date=2025-12-31 00:00:00, name=Phan Doan Kim Nhung, result={'payable': -8798630.0, 'edu': 6952675.0}
+  [73] ADD payable: 1117583069.0 + -8798630.0 = 1108784439.0
+  [73] ADD edu: 211822150.0 + 6952675.0 = 218774825.0
+  -> SALARY/1500 (positive): payable -= 14178472.0
+  -> SALARY/1500 (positive): payable -= 15117814.0
+  -> SALARY split: edu=6098735.0, payable=-29296286.0
+  [74] SALARY/BONUS: date=2025-12-31 00:00:00, name=Truong Thi Hai, result={'payable': -29296286.0, 'edu': 6098735.0}
+  [74] ADD payable: 1108784439.0 + -29296286.0 = 1079488153.0
+  [74] ADD edu: 218774825.0 + 6098735.0 = 224873560.0
+  -> SALARY/1500 (positive): payable -= 13018887.0
+  -> SALARY/1500 (positive): payable -= 15063924.0
+  -> SALARY split: edu=5770820.0, payable=-28082811.0
+  [75] SALARY/BONUS: date=2025-12-31 00:00:00, name=Bui Thi Huong, result={'payable': -28082811.0, 'edu': 5770820.0}
+  [75] ADD payable: 1079488153.0 + -28082811.0 = 1051405342.0
+  [75] ADD edu: 224873560.0 + 5770820.0 = 230644380.0
+  -> SALARY/1500 (positive): payable -= 14178472.0
+  -> SALARY/1500 (positive): payable -= 15117814.0
+  -> SALARY split: edu=6098735.0, payable=-29296286.0
+  [76] SALARY/BONUS: date=2025-12-31 00:00:00, name=Huynh My Ngoc, result={'payable': -29296286.0, 'edu': 6098735.0}
+  [76] ADD payable: 1051405342.0 + -29296286.0 = 1022109056.0
+  [76] ADD edu: 230644380.0 + 6098735.0 = 236743115.0
+  -> SALARY/1500 (positive): payable -= 10694997.0
+  -> SALARY/1500 (positive): payable -= 14094497.0
+  -> SALARY split: org=4481752.0, payable=-24789494.0
+  [77] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Thanh Thanh, result={'payable': -24789494.0, 'org': 4481752.0}
+  [77] ADD payable: 1022109056.0 + -24789494.0 = 997319562.0
+  [77] ADD org: 264691163.0 + 4481752.0 = 269172915.0
+  -> SALARY/1500 (positive): payable -= 23150459.0
+  -> SALARY/1500 (positive): payable -= 15534950.0
+  -> SALARY split: org=8644207.0, payable=-38685409.0
+  [78] SALARY/BONUS: date=2025-12-31 00:00:00, name=Phan Thi Thao Nguyen, result={'payable': -38685409.0, 'org': 8644207.0}
+  [78] ADD payable: 997319562.0 + -38685409.0 = 958634153.0
+  [78] ADD org: 269172915.0 + 8644207.0 = 277817122.0
+  -> SALARY/1500 (positive): payable -= 3634551.0
+  -> SALARY/1500 (positive): payable -= 3984832.0
+  -> SALARY split: edu=18283743.0, payable=-7619383.0
+  [79] SALARY/BONUS: date=2025-12-31 00:00:00, name=Mai Thi Kim Hang, result={'payable': -7619383.0, 'edu': 18283743.0}
+  [79] ADD payable: 958634153.0 + -7619383.0 = 951014770.0
+  [79] ADD edu: 236743115.0 + 18283743.0 = 255026858.0
+  -> SALARY/1500 (positive): payable -= 4683243.0
+  -> SALARY/1500 (positive): payable -= 5064512.0
+  -> SALARY split: edu=21680409.0, payable=-9747755.0
+  [80] SALARY/BONUS: date=2025-12-31 00:00:00, name=Pham Thi Huyen, result={'payable': -9747755.0, 'edu': 21680409.0}
+  [80] ADD payable: 951014770.0 + -9747755.0 = 941267015.0
+  [80] ADD edu: 255026858.0 + 21680409.0 = 276707267.0
+  -> SALARY/1500 (positive): payable -= 7781840.0
+  -> SALARY/1500 (positive): payable -= 6516352.0
+  -> SALARY split: edu=22528990.0, payable=-14298192.0
+  [81] SALARY/BONUS: date=2025-12-31 00:00:00, name=Vo Thi Quynh Thi, result={'payable': -14298192.0, 'edu': 22528990.0}
+  [81] ADD payable: 941267015.0 + -14298192.0 = 926968823.0
+  [81] ADD edu: 276707267.0 + 22528990.0 = 299236257.0
+  -> SALARY/1500 (positive): payable -= 3793089.0
+  -> SALARY/1500 (positive): payable -= 4564352.0
+  -> SALARY split: edu=20898992.0, payable=-8357441.0
+  [82] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Tram Anh, result={'payable': -8357441.0, 'edu': 20898992.0}
+  [82] ADD payable: 926968823.0 + -8357441.0 = 918611382.0
+  [82] ADD edu: 299236257.0 + 20898992.0 = 320135249.0
+  -> SALARY/1500 (positive): payable -= 4245474.0
+  -> SALARY/1500 (positive): payable -= 5039552.0
+  -> SALARY split: edu=13399372.0, payable=-9285026.0
+  [83] SALARY/BONUS: date=2025-12-31 00:00:00, name=Ho Thi Mong Thu, result={'payable': -9285026.0, 'edu': 13399372.0}
+  [83] ADD payable: 918611382.0 + -9285026.0 = 909326356.0
+  [83] ADD edu: 320135249.0 + 13399372.0 = 333534621.0
+  -> SALARY/1500 (positive): payable -= 2247233.0
+  -> SALARY split: edu=16661732.0, payable=-2247233.0
+  [84] SALARY/BONUS: date=2025-12-31 00:00:00, name=Truong Thi Diem Phuong, result={'payable': -2247233.0, 'edu': 16661732.0}
+  [84] ADD payable: 909326356.0 + -2247233.0 = 907079123.0
+  [84] ADD edu: 333534621.0 + 16661732.0 = 350196353.0
+  -> SALARY/1500 (positive): payable -= 3952979.0
+  -> SALARY/1500 (positive): payable -= 4069952.0
+  -> SALARY split: edu=21095837.0, payable=-8022931.0
+  [85] SALARY/BONUS: date=2025-12-31 00:00:00, name=Vu Thi Thu Thuy, result={'payable': -8022931.0, 'edu': 21095837.0}
+  [85] ADD payable: 907079123.0 + -8022931.0 = 899056192.0
+  [85] ADD edu: 350196353.0 + 21095837.0 = 371292190.0
+  -> SALARY/1500 (positive): payable -= 5458065.0
+  -> SALARY/1500 (positive): payable -= 4564352.0
+  -> SALARY split: edu=17129040.0, payable=-10022417.0
+  [86] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Nhung, result={'payable': -10022417.0, 'edu': 17129040.0}
+  [86] ADD payable: 899056192.0 + -10022417.0 = 889033775.0
+  [86] ADD edu: 371292190.0 + 17129040.0 = 388421230.0
+  -> SALARY/1500 (positive): payable -= 5323057.0
+  -> SALARY/1500 (positive): payable -= 4564352.0
+  -> SALARY split: edu=16859025.0, payable=-9887409.0
+  [87] SALARY/BONUS: date=2025-12-31 00:00:00, name=Mai Anh Thu, result={'payable': -9887409.0, 'edu': 16859025.0}
+  [87] ADD payable: 889033775.0 + -9887409.0 = 879146366.0
+  [87] ADD edu: 388421230.0 + 16859025.0 = 405280255.0
+  -> SALARY/1500 (positive): payable -= 810507.0
+  -> SALARY split: org=6484056.0, payable=-810507.0
+  [88] SALARY/BONUS: date=2025-12-31 00:00:00, name=Dang Thanh Canh, result={'payable': -810507.0, 'org': 6484056.0}
+  [88] ADD payable: 879146366.0 + -810507.0 = 878335859.0
+  [88] ADD org: 277817122.0 + 6484056.0 = 284301178.0
+  -> SALARY/1500 (positive): payable -= 31082008.0
+  -> SALARY split: org=26897254.0, payable=-31082008.0
+  [89] SALARY/BONUS: date=2025-12-31 00:00:00, name=Le Thi Thu Hanh, result={'payable': -31082008.0, 'org': 26897254.0}
+  [89] ADD payable: 878335859.0 + -31082008.0 = 847253851.0
+  [89] ADD org: 284301178.0 + 26897254.0 = 311198432.0
+  -> SALARY/1500 (positive): payable -= 4153483.0
+  -> SALARY/1500 (positive): payable -= 3604352.0
+  -> SALARY split: edu=16417904.0, payable=-7757835.0
+  [90] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Thuy Na, result={'payable': -7757835.0, 'edu': 16417904.0}
+  [90] ADD payable: 847253851.0 + -7757835.0 = 839496016.0
+  [90] ADD edu: 405280255.0 + 16417904.0 = 421698159.0
+  -> SALARY/1500 (positive): payable -= 2524917.0
+  -> SALARY/1500 (positive): payable -= 4160000.0
+  -> SALARY split: edu=10478499.0, payable=-6684917.0
+  [91] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Thuy Van, result={'payable': -6684917.0, 'edu': 10478499.0}
+  [91] ADD payable: 839496016.0 + -6684917.0 = 832811099.0
+  [91] ADD edu: 421698159.0 + 10478499.0 = 432176658.0
+  -> SALARY/1500 (positive): payable -= 1600000.0
+  -> SALARY split: org=2875000.0, payable=-1600000.0
+  [92] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Hai, result={'payable': -1600000.0, 'org': 2875000.0}
+  [92] ADD payable: 832811099.0 + -1600000.0 = 831211099.0
+  [92] ADD org: 311198432.0 + 2875000.0 = 314073432.0
+  -> SALARY/1500 (positive): payable -= 3384354.0
+  -> SALARY/1500 (positive): payable -= 3976000.0
+  -> SALARY split: edu=13566784.0, payable=-7360354.0
+  [93] SALARY/BONUS: date=2025-12-31 00:00:00, name=Pham Thi Nhi Ca, result={'payable': -7360354.0, 'edu': 13566784.0}
+  [93] ADD payable: 831211099.0 + -7360354.0 = 823850745.0
+  [93] ADD edu: 432176658.0 + 13566784.0 = 445743442.0
+  -> SALARY/1500 (positive): payable -= 2224907.0
+  -> SALARY/1500 (positive): payable -= 4160000.0
+  -> SALARY split: edu=9578469.0, payable=-6384907.0
+  [94] SALARY/BONUS: date=2025-12-31 00:00:00, name=Mai Thi Mong Tuyen, result={'payable': -6384907.0, 'edu': 9578469.0}
+  [94] ADD payable: 823850745.0 + -6384907.0 = 817465838.0
+  [94] ADD edu: 445743442.0 + 9578469.0 = 455321911.0
+  -> SALARY/1500 (positive): payable -= 2224907.0
+  -> SALARY/1500 (positive): payable -= 4160000.0
+  -> SALARY split: edu=9578469.0, payable=-6384907.0
+  [95] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Dang Hai Sam, result={'payable': -6384907.0, 'edu': 9578469.0}
+  [95] ADD payable: 817465838.0 + -6384907.0 = 811080931.0
+  [95] ADD edu: 455321911.0 + 9578469.0 = 464900380.0
+  -> SALARY/1500 (positive): payable -= 354273.0
+  -> SALARY/1500 (positive): payable -= 4160000.0
+  -> SALARY split: edu=9556454.0, payable=-4514273.0
+  [96] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Huong, result={'payable': -4514273.0, 'edu': 9556454.0}
+  [96] ADD payable: 811080931.0 + -4514273.0 = 806566658.0
+  [96] ADD edu: 464900380.0 + 9556454.0 = 474456834.0
+  -> SALARY/1500 (positive): payable -= 5389074.0
+  -> SALARY split: edu=2479310.0, payable=-5389074.0
+  [97] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Minh Ngoc, result={'payable': -5389074.0, 'edu': 2479310.0}
+  [97] ADD payable: 806566658.0 + -5389074.0 = 801177584.0
+  [97] ADD edu: 474456834.0 + 2479310.0 = 476936144.0
+
+=== DEBUG: process_manual_groups SUMMARY ===
+Total groups: 98
+Skipped (already processed): 13
+Processed in this step: 85
+Still manual: 0
+Final totals[VND]: {'org': 314073432.0, 'edu': 476936144.0, 'oper': 51987960.0, 'advance': 99446978.0, 'payable': 801177584.0}
+Final totals[USD]: {}
+
+=== DEBUG: BEFORE merging manual_nature_totals ===
+nature_totals[VND]: {'edu': 400922868.0, 'oper': 88718912.0, 'manual': 4357217468.0}
+manual_nature_totals[VND]: {'org': 314073432.0, 'edu': 476936144.0, 'oper': 51987960.0, 'advance': 99446978.0, 'payable': 801177584.0}
+  MERGE 30 org: 0.0 + 314073432.0 = 314073432.0
+  MERGE 30 edu: 400922868.0 + 476936144.0 = 877859012.0
+  MERGE 30 oper: 88718912.0 + 51987960.0 = 140706872.0
+  MERGE ADV/SETTLE 30 advance: 1404076855.0 + 99446978.0 = 1503523833.0
+  MERGE PAYABLE 30 payable: 0.0 + 801177584.0 = 801177584.0
+
+=== DEBUG: AFTER merging - FINAL totals ===
+nature_totals[VND]: {'org': 314073432.0, 'edu': 877859012.0, 'oper': 140706872.0}
+advance_settlement[VND]: {'advance': 1503523833.0, 'settlement': -16514846.0}
+payable_totals[VND]: {'payable': 801177584.0}
+
+=== DEBUG: Loading Staff_&_Allocation.xlsx (province allocation) ===
+  Shape: (42, 11)
+  Province columns: {2: 'vnelc', 3: 'vndn', 4: 'vnqn', 5: 'vnhd', 6: 'vnqng', 7: 'vnhcm', 8: 'vnla', 9: 'vnbn', 10: 'vnmoet'}
+  Loaded 40 allocation entries
+
+=== DEBUG: Loading PIT_SI.xlsx ===
+  Shape: (67, 5)
+  Header row: 0
+  Loaded 59 PIT entries
+  Group 1 (Service Center - SI/HI): 56 entries, sum: -468,874,144
+  Group 2 (Vietnam Tax - PIT): 3 entries, sum: -12,664,331
+
+=== DEBUG: ProvinceMapper.process_groups ===
+  ADD 29 vnother: 1.0999962050776062
+  SKIP (settlement/advance/payable): Service Center for Foreign Affairs - nature_type in entries
+  ADD 30 vnother: 11000.0
+  SKIP (settlement/advance/payable): Hien Thi Hien Vo - nature_type in entries
+  SKIP (settlement/advance/payable): Thuy Thi Bich Thuy Tran - nature_type in entries
+  SKIP (settlement/advance/payable): Tran Thi Que Chi - nature_type in entries
+  SKIP (settlement/advance/payable): Maggie Huyen Nguyen - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Hong Kim - nature_type in entries
+  SKIP (settlement/advance/payable): Hoang Thi Kieu Oanh - nature_type in entries
+  SKIP (settlement/advance/payable): Pham Thi  Dieu Loan - nature_type in entries
+  SKIP (settlement/advance/payable): Phan Doan Kim Nhung - nature_type in entries
+  SKIP (settlement/advance/payable): Truong Thi Hai - nature_type in entries
+  SKIP (settlement/advance/payable): Bui Thi Huong - nature_type in entries
+  SKIP (settlement/advance/payable): Huynh My Ngoc - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Thi Thanh Thanh - nature_type in entries
+  SKIP (settlement/advance/payable): Phan Thi Thao Nguyen - nature_type in entries
+  SKIP (settlement/advance/payable): Mai Thi Kim Hang - nature_type in entries
+  SKIP (settlement/advance/payable): Pham Thi Huyen - nature_type in entries
+  SKIP (settlement/advance/payable): Vo Thi Quynh Thi - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Thi Tram Anh - nature_type in entries
+  SKIP (settlement/advance/payable): Ho Thi Mong Thu - nature_type in entries
+  SKIP (settlement/advance/payable): Truong Thi Diem Phuong - nature_type in entries
+  SKIP (settlement/advance/payable): Vu Thi Thu Thuy - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Thi Nhung - nature_type in entries
+  SKIP (settlement/advance/payable): Mai Anh Thu - nature_type in entries
+  SKIP (settlement/advance/payable): Dang Thanh Canh - nature_type in entries
+  SKIP (settlement/advance/payable): Le Thi Thu Hanh - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Thi Thuy Na - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Thi Thuy Van - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Thi Hai - nature_type in entries
+  SKIP (settlement/advance/payable): Phạm Thị Nhị Ca - nature_type in entries
+  SKIP (settlement/advance/payable): Mai Thi Mong Tuyen - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Dang Hai Sam - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Thi Huong - nature_type in entries
+  SALARY/BONUS (memo fallback): Vietcombank -> vnother: 136400.0
+  ADD 30 vnother: 136400.0
+  SKIP (settlement/advance/payable): Vietnam Tax Company - nature_type in entries
+  SKIP (settlement/advance/payable): Le Ngoc Bich Hien - nature_type in entries
+  ADD 30 vnother: 11000.0
+  ADD 30 vnqn: 4082000.0
+  ADD 30 vnhd: 5080400.0
+  ADD 30 vnqn: 11000.0
+  ADD 30 vnqn: 1735000.0
+  ADD 30 vnqn: 11000.0
+  ADD 30 vnhd: 3798000.0
+  ADD 30 vnhd: 11000.0
+  ADD 30 vnother: 265550.0
+  ADD 30 vnother: 11000.0
+  ADD 30 vnqn: 7736000.0
+  ADD 30 vnqn: 11000.0
+  ADD 30 vnother: 5872000.0
+  ADD 30 vnother: 11000.0
+  ADD 30 vnother: 480000.0
+  ADD 30 vnother: 22000.0
+  ADD 30 vnother: 1013100.0
+  ADD 30 vnother: 22000.0
+  ADD 30 vnother: 891000.0
+  ADD 30 vnother: 22000.0
+  ADD 30 vnother: 126710.0
+  ADD 30 vnother: 22000.0
+  ADD 30 vnother: 1187584.0
+  ADD 30 vnother: 2.0
+  SKIP (settlement/advance/payable): Vietnam Tax Company - nature_type in entries
+  ADD 30 vnhd: 1050001.0
+  ADD 30 vnhd: 11000.0
+  ADD 30 vnhd: 4527360.0
+  ADD 30 vnhd: 22000.0
+  SKIP (settlement/advance/payable): Ho Lam Hong - nature_type in entries
+  ADD 30 vnhd: 11000.0
+  ADD 30 vnmoet: 5672350.0
+  ADD 30 vnqn: 2242800.0
+  ADD 30 vnother: 3687900.0
+  ADD 30 vnmoet: 22000.0
+  ADD 30 vnqn: 4190000.0
+  ADD 30 vnhbc: 1800000.0
+  ADD 30 vnqn: 11000.0
+  ADD 30 vnother: 369400.0
+  ADD 30 vnmoet: 3849000.0
+  ADD 30 vnother: 6178594.0
+  ADD 30 vnother: 11000.0
+  ADD 30 vnother: 11000.0
+  ADD 30 vnother: 365000.0
+  ADD 30 vnqn: 3037000.0
+  ADD 30 vnother: 11000.0
+  ADD 30 vnqn: 826350.0
+  ADD 30 vnqn: 22000.0
+  ADD 30 vnhcm: 15189000.0
+  ADD 30 vnhcm: 11000.0
+  ADD 30 vnhcm: 10074601.0
+  ADD 30 vnhcm: 11000.0
+  ADD 30 vnqn: 14980000.0
+  ADD 30 vnqn: 11000.0
+  ADD 30 vnqn: 850000.0
+  ADD 30 vnqn: 11000.0
+  ADD 30 vnmoet: 583200.0
+  ADD 30 vnmoet: 22000.0
+  ADD 30 vnhbc: 13304600.0
+  ADD 30 vnmoet: 415180.0
+  ADD 30 vnhbc: 11000.0
+  ADD 30 vnhbc: 297000.0
+  ADD 30 vnhbc: 22000.0
+  ADD 30 vnother: 4468621.0
+  ADD 30 vnother: 11000.0
+  ADD 30 vnmoet: 1980000.0
+  ADD 30 vnmoet: 11000.0
+  ADD 30 vnmoet: 2592000.0
+  ADD 30 vnmoet: 11000.0
+  SKIP (settlement/advance/payable): Nguyen Minh Huyen - nature_type in entries
+  ADD 30 vnmoet: 11000.0
+  ADD 30 vnmoet: 22250000.0
+  ADD 30 vnmoet: 22000.0
+  ADD 30 vnhd: 8538200.0
+  ADD 30 vnhd: 11000.0
+  ADD 30 vnhd: 5286000.0
+  ADD 30 vnhd: 11000.0
+  ADD 30 vnhd: 2106000.0
+  ADD 30 vnhd: 22000.0
+  ADD 30 vnother: 48380000.0
+  ADD 30 vnother: 11000.0
+  ADD 30 vnother: 1296000.0
+  ADD 30 vnother: 22000.0
+  ADD 30 vnhd: 5253880.0
+  ADD 30 vnhd: 11000.0
+  ADD 30 vnhd: 5435000.0
+  ADD 30 vnhd: 11000.0
+  ADD 30 vnhd: 5184000.0
+  ADD 30 vnhd: 22000.0
+  ADD 30 vnhd: 1728000.0
+  ADD 30 vnhd: 11000.0
+  ADD 30 vnhd: 672000.0
+  ADD 30 vnhd: 22000.0
+  ADD 30 vnother: 4250000.0
+  ADD 30 vnother: 11000.0
+  ADD 30 vnmoet: 3284000.0
+  ADD 30 vnmoet: 11000.0
+  ADD 30 vnother: 22000.0
+  SKIP (settlement/advance/payable): Service Center for Foreign Affairs - nature_type in entries
+  ADD 30 vnother: 11000.0
+  ADD 30 vnhbc: 688217.0
+  ADD 30 vnhcm: 1617500.0
+  ADD 30 vnla: 1617500.0
+  ADD 30 vnla: 11000.0
+  ADD 30 vnqn: 750000.0
+  ADD 30 vnqn: 11000.0
+  ADD 30 vnhcm: 1951000.0
+  ADD 30 vnla: 1951000.0
+  ADD 30 vnhcm: 11000.0
+  ADD 30 vnhcm: 7377600.0
+  ADD 30 vnla: 7377600.0
+  ADD 30 vnhcm: 11000.0
+  ADD 30 vnmoet: 3526182.0
+  ADD 30 vnmoet: 11000.0
+  ADD 30 vnmoet: 622500.0
+  ADD 30 vnmoet: 11000.0
+  ADD 30 vnother: 190581.0
+  ADD 30 vnother: 11000.0
+  ADD 30 vnbn: 10542000.0
+  ADD 30 vnbn: 11000.0
+  ADD 30 vnla: 4961640.0
+  ADD 30 vnla: 11000.0
+  SKIP (settlement/advance/payable): Cong ty TNHH MTV A-X - nature_type in entries
+  ADD 30 vnother: 22000.0
+  SKIP (settlement/advance/payable): Nguyen Thi Thuc An - nature_type in entries
+  ADD 30 vnmoet: 22000.0
+  ADD 30 vnother: 960000.0
+  ADD 30 vnother: 22000.0
+  ADD 30 vnother: 440000.0
+  ADD 30 vnother: 22000.0
+  SKIP (settlement/advance/payable): Le Ngoc Bich Hien - nature_type in entries
+  ADD 30 vnmoet: 11000.0
+  ADD 30 vnmoet: 7356000.0
+  SKIP (settlement/advance/payable): MOET - nature_type in entries
+  ADD 30 vnmoet: 101200.0
+  ADD 30 vnother: 1057847.0
+  ADD 30 vnqn: 5313948.0
+  ADD 30 vnhcm: 3925000.0
+  ADD 30 vnhd: 683000.0
+  ADD 30 vnother: 22000.0
+  ADD 30 vnmoet: 35910000.0
+  ADD 30 vnmoet: 22000.0
+  ADD 30 vnmoet: 4239000.0
+  ADD 30 vnmoet: 22000.0
+  SKIP (settlement/advance/payable): Uong Mai Trang - nature_type in entries
+  ADD 30 vnmoet: 22000.0
+  ADD 30 vnmoet: 5676000.0
+  ADD 30 vnmoet: 11000.0
+  SKIP (settlement/advance/payable): Nguyen Minh Huyen - nature_type in entries
+  ADD 30 vnmoet: 11000.0
+  ADD 30 vnmoet: 900000.0
+  ADD 30 vnmoet: 11000.0
+  SKIP (settlement/advance/payable): Ho Lam Hong - nature_type in entries
+  ADD 30 vnmoet: 11000.0
+  ADD 30 vnmoet: 563600.0
+  ADD 30 vnmoet: 11000.0
+  ADD 30 vnhbc: 18563000.0
+  ADD 30 vnhbc: 11000.0
+  ADD 30 vnla: 1150000.0
+  ADD 30 vnla: 11000.0
+  ADD 30 vnhbc: 664370.0
+  ADD 30 vnhbc: 11000.0
+  ADD 30 vnqn: 5595000.0
+  ADD 30 vnqn: 11000.0
+  SKIP (settlement/advance/payable): Nguyen Thi Phuong - nature_type in entries
+  ADD 30 vnbn: 22000.0
+  ADD 30 vnmoet: 1566000.0
+  ADD 30 vnmoet: 22000.0
+  ADD 30 vnla: 1750000.0
+  ADD 30 vnla: 22000.0
+  SKIP (settlement/advance/payable): Nguyen Thi My Hanh - nature_type in entries
+  ADD 30 vnmoet: 22000.0
+  SKIP (settlement/advance/payable): Ho Lam Hong - nature_type in entries
+  ADD 30 vnmoet: 11000.0
+  ADD 30 vnmoet: 1000000.0
+  ADD 30 vnmoet: 22000.0
+  ADD 30 vnla: 1840000.0
+  ADD 30 vnla: 22000.0
+  SKIP (settlement/advance/payable): Ho Thi Tuong Van - nature_type in entries
+  ADD 30 vnhcm: 22000.0
+  SKIP (settlement/advance/payable): Mac Thuy Linh - nature_type in entries
+  ADD 30 vnla: 22000.0
+  ADD 30 vnmoet: 14550000.0
+  ADD 30 vnmoet: 22000.0
+  SKIP (settlement/advance/payable): Mac Thuy Linh - nature_type in entries
+  ADD 30 vnla: 22000.0
+  ADD 30 vnother: 3499200.0
+  ADD 30 vnhbc: 3499200.0
+  ADD 30 vnother: 11000.0
+  ADD 30 vnmoet: 12658000.0
+  ADD 30 vnmoet: 11000.0
+  ADD 30 vnmoet: 8383499.0
+  ADD 30 vnmoet: 11000.0
+  SKIP (settlement/advance/payable): Nguyen Mai Ngoc Hong Quyen - nature_type in entries
+  ADD 30 vnmoet: 11000.0
+  SKIP (settlement/advance/payable): Nguyen Minh Huyen - nature_type in entries
+  ADD 30 vnbn: 22000.0
+  ADD 30 vnhcm: 6113300.0
+  ADD 30 vnhcm: 11000.0
+  ADD 30 vnmoet: 34445000.0
+  ADD 30 vnmoet: 11000.0
+  ADD 30 vnmoet: 2928000.0
+  ADD 30 vnmoet: 11000.0
+  ADD 30 vnmoet: 1512000.0
+  ADD 30 vnmoet: 11000.0
+  ADD 30 vnmoet: 9030000.0
+  ADD 30 vnmoet: 22000.0
+  SKIP (settlement/advance/payable): Hien Thi Hien Vo - nature_type in entries
+  SKIP (settlement/advance/payable): Thuy Thi Bich Thuy Tran - nature_type in entries
+  SKIP (settlement/advance/payable): Tran Thi Que Chi - nature_type in entries
+  SKIP (settlement/advance/payable): Maggie Huyen Nguyen - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Hong Kim - nature_type in entries
+  SKIP (settlement/advance/payable): Hoang Thi Kieu Oanh - nature_type in entries
+  SKIP (settlement/advance/payable): Pham Thi  Dieu Loan - nature_type in entries
+  SKIP (settlement/advance/payable): Phan Doan Kim Nhung - nature_type in entries
+  SKIP (settlement/advance/payable): Truong Thi Hai - nature_type in entries
+  SKIP (settlement/advance/payable): Bui Thi Huong - nature_type in entries
+  SKIP (settlement/advance/payable): Huynh My Ngoc - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Thi Thanh Thanh - nature_type in entries
+  SKIP (settlement/advance/payable): Phan Thi Thao Nguyen - nature_type in entries
+  SKIP (settlement/advance/payable): Mai Thi Kim Hang - nature_type in entries
+  SKIP (settlement/advance/payable): Pham Thi Huyen - nature_type in entries
+  SKIP (settlement/advance/payable): Vo Thi Quynh Thi - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Thi Tram Anh - nature_type in entries
+  SKIP (settlement/advance/payable): Ho Thi Mong Thu - nature_type in entries
+  SKIP (settlement/advance/payable): Truong Thi Diem Phuong - nature_type in entries
+  SKIP (settlement/advance/payable): Vu Thi Thu Thuy - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Thi Nhung - nature_type in entries
+  SKIP (settlement/advance/payable): Mai Anh Thu - nature_type in entries
+  SKIP (settlement/advance/payable): Dang Thanh Canh - nature_type in entries
+  SKIP (settlement/advance/payable): Le Thi Thu Hanh - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Thi Thuy Na - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Thi Thuy Van - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Thi Hai - nature_type in entries
+  SKIP (settlement/advance/payable): Pham Thi Nhi Ca - nature_type in entries
+  SKIP (settlement/advance/payable): Mai Thi Mong Tuyen - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Dang Hai Sam - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Thi Huong - nature_type in entries
+  SKIP (settlement/advance/payable): Nguyen Thi Minh Ngoc - nature_type in entries
+
+=== DEBUG: Processing 59 PIT entries ===
+  PIT (allocation) G1: Thuy Thi Bich Thuy Tran -> distributed to ['vnelc', 'vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Tran Thi Que Chi -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Maggie Huyen Nguyen -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Nguyen Hong Kim -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Hoang Thi Kieu Oanh -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Pham Thi  Dieu Loan -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Phan Doan Kim Nhung -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Truong Thi Hai -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Bui Thi Huong -> distributed to ['vnmoet']
+  PIT (allocation) G1: Huynh My Ngoc -> distributed to ['vnmoet']
+  PIT (allocation) G1: Nguyen Thi Thanh Thanh -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Phan Thi Thao Nguyen -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Mai Thi Kim Hang -> distributed to ['vndn']
+  PIT (allocation) G1: Pham Thi Huyen -> distributed to ['vndn']
+  PIT (allocation) G1: Vo Thi Quynh Thi -> distributed to ['vndn']
+  PIT (allocation) G1: Nguyen Thi Tram Anh -> distributed to ['vndn']
+  PIT (allocation) G1: Ho Thi Mong Thu -> distributed to ['vnqn']
+  PIT (allocation) G1: Truong Thi Diem Phuong -> distributed to ['vnqn']
+  PIT (allocation) G1: Vu Thi Thu Thuy -> distributed to ['vnhd']
+  PIT (allocation) G1: Nguyen Thi Nhung -> distributed to ['vnhcm']
+  PIT (allocation) G1: Mai Anh Thu -> distributed to ['vnhcm']
+  PIT (allocation) G1: Nguyen Thi Thuy Na -> distributed to ['vnqn']
+  PIT (allocation) G1: Nguyen Thi Thuy Van -> distributed to ['vnla']
+  PIT (allocation) G1: Nguyen Thi Hai -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Pham Thi Nhi Ca -> distributed to ['vnqn']
+  PIT (allocation) G1: Mai Thi Mong Tuyen -> distributed to ['vnhcm']
+  PIT (allocation) G1: Nguyen Dang Hai Sam -> distributed to ['vnbn']
+  PIT (allocation) G1: Nguyen Thi Huong -> distributed to ['vnbn']
+  PIT (allocation) G1: Thuy Thi Bich Thuy Tran -> distributed to ['vnelc', 'vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Tran Thi Que Chi -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Maggie Huyen Nguyen -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Nguyen Hong Kim -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Hoang Thi Kieu Oanh -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Pham Thi  Dieu Loan -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Phan Doan Kim Nhung -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Truong Thi Hai -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Bui Thi Huong -> distributed to ['vnmoet']
+  PIT (allocation) G1: Huynh My Ngoc -> distributed to ['vnmoet']
+  PIT (allocation) G1: Nguyen Thi Thanh Thanh -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Phan Thi Thao Nguyen -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Mai Thi Kim Hang -> distributed to ['vndn']
+  PIT (allocation) G1: Pham Thi Huyen -> distributed to ['vndn']
+  PIT (allocation) G1: Vo Thi Quynh Thi -> distributed to ['vndn']
+  PIT (allocation) G1: Nguyen Thi Tram Anh -> distributed to ['vndn']
+  PIT (allocation) G1: Ho Thi Mong Thu -> distributed to ['vnqn']
+  PIT (allocation) G1: Vu Thi Thu Thuy -> distributed to ['vnhd']
+  PIT (allocation) G1: Nguyen Thi Nhung -> distributed to ['vnhcm']
+  PIT (allocation) G1: Mai Anh Thu -> distributed to ['vnhcm']
+  PIT (allocation) G1: Nguyen Thi Thuy Na -> distributed to ['vnqn']
+  PIT (allocation) G1: Nguyen Thi Thuy Van -> distributed to ['vnla']
+  PIT (allocation) G1: Nguyen Thi Hai -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G1: Pham Thi Nhi Ca -> distributed to ['vnqn']
+  PIT (allocation) G1: Mai Thi Mong Tuyen -> distributed to ['vnhcm']
+  PIT (allocation) G1: Nguyen Dang Hai Sam -> distributed to ['vnbn']
+  PIT (allocation) G1: Nguyen Thi Huong -> distributed to ['vnbn']
+  PIT (allocation) G1: Nguyen Thi Minh Ngoc -> distributed to ['vndn']
+  PIT (allocation) G2: Le Thi Thu Huyen -> distributed to ['vndn', 'vnqn', 'vnhd', 'vnmoet']
+  PIT (allocation) G2: Do Kim Dung -> distributed to ['vnmoet']
+  PIT (memo) G2: MOET staff -> vnmoet: 6000000.0
+
+=== DEBUG: Matching PIT groups to transactions ===
+  Group 1 sum: 468,874,144
+  Group 2 sum: 12,664,331
+
+=== DEBUG: Recording PIT validation on respective rows ===
+  WARNING: No matching transaction for Group 1
+  WARNING: No matching transaction for Group 2
+
+=== DEBUG: ProvinceMapper SUMMARY ===
+Processed groups: 177
+Ignored groups (handled by PIT): 0
+Province totals[VND]: {'vnhbc': 38871387.0, 'vnqn': 51448098.0, 'vnhd': 49517841.0, 'vnmoet': 186065711.0, 'vnla': 20768740.0, 'vnhcm': 46325001.0, 'vnbn': 10597000.0, 'vnother': 85478489.0}
+Province totals[USD]: {'vnother': 1.0999962050776062}
+PIT totals[VND]: {'vnelc': 15333896.0, 'vndn': 92693886.42, 'vnqn': 76354476.42, 'vnhd': 55184620.42, 'vnmoet': 190434187.74, 'vnla': 8320000.0, 'vnhcm': 26577408.0, 'vnbn': 16640000.0}
+
+=== DEBUG: FINAL province_totals ===
+VND: {'vnelc': 15333896.0, 'vnhbc': 38871387.0, 'vndn': 92693886.42, 'vnqn': 127802574.42, 'vnhd': 104702461.42, 'vnmoet': 376499898.74, 'vnla': 29088740.0, 'vnhcm': 72902409.0, 'vnbn': 27237000.0, 'vnother': 85478489.0}
+USD: {'vnother': 1.0999962050776062}
+  Stopping...

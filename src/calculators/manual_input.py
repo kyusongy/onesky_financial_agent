@@ -274,25 +274,66 @@ class ManualInputProcessor:
         Process salary/bonus transactions by looking up staff name.
 
         If header memo contains "salary" or "bonus", look up payee_name in staff lookup
-        to determine nature (org/edu). Use absolute bank_amount for the result.
+        to determine nature (org/edu).
+
+        Three cases:
+        1. All entries are 1500 → skip salary, fall through to payable processing
+        2. Has non-1500 entries but staff not found → fall through to account type processing
+        3. Staff found + has non-1500 entries → split: 1500→payable, rest→org/edu
         """
         result = {"processed": False, "amounts": {}}
 
-        # Look up staff by payee name
+        active_entries = group.active_entries
+        payable_entries = [e for e in active_entries if get_account_type(e.account_code) == "1500"]
+        non_payable_entries = [e for e in active_entries if get_account_type(e.account_code) != "1500"]
+
+        # Case 1: ALL entries are 1500 → pure payable, skip salary processing entirely
+        if not non_payable_entries:
+            print(f"  -> SALARY/BONUS: all entries are 1500, skipping to payable processing")
+            return result  # Falls through to _process_by_account_nature → payable
+
+        # Case 2 & 3: Has non-1500 entries → try staff lookup
         nature = self.lookup_staff_by_name(group.payee_name)
 
-        if nature:
-            # Use absolute bank_amount for the nature category
-            converted = abs(convert_amount(group.bank_amount, group.bank_identifier, ex_rate))
-            result["amounts"][nature] = converted
-            result["processed"] = True
+        if not nature:
+            # Case 2: Staff not found → fall through to _process_by_account_nature
+            return result
 
-            # Validation tracking: header row gets converted amount
-            if validation_data:
-                validation_data.set_value(group.original_row_index, nature, converted)
+        # Case 3: Staff found + has non-1500 entries → split payable/salary
+        converted_bank = abs(convert_amount(group.bank_amount, group.bank_identifier, ex_rate))
 
-            # Mark all entries with this nature for reporting purposes
-            for entry in group.entries:
+        # Process 1500 entries as payable
+        net_payable = 0.0
+        for entry in payable_entries:
+            if entry.amount:
+                amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
+                if entry.amount < 0:
+                    contribution = abs(amount)
+                    net_payable += contribution
+                    result["amounts"]["payable"] = result["amounts"].get("payable", 0.0) + contribution
+                    if validation_data:
+                        validation_data.set_value(entry.original_row_index, "payable", contribution)
+                    print(f"  -> SALARY/1500 (negative): payable += {contribution}")
+                else:
+                    net_payable -= amount
+                    result["amounts"]["payable"] = result["amounts"].get("payable", 0.0) - amount
+                    if validation_data:
+                        validation_data.set_value(entry.original_row_index, "payable", -amount)
+                    print(f"  -> SALARY/1500 (positive): payable -= {amount}")
+
+        # Salary = total cash - payable portion
+        salary_amount = converted_bank - abs(net_payable)
+        result["amounts"][nature] = salary_amount
+        result["processed"] = True
+
+        if validation_data:
+            validation_data.set_value(group.original_row_index, nature, salary_amount)
+
+        print(f"  -> SALARY split: {nature}={salary_amount}, payable={result['amounts'].get('payable', 0.0)}")
+
+        # Only overwrite nature_type on non-1500 entries
+        for entry in group.entries:
+            if get_account_type(entry.account_code) != "1500":
                 entry.nature_type = nature
 
         return result

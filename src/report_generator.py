@@ -429,10 +429,12 @@ def _get_section_type_labels(group: TransactionGroup) -> tuple[str, str]:
         
         # Determine section_label based on the actual nature
         nature_categories = ["org", "edu", "oper", "nutrition", "edu_infra"]
-        advance_settlement_categories = ["advance", "settlement", "payable"]
-        
+        advance_settlement_categories = ["advance", "settlement"]
+
         if determined_nature in nature_categories:
             section_label = "Nature"
+        elif determined_nature == "payable":
+            section_label = "Payable"
         elif determined_nature in advance_settlement_categories:
             section_label = "Advance_Settlement"
         else:
