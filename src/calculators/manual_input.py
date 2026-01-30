@@ -300,7 +300,12 @@ class ManualInputProcessor:
             return result
 
         # Case 3: Staff found + has non-1500 entries → split payable/salary
-        converted_bank = abs(convert_amount(group.bank_amount, group.bank_identifier, ex_rate))
+        bank_amount_converted = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
+        non_payable_sum = sum(
+            convert_amount(e.amount, group.bank_identifier, ex_rate)
+            for e in non_payable_entries
+            if e.amount
+        )
 
         # Process 1500 entries as payable
         net_payable = 0.0
@@ -321,13 +326,18 @@ class ManualInputProcessor:
                         validation_data.set_value(entry.original_row_index, "payable", -amount)
                     print(f"  -> SALARY/1500 (positive): payable -= {amount}")
 
-        # Salary = total cash - payable portion
-        salary_amount = converted_bank - abs(net_payable)
+        # Salary = sum of non-1500 entry amounts
+        salary_amount = non_payable_sum
         result["amounts"][nature] = salary_amount
         result["processed"] = True
 
         if validation_data:
             validation_data.set_value(group.original_row_index, nature, salary_amount)
+
+        expected = -bank_amount_converted
+        combined = non_payable_sum + net_payable
+        if abs(combined - expected) > 0.01:
+            print(f"  WARNING: Manual salary sum mismatch! sum+payable={combined}, expected={expected}, diff={combined - expected}")
 
         print(f"  -> SALARY split: {nature}={salary_amount}, payable={result['amounts'].get('payable', 0.0)}")
 
@@ -467,24 +477,39 @@ class ManualInputProcessor:
                             validation_data.set_value(entry.original_row_index, "settlement", abs(amount))
                         print(f"  -> SETTLEMENT entry: settlement += abs({amount})")
 
+            non_payable_sum = sum(
+                convert_amount(entry.amount, group.bank_identifier, ex_rate)
+                for entry in active_entries
+                if entry.amount and get_account_type(entry.account_code) != "1500"
+            )
+
             # Process payable entries (1500) - SIMPLIFIED LOGIC
             # Negative 1500: ADD to payable
             # Positive 1500: SUBTRACT from payable
+            net_payable = 0.0
             for entry in payable_entries:
                 if entry.amount:
                     amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
                     if entry.amount < 0:
                         # Negative 1500: add absolute value
                         result["amounts"]["payable"] = result["amounts"].get("payable", 0.0) + abs(amount)
+                        net_payable += abs(amount)
                         if validation_data:
                             validation_data.set_value(entry.original_row_index, "payable", abs(amount))
                         print(f"  -> PAYABLE (negative) entry: payable += abs({amount})")
                     else:
                         # Positive 1500: subtract
                         result["amounts"]["payable"] = result["amounts"].get("payable", 0.0) - amount
+                        net_payable -= amount
                         if validation_data:
                             validation_data.set_value(entry.original_row_index, "payable", -amount)
                         print(f"  -> PAYABLE (positive) entry: payable -= {amount}")
+
+            if payable_entries and any(get_account_type(e.account_code) != "1500" for e in active_entries):
+                expected = -bank_amount_converted
+                combined = non_payable_sum + net_payable
+                if abs(combined - expected) > 0.01:
+                    print(f"  WARNING: Manual sum mismatch! sum+payable={combined}, expected={expected}, diff={combined - expected}")
 
         print(f"  Final result: {result}")
         return result
