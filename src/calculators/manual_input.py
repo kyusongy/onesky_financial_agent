@@ -231,6 +231,10 @@ class ManualInputProcessor:
                 group.is_processed = True
                 group.assigned_section = ReportSection.MANUAL
                 processed_count += 1
+                if validation_data:
+                    for key, amount in result["amounts"].items():
+                        if amount != 0:
+                            validation_data.set_value(group.original_row_index, key, amount)
                 for key, amount in result["amounts"].items():
                     if key in totals[group.bank_identifier]:
                         old_val = totals[group.bank_identifier][key]
@@ -316,23 +320,16 @@ class ManualInputProcessor:
                     contribution = abs(amount)
                     net_payable += contribution
                     result["amounts"]["payable"] = result["amounts"].get("payable", 0.0) + contribution
-                    if validation_data:
-                        validation_data.set_value(entry.original_row_index, "payable", contribution)
                     print(f"  -> SALARY/1500 (negative): payable += {contribution}")
                 else:
                     net_payable -= amount
                     result["amounts"]["payable"] = result["amounts"].get("payable", 0.0) - amount
-                    if validation_data:
-                        validation_data.set_value(entry.original_row_index, "payable", -amount)
                     print(f"  -> SALARY/1500 (positive): payable -= {amount}")
 
         # Salary = sum of non-1500 entry amounts
         salary_amount = non_payable_sum
         result["amounts"][nature] = salary_amount
         result["processed"] = True
-
-        if validation_data:
-            validation_data.set_value(group.original_row_index, nature, salary_amount)
 
         expected = -bank_amount_converted
         combined = non_payable_sum + net_payable
@@ -357,8 +354,8 @@ class ManualInputProcessor:
         """
         Process group based on account nature from Nature.xlsx.
 
-        - 1230VN / 1250VN → "advance" → Advance section (abs amount)
-        - 1252VN → "settlement" → Settlement section (positive bank_amount → cash_settlement)
+        - 1250VN → "advance" → Advance section (abs amount)
+        - 1230VN / 1252VN → "settlement" → Settlement section (positive bank_amount → cash_settlement)
         - 1500VN → "payable" → Payable section (positive 1500 subtracts from payable)
         """
         result = {"processed": False, "amounts": {}}
@@ -371,17 +368,17 @@ class ManualInputProcessor:
         print(f"Active entries: {len(active_entries)}")
 
         # Collect entries by their account nature
-        advance_entries = []  # 1230, 1250
-        settlement_entries = []  # 1252
+        advance_entries = []  # 1250
+        settlement_entries = []  # 1230, 1252
         payable_entries = []  # 1500
         other_entries = []  # Non-special accounts
 
         for entry in active_entries:
             acct_type = get_account_type(entry.account_code)
-            if acct_type in ("1230", "1250"):
+            if acct_type == "1250":
                 advance_entries.append(entry)
                 entry.nature_type = "advance"
-            elif acct_type == "1252":
+            elif acct_type in ("1230", "1252"):
                 settlement_entries.append(entry)
                 entry.nature_type = "settlement"
             elif acct_type == "1500":
@@ -408,8 +405,6 @@ class ManualInputProcessor:
                 converted = abs(bank_amount_converted)
                 result["amounts"]["advance"] = converted
                 result["processed"] = True
-                if validation_data:
-                    validation_data.set_value(group.original_row_index, "advance", converted)
                 print(f"  -> SINGLE ADVANCE: {converted}")
 
             elif nature == "settlement":
@@ -418,14 +413,10 @@ class ManualInputProcessor:
                     converted = abs(bank_amount_converted)
                     result["amounts"]["cash_settlement"] = converted
                     entry.nature_type = "cash_settlement"
-                    if validation_data:
-                        validation_data.set_value(group.original_row_index, "cash_settlement", converted)
                     print(f"  -> SINGLE SETTLEMENT (positive) → cash_settlement: {converted}")
                 else:
                     converted = abs(bank_amount_converted)
                     result["amounts"]["settlement"] = converted
-                    if validation_data:
-                        validation_data.set_value(group.original_row_index, "settlement", converted)
                     print(f"  -> SINGLE SETTLEMENT: {converted}")
                 result["processed"] = True
 
@@ -433,16 +424,12 @@ class ManualInputProcessor:
                 converted = abs(bank_amount_converted)
                 result["amounts"]["payable"] = converted
                 result["processed"] = True
-                if validation_data:
-                    validation_data.set_value(group.original_row_index, "payable", converted)
                 print(f"  -> SINGLE PAYABLE: {converted}")
             elif nature:
                 # Non-special single-entry (e.g., oper/org/edu) should follow normal nature rules
                 converted = abs(bank_amount_converted)
                 result["amounts"][nature] = converted
                 result["processed"] = True
-                if validation_data:
-                    validation_data.set_value(group.original_row_index, nature, converted)
                 print(f"  -> SINGLE NATURE: {nature} = {converted}")
 
         # Multi-entry groups
@@ -454,8 +441,6 @@ class ManualInputProcessor:
                 if entry.amount and entry.nature_type:
                     amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
                     result["amounts"][entry.nature_type] = result["amounts"].get(entry.nature_type, 0.0) + amount
-                    if validation_data:
-                        validation_data.set_value(entry.original_row_index, entry.nature_type, amount)
                     print(f"  -> OTHER entry: {entry.nature_type} += {amount}")
 
             # Process advance entries (1230/1250)
@@ -463,8 +448,6 @@ class ManualInputProcessor:
                 if entry.amount:
                     amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
                     result["amounts"]["advance"] = result["amounts"].get("advance", 0.0) + abs(amount)
-                    if validation_data:
-                        validation_data.set_value(entry.original_row_index, "advance", abs(amount))
                     print(f"  -> ADVANCE entry: advance += abs({amount})")
 
             # Process settlement entries (1252)
@@ -475,14 +458,10 @@ class ManualInputProcessor:
                         amount = abs(convert_amount(entry.amount, group.bank_identifier, ex_rate))
                         result["amounts"]["cash_settlement"] = result["amounts"].get("cash_settlement", 0.0) + amount
                         entry.nature_type = "cash_settlement"
-                        if validation_data:
-                            validation_data.set_value(entry.original_row_index, "cash_settlement", amount)
                         print(f"  -> SETTLEMENT (positive) → cash_settlement += {amount}")
                     else:
                         amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
                         result["amounts"]["settlement"] = result["amounts"].get("settlement", 0.0) + abs(amount)
-                        if validation_data:
-                            validation_data.set_value(entry.original_row_index, "settlement", abs(amount))
                         print(f"  -> SETTLEMENT entry: settlement += abs({amount})")
 
             non_payable_sum = sum(
@@ -502,15 +481,11 @@ class ManualInputProcessor:
                         # Negative 1500: add absolute value
                         result["amounts"]["payable"] = result["amounts"].get("payable", 0.0) + abs(amount)
                         net_payable += abs(amount)
-                        if validation_data:
-                            validation_data.set_value(entry.original_row_index, "payable", abs(amount))
                         print(f"  -> PAYABLE (negative) entry: payable += abs({amount})")
                     else:
                         # Positive 1500: subtract
                         result["amounts"]["payable"] = result["amounts"].get("payable", 0.0) - amount
                         net_payable -= amount
-                        if validation_data:
-                            validation_data.set_value(entry.original_row_index, "payable", -amount)
                         print(f"  -> PAYABLE (positive) entry: payable -= {amount}")
 
             if payable_entries and any(get_account_type(e.account_code) != "1500" for e in active_entries):

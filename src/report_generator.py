@@ -10,7 +10,12 @@ from io import BytesIO
 from datetime import datetime
 
 from .models import TransactionGroup, TransactionEntry, ProcessingResult, ReportSection, BANK_USD, BANK_VND
-from .validation import ValidationData, VALIDATION_COLUMNS, VALIDATION_COLUMN_DISPLAY
+from .validation import (
+    ValidationData,
+    VALIDATION_COLUMN_DISPLAY,
+    NATURE_VALIDATION_COLUMNS,
+    PROVINCE_VALIDATION_COLUMNS,
+)
 from config.mappings import (
     DEFAULT_OUTPUT_TEMPLATE,
     TEMPLATE_COL_VND,
@@ -27,6 +32,7 @@ from config.mappings import (
 HIGHLIGHT_FILL = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
 HEADER_FILL = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
 HEADER_FONT = Font(color="FFFFFF", bold=True)
+SEPARATOR_FILL = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")
 
 
 class ReportGenerator:
@@ -203,7 +209,7 @@ def generate_marked_transactions(
     - Is_Processed
     - Exchange_Rate
     - Bank
-    - 12 validation columns for per-row contributions
+    - Validation columns for per-row contributions
 
     Args:
         original_file: Path or file-like object of original transaction file
@@ -237,12 +243,19 @@ def generate_marked_transactions(
     col_exchange_rate = max_col + 5
     col_bank = max_col + 6
 
-    # Validation columns (12 columns starting after col_bank)
+    # Validation columns (nature + separator + province)
     validation_col_start = col_bank + 1
-    validation_col_indices = {
+    nature_col_indices = {
         col_name: validation_col_start + i
-        for i, col_name in enumerate(VALIDATION_COLUMNS)
+        for i, col_name in enumerate(NATURE_VALIDATION_COLUMNS)
     }
+    separator_col = validation_col_start + len(NATURE_VALIDATION_COLUMNS)
+    province_col_start = separator_col + 1
+    province_col_indices = {
+        col_name: province_col_start + i
+        for i, col_name in enumerate(PROVINCE_VALIDATION_COLUMNS)
+    }
+    validation_col_indices = {**nature_col_indices, **province_col_indices}
 
     # Set headers for existing columns
     headers = [
@@ -260,8 +273,21 @@ def generate_marked_transactions(
         cell.fill = HEADER_FILL
         cell.font = HEADER_FONT
 
-    # Set headers for validation columns
-    for col_name, col_idx in validation_col_indices.items():
+    # Set headers for validation columns (nature)
+    for col_name, col_idx in nature_col_indices.items():
+        cell = ws.cell(row=header_row, column=col_idx)
+        cell.value = VALIDATION_COLUMN_DISPLAY.get(col_name, col_name)
+        cell.fill = HEADER_FILL
+        cell.font = HEADER_FONT
+
+    # Separator column between nature and province
+    separator_cell = ws.cell(row=header_row, column=separator_col)
+    separator_cell.value = "|"
+    separator_cell.fill = SEPARATOR_FILL
+    separator_cell.font = HEADER_FONT
+
+    # Set headers for validation columns (province)
+    for col_name, col_idx in province_col_indices.items():
         cell = ws.cell(row=header_row, column=col_idx)
         cell.value = VALIDATION_COLUMN_DISPLAY.get(col_name, col_name)
         cell.fill = HEADER_FILL

@@ -55,7 +55,7 @@ onesky_financial_agent/
 **Special Account Mappings:**
 | Account | Nature | Report Section |
 |---------|--------|----------------|
-| 1230VN | Advance | Row 36 (Advance) |
+| 1230VN | Settlement | Row 37 (Settlement) |
 | 1250VN | Advance | Row 36 (Advance) |
 | 1252VN | Settlement | Row 37 (Settlement) |
 | 1500VN | Payable | Row 38 (Payable) |
@@ -123,8 +123,8 @@ Fill this section for Bank 29 and 30 respectively.
 **Note:** Positive settlements (`bank_amount > 0`) go to Income section as "Cash Settlement" instead.
 
 **Additional Source:** Account-based routing from Nature.xlsx:
-- 1230VN / 1250VN → Advance section (use abs amount)
-- 1252VN → Settlement section (positive bank_amount → cash_settlement in Income)
+- 1250VN → Advance section (use abs amount)
+- 1230VN / 1252VN → Settlement section (positive bank_amount → cash_settlement in Income)
 
 ---
 
@@ -188,6 +188,8 @@ These ignored entries are excluded from `group.active_entries`. See `processor.p
 | Has non-1500 entries, staff not found | Skip salary processing | Falls through to account type processing (entries have correct `nature_type` from NatureMapper) |
 | Has non-1500 entries, staff found | Split: 1500 entries → Payable, rest → org/edu | Salary amount = sum of non-1500 entry amounts |
 
+**Note:** If salary/bonus memo is present but staff is not found, ManualInputProcessor falls through to account-type processing. Single-entry non-special accounts (e.g., 73209VN) are treated as normal nature and recorded in nature totals.
+
 **Key behavior:** Only non-1500 entries get their `nature_type` overwritten to the staff's nature (org/edu). 1500 entries retain `nature_type = "payable"` as assigned by NatureMapper.
 
 **Code Location:** `nature.py:236-243` (salary/bonus detection, after entry assignment), `manual_input.py:267-338` (three-case processing)
@@ -225,6 +227,8 @@ vnbd, vnbg, vnla, vnhcm, vnbn, vnother, caobang, province_manual
 #### B. Ignored Groups
 
 Groups are skipped only when all active entries are `settlement`, `advance`, `cash_settlement`, or `payable`.
+
+**Additional Rule:** Advance/settlement entries are excluded from province totals even when mixed with other entries in a group.
 
 #### C. Province Assignment Logic
 
@@ -500,8 +504,8 @@ The application will be available at `http://localhost:8501`
    │   ├─> Staff not found → fall through to account type processing
    │   └─> Staff found → split: 1500 entries → payable, rest → org/edu
    ├─> Priority 2: Account type processing based on Nature.xlsx
-   │   ├─> 1230VN / 1250VN → Advance section
-   │   ├─> 1252VN → Settlement section (positive → cash_settlement)
+   │   ├─> 1250VN → Advance section
+   │   ├─> 1230VN / 1252VN → Settlement section (positive → cash_settlement)
    │   └─> 1500VN → Payable section
    ├─> Handle 1500 offset logic (positive 1500 subtracts from Payable only)
    └─> Records row contributions to respective sections
