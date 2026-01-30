@@ -436,6 +436,14 @@ class ManualInputProcessor:
                 if validation_data:
                     validation_data.set_value(group.original_row_index, "payable", converted)
                 print(f"  -> SINGLE PAYABLE: {converted}")
+            elif nature:
+                # Non-special single-entry (e.g., oper/org/edu) should follow normal nature rules
+                converted = abs(bank_amount_converted)
+                result["amounts"][nature] = converted
+                result["processed"] = True
+                if validation_data:
+                    validation_data.set_value(group.original_row_index, nature, converted)
+                print(f"  -> SINGLE NATURE: {nature} = {converted}")
 
         # Multi-entry groups
         elif num_entries > 1:
@@ -534,6 +542,9 @@ def mark_processed_groups(
 
 def _get_processed_section(group: TransactionGroup) -> Optional[ReportSection]:
     """Determine which section processed this group."""
+    # Salary/bonus groups should be handled by ManualInputProcessor
+    if group.any_memo_contains("salary") or group.any_memo_contains("bonus"):
+        return None
     # Income checks
     if group.is_deposit():
         if group.any_name_contains("onesky"):

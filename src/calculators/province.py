@@ -332,7 +332,10 @@ class ProvinceMapper:
             return account_code.startswith("1500")
 
         payable_entries = [e for e in active_entries if _is_1500(e)]
-        non_payable_entries = [e for e in active_entries if not _is_1500(e)]
+        non_payable_entries = [
+            e for e in active_entries
+            if not _is_1500(e) and (e.nature_type not in ("advance", "settlement", "cash_settlement"))
+        ]
 
         non_payable_sum = sum(
             convert_amount(e.amount, group.bank_identifier, ex_rate)
