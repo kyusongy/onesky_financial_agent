@@ -14,18 +14,18 @@
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-19 00:00:00, bank: 29
-Bank amount: 2612500000.0, converted: 104500.0
+Bank amount: 2612500000.0, converted: 100000.0
 Active entries count: 1
   Entry: account=2102VN, amount=2612500000.0, nature_type=None, is_manual_trigger=False
   Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {}}
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-25 00:00:00, bank: 29
-Bank amount: -28986.0, converted: -1.15944
+Bank amount: -28986.0, converted: -1.0999962050776062
 Active entries count: 1
   Entry: account=73209VN, amount=28986.0, nature_type=oper, is_manual_trigger=False
-  -> SINGLE-ENTRY mode: oper = abs(-1.15944) = 1.15944
-  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 1.15944}}
+  -> SINGLE-ENTRY mode: oper = abs(-1.0999962050776062) = 1.0999962050776062
+  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 1.0999962050776062}}
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-02 00:00:00, bank: 30
@@ -458,52 +458,42 @@ Group date: 2025-12-16 00:00:00, bank: 30
 Bank amount: -431220000.0, converted: -431220000.0
 Active entries count: 1
   Entry: account=1250VN, amount=431220000.0, nature_type=advance, is_manual_trigger=True
-  -> MANUAL REVIEW required, amount=-431220000.0
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-16 00:00:00, bank: 30
 Bank amount: -142303.0, converted: -142303.0
 Active entries count: 1
   Entry: account=73209VN, amount=142303.0, nature_type=oper, is_manual_trigger=False
-  -> SINGLE-ENTRY mode: oper = abs(-142303.0) = 142303.0
-  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 142303.0}}
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-16 00:00:00, bank: 30
 Bank amount: -349550000.0, converted: -349550000.0
 Active entries count: 1
   Entry: account=1250VN, amount=349550000.0, nature_type=advance, is_manual_trigger=True
-  -> MANUAL REVIEW required, amount=-349550000.0
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-16 00:00:00, bank: 30
 Bank amount: -115352.0, converted: -115352.0
 Active entries count: 1
   Entry: account=73209VN, amount=115352.0, nature_type=oper, is_manual_trigger=False
-  -> SINGLE-ENTRY mode: oper = abs(-115352.0) = 115352.0
-  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 115352.0}}
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-16 00:00:00, bank: 30
 Bank amount: -501350000.0, converted: -501350000.0
 Active entries count: 1
   Entry: account=1250VN, amount=501350000.0, nature_type=advance, is_manual_trigger=True
-  -> MANUAL REVIEW required, amount=-501350000.0
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-16 00:00:00, bank: 30
 Bank amount: -220594.0, converted: -220594.0
 Active entries count: 1
   Entry: account=73209VN, amount=220594.0, nature_type=oper, is_manual_trigger=False
-  -> SINGLE-ENTRY mode: oper = abs(-220594.0) = 220594.0
-  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 220594.0}}
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-18 00:00:00, bank: 30
 Bank amount: 842500.0, converted: 842500.0
 Active entries count: 1
   Entry: account=1230VN, amount=-842500.0, nature_type=advance, is_manual_trigger=True
-  -> MANUAL REVIEW required, amount=842500.0
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-19 00:00:00, bank: 30
@@ -1093,30 +1083,24 @@ Group date: 2025-12-22 00:00:00, bank: 30
 Bank amount: -7583200.0, converted: -7583200.0
 Active entries count: 1
   Entry: account=1250VN, amount=7583200.0, nature_type=advance, is_manual_trigger=True
-  -> MANUAL REVIEW required, amount=-7583200.0
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-22 00:00:00, bank: 30
 Bank amount: -11000.0, converted: -11000.0
 Active entries count: 1
   Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
-  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
-  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-22 00:00:00, bank: 30
 Bank amount: -17284000.0, converted: -17284000.0
 Active entries count: 1
   Entry: account=1250VN, amount=17284000.0, nature_type=advance, is_manual_trigger=True
-  -> MANUAL REVIEW required, amount=-17284000.0
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-22 00:00:00, bank: 30
 Bank amount: -11000.0, converted: -11000.0
 Active entries count: 1
   Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
-  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
-  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-22 00:00:00, bank: 30
@@ -1408,14 +1392,12 @@ Group date: 2025-12-30 00:00:00, bank: 30
 Bank amount: 5520000.0, converted: 5520000.0
 Active entries count: 1
   Entry: account=1230VN, amount=-5520000.0, nature_type=advance, is_manual_trigger=True
-  -> MANUAL REVIEW required, amount=5520000.0
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-30 00:00:00, bank: 30
 Bank amount: 30000576.0, converted: 30000576.0
 Active entries count: 1
   Entry: account=1230VN, amount=-30000576.0, nature_type=advance, is_manual_trigger=True
-  -> MANUAL REVIEW required, amount=30000576.0
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-31 00:00:00, bank: 30
@@ -1595,15 +1577,12 @@ Bank amount: -11080256.0, converted: -11080256.0
 Active entries count: 2
   Entry: account=73102VN, amount=11084000.0, nature_type=edu, is_manual_trigger=False
   Entry: account=1230VN, amount=-3744.0, nature_type=advance, is_manual_trigger=True
-  -> MANUAL REVIEW required, amount=-11080256.0
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-31 00:00:00, bank: 30
 Bank amount: -11000.0, converted: -11000.0
 Active entries count: 1
   Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
-  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
-  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-31 00:00:00, bank: 30
@@ -1675,15 +1654,12 @@ Bank amount: -828800.0, converted: -828800.0
 Active entries count: 2
   Entry: account=1250VN, amount=-7583200.0, nature_type=advance, is_manual_trigger=True
   Entry: account=72105VN, amount=8412000.0, nature_type=edu, is_manual_trigger=False
-  -> MANUAL REVIEW required, amount=-828800.0
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-31 00:00:00, bank: 30
 Bank amount: -11000.0, converted: -11000.0
 Active entries count: 1
   Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
-  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
-  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-31 00:00:00, bank: 30
@@ -1707,15 +1683,12 @@ Bank amount: -96557542.0, converted: -96557542.0
 Active entries count: 2
   Entry: account=1250VN, amount=155409188.0, nature_type=advance, is_manual_trigger=True
   Entry: account=1230VN, amount=-58851646.0, nature_type=advance, is_manual_trigger=True
-  -> MANUAL REVIEW required, amount=-96557542.0
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-31 00:00:00, bank: 30
 Bank amount: -31864.0, converted: -31864.0
 Active entries count: 1
   Entry: account=73209VN, amount=31864.0, nature_type=oper, is_manual_trigger=False
-  -> SINGLE-ENTRY mode: oper = abs(-31864.0) = 31864.0
-  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 31864.0}}
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-31 00:00:00, bank: 30
@@ -1969,15 +1942,12 @@ Active entries count: 5
   Entry: account=72105VN, amount=18030000.0, nature_type=edu, is_manual_trigger=False
   Entry: account=72105VN, amount=28970284.0, nature_type=edu, is_manual_trigger=False
   Entry: account=72105VN, amount=8275706.0, nature_type=edu, is_manual_trigger=False
-  -> MANUAL REVIEW required, amount=-4431990.0
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-31 00:00:00, bank: 30
 Bank amount: -11000.0, converted: -11000.0
 Active entries count: 1
   Entry: account=73209VN, amount=11000.0, nature_type=oper, is_manual_trigger=False
-  -> SINGLE-ENTRY mode: oper = abs(-11000.0) = 11000.0
-  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 11000.0}}
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-31 00:00:00, bank: 30
@@ -2082,8 +2052,6 @@ Group date: 2025-12-31 00:00:00, bank: 30
 Bank amount: -140800.0, converted: -140800.0
 Active entries count: 1
   Entry: account=73209VN, amount=140800.0, nature_type=oper, is_manual_trigger=False
-  -> SINGLE-ENTRY mode: oper = abs(-140800.0) = 140800.0
-  Final result: {'is_manual': False, 'manual_amount': 0.0, 'nature_amounts': {'oper': 140800.0}}
 
 === DEBUG _process_group (NatureMapper) ===
 Group date: 2025-12-31 00:00:00, bank: 30
@@ -2498,12 +2466,12 @@ Active entries count: 5
   -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor
 
 === DEBUG: nature_totals AFTER nature_mapper.process_groups ===
-VND totals: {'edu': 400922868.0, 'oper': 88718912.0, 'manual': 4357217468.0}
-USD totals: {'oper': 1.15944}
-Manual groups count: 98
+VND totals: {'edu': 400922868.0, 'oper': 88012999.0, 'manual': 2900968604.0}
+USD totals: {'oper': 1.0999962050776062}
+Manual groups count: 86
 
 === DEBUG: After mark_processed_groups ===
-Total processed groups: 205
+Total processed groups: 204
 
 === DEBUG: Loading Staff_&_Allocation.xlsx ===
   Shape: (42, 11)
@@ -2512,7 +2480,7 @@ Total processed groups: 205
   Loaded 40 allocation entries
 
 === DEBUG: process_manual_groups ===
-Total manual groups to process: 98
+Total manual groups to process: 86
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-02 00:00:00, bank: 30
@@ -2895,7 +2863,17 @@ Active entries: 1
   Final result: {'processed': True, 'amounts': {'payable': 3659092.0}}
   [31] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'payable': 3659092.0}
   [31] ADD payable: 1192917339.0 + 3659092.0 = 1196576431.0
-  [32] SKIP (already processed): date=2025-12-02 00:00:00, section=ReportSection.NATURE
+  [32] SALARY/BONUS memo but staff not found: name=Vietcombank
+
+=== DEBUG _process_by_account_nature ===
+Group date: 2025-12-02 00:00:00, bank: 30
+Bank amount: -136400.0, converted: -136400.0
+Active entries: 1
+  Entry: account=73209VN, amount=136400.0, nature=oper
+  -> SINGLE NATURE: oper = 136400.0
+  Final result: {'processed': True, 'amounts': {'oper': 136400.0}}
+  [32] ACCOUNT NATURE: date=2025-12-02 00:00:00, result={'oper': 136400.0}
+  [32] ADD oper: 0.0 + 136400.0 = 136400.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-08 00:00:00, bank: 30
@@ -2919,10 +2897,6 @@ Active entries: 1
   Final result: {'processed': True, 'amounts': {'advance': 16000000.0}}
   [34] ACCOUNT NATURE: date=2025-12-12 00:00:00, result={'advance': 16000000.0}
   [34] ADD advance: 0.0 + 16000000.0 = 16000000.0
-  [35] SKIP (already processed): date=2025-12-16 00:00:00, section=ReportSection.ADVANCE_SETTLEMENT
-  [36] SKIP (already processed): date=2025-12-16 00:00:00, section=ReportSection.ADVANCE_SETTLEMENT
-  [37] SKIP (already processed): date=2025-12-16 00:00:00, section=ReportSection.ADVANCE_SETTLEMENT
-  [38] SKIP (already processed): date=2025-12-18 00:00:00, section=ReportSection.INCOME
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-19 00:00:00, bank: 30
@@ -2931,8 +2905,8 @@ Active entries: 1
   Entry: account=1500VN, amount=-6000000.0, nature=payable
   -> SINGLE PAYABLE: 6000000.0
   Final result: {'processed': True, 'amounts': {'payable': 6000000.0}}
-  [39] ACCOUNT NATURE: date=2025-12-19 00:00:00, result={'payable': 6000000.0}
-  [39] ADD payable: 1202280222.0 + 6000000.0 = 1208280222.0
+  [35] ACCOUNT NATURE: date=2025-12-19 00:00:00, result={'payable': 6000000.0}
+  [35] ADD payable: 1202280222.0 + 6000000.0 = 1208280222.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-22 00:00:00, bank: 30
@@ -2943,9 +2917,9 @@ Active entries: 2
   -> OTHER entry: org += 26250000.0
   -> PAYABLE (positive) entry: payable -= 2625000.0
   Final result: {'processed': True, 'amounts': {'org': 26250000.0, 'payable': -2625000.0}}
-  [40] ACCOUNT NATURE: date=2025-12-22 00:00:00, result={'org': 26250000.0, 'payable': -2625000.0}
-  [40] ADD org: 960540.0 + 26250000.0 = 27210540.0
-  [40] ADD payable: 1208280222.0 + -2625000.0 = 1205655222.0
+  [36] ACCOUNT NATURE: date=2025-12-22 00:00:00, result={'org': 26250000.0, 'payable': -2625000.0}
+  [36] ADD org: 960540.0 + 26250000.0 = 27210540.0
+  [36] ADD payable: 1208280222.0 + -2625000.0 = 1205655222.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-22 00:00:00, bank: 30
@@ -2968,12 +2942,10 @@ Active entries: 8
   -> PAYABLE (positive) entry: payable -= 378000.0
   -> PAYABLE (positive) entry: payable -= 940000.0
   Final result: {'processed': True, 'amounts': {'edu': 33989000.0, 'advance': 1161100.0, 'payable': -2640000.0}}
-  [41] ACCOUNT NATURE: date=2025-12-22 00:00:00, result={'edu': 33989000.0, 'advance': 1161100.0, 'payable': -2640000.0}
-  [41] ADD edu: 0.0 + 33989000.0 = 33989000.0
-  [41] ADD advance: 16000000.0 + 1161100.0 = 17161100.0
-  [41] ADD payable: 1205655222.0 + -2640000.0 = 1203015222.0
-  [42] SKIP (already processed): date=2025-12-22 00:00:00, section=ReportSection.ADVANCE_SETTLEMENT
-  [43] SKIP (already processed): date=2025-12-22 00:00:00, section=ReportSection.ADVANCE_SETTLEMENT
+  [37] ACCOUNT NATURE: date=2025-12-22 00:00:00, result={'edu': 33989000.0, 'advance': 1161100.0, 'payable': -2640000.0}
+  [37] ADD edu: 0.0 + 33989000.0 = 33989000.0
+  [37] ADD advance: 16000000.0 + 1161100.0 = 17161100.0
+  [37] ADD payable: 1205655222.0 + -2640000.0 = 1203015222.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-29 00:00:00, bank: 30
@@ -2982,8 +2954,8 @@ Active entries: 1
   Entry: account=1500VN, amount=-235096633.0, nature=payable
   -> SINGLE PAYABLE: 235096633.0
   Final result: {'processed': True, 'amounts': {'payable': 235096633.0}}
-  [44] ACCOUNT NATURE: date=2025-12-29 00:00:00, result={'payable': 235096633.0}
-  [44] ADD payable: 1203015222.0 + 235096633.0 = 1438111855.0
+  [38] ACCOUNT NATURE: date=2025-12-29 00:00:00, result={'payable': 235096633.0}
+  [38] ADD payable: 1203015222.0 + 235096633.0 = 1438111855.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-30 00:00:00, bank: 30
@@ -2994,9 +2966,9 @@ Active entries: 2
   -> OTHER entry: oper += 51987960.0
   -> ADVANCE entry: advance += abs(-15000000.0)
   Final result: {'processed': True, 'amounts': {'oper': 51987960.0, 'advance': 15000000.0}}
-  [45] ACCOUNT NATURE: date=2025-12-30 00:00:00, result={'oper': 51987960.0, 'advance': 15000000.0}
-  [45] ADD oper: 0.0 + 51987960.0 = 51987960.0
-  [45] ADD advance: 17161100.0 + 15000000.0 = 32161100.0
+  [39] ACCOUNT NATURE: date=2025-12-30 00:00:00, result={'oper': 51987960.0, 'advance': 15000000.0}
+  [39] ADD oper: 136400.0 + 51987960.0 = 52124360.0
+  [39] ADD advance: 17161100.0 + 15000000.0 = 32161100.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-30 00:00:00, bank: 30
@@ -3007,9 +2979,9 @@ Active entries: 2
   -> OTHER entry: org += 19649993.0
   -> PAYABLE (positive) entry: payable -= 1964999.0
   Final result: {'processed': True, 'amounts': {'org': 19649993.0, 'payable': -1964999.0}}
-  [46] ACCOUNT NATURE: date=2025-12-30 00:00:00, result={'org': 19649993.0, 'payable': -1964999.0}
-  [46] ADD org: 27210540.0 + 19649993.0 = 46860533.0
-  [46] ADD payable: 1438111855.0 + -1964999.0 = 1436146856.0
+  [40] ACCOUNT NATURE: date=2025-12-30 00:00:00, result={'org': 19649993.0, 'payable': -1964999.0}
+  [40] ADD org: 27210540.0 + 19649993.0 = 46860533.0
+  [40] ADD payable: 1438111855.0 + -1964999.0 = 1436146856.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-30 00:00:00, bank: 30
@@ -3020,11 +2992,9 @@ Active entries: 2
   -> OTHER entry: edu += 8200000.0
   -> ADVANCE entry: advance += abs(41000000.0)
   Final result: {'processed': True, 'amounts': {'edu': 8200000.0, 'advance': 41000000.0}}
-  [47] ACCOUNT NATURE: date=2025-12-30 00:00:00, result={'edu': 8200000.0, 'advance': 41000000.0}
-  [47] ADD edu: 33989000.0 + 8200000.0 = 42189000.0
-  [47] ADD advance: 32161100.0 + 41000000.0 = 73161100.0
-  [48] SKIP (already processed): date=2025-12-30 00:00:00, section=ReportSection.INCOME
-  [49] SKIP (already processed): date=2025-12-30 00:00:00, section=ReportSection.INCOME
+  [41] ACCOUNT NATURE: date=2025-12-30 00:00:00, result={'edu': 8200000.0, 'advance': 41000000.0}
+  [41] ADD edu: 33989000.0 + 8200000.0 = 42189000.0
+  [41] ADD advance: 32161100.0 + 41000000.0 = 73161100.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-31 00:00:00, bank: 30
@@ -3055,9 +3025,9 @@ Active entries: 12
   -> PAYABLE (positive) entry: payable -= 400000.0
   -> PAYABLE (positive) entry: payable -= 200000.0
   Final result: {'processed': True, 'amounts': {'edu': 40000000.0, 'payable': -4000000.0}}
-  [50] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 40000000.0, 'payable': -4000000.0}
-  [50] ADD edu: 42189000.0 + 40000000.0 = 82189000.0
-  [50] ADD payable: 1436146856.0 + -4000000.0 = 1432146856.0
+  [42] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 40000000.0, 'payable': -4000000.0}
+  [42] ADD edu: 42189000.0 + 40000000.0 = 82189000.0
+  [42] ADD payable: 1436146856.0 + -4000000.0 = 1432146856.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-31 00:00:00, bank: 30
@@ -3068,9 +3038,9 @@ Active entries: 2
   -> OTHER entry: org += 27750000.0
   -> PAYABLE (positive) entry: payable -= 2775000.0
   Final result: {'processed': True, 'amounts': {'org': 27750000.0, 'payable': -2775000.0}}
-  [51] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'org': 27750000.0, 'payable': -2775000.0}
-  [51] ADD org: 46860533.0 + 27750000.0 = 74610533.0
-  [51] ADD payable: 1432146856.0 + -2775000.0 = 1429371856.0
+  [43] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'org': 27750000.0, 'payable': -2775000.0}
+  [43] ADD org: 46860533.0 + 27750000.0 = 74610533.0
+  [43] ADD payable: 1432146856.0 + -2775000.0 = 1429371856.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-31 00:00:00, bank: 30
@@ -3083,10 +3053,10 @@ Active entries: 3
   -> ADVANCE entry: advance += abs(-17285878.0)
   -> PAYABLE (positive) entry: payable -= 4800000.0
   Final result: {'processed': True, 'amounts': {'org': 48000000.0, 'advance': 17285878.0, 'payable': -4800000.0}}
-  [52] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'org': 48000000.0, 'advance': 17285878.0, 'payable': -4800000.0}
-  [52] ADD org: 74610533.0 + 48000000.0 = 122610533.0
-  [52] ADD advance: 73161100.0 + 17285878.0 = 90446978.0
-  [52] ADD payable: 1429371856.0 + -4800000.0 = 1424571856.0
+  [44] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'org': 48000000.0, 'advance': 17285878.0, 'payable': -4800000.0}
+  [44] ADD org: 74610533.0 + 48000000.0 = 122610533.0
+  [44] ADD advance: 73161100.0 + 17285878.0 = 90446978.0
+  [44] ADD payable: 1429371856.0 + -4800000.0 = 1424571856.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-31 00:00:00, bank: 30
@@ -3097,12 +3067,9 @@ Active entries: 2
   -> OTHER entry: org += 14000000.0
   -> PAYABLE (positive) entry: payable -= 1400000.0
   Final result: {'processed': True, 'amounts': {'org': 14000000.0, 'payable': -1400000.0}}
-  [53] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'org': 14000000.0, 'payable': -1400000.0}
-  [53] ADD org: 122610533.0 + 14000000.0 = 136610533.0
-  [53] ADD payable: 1424571856.0 + -1400000.0 = 1423171856.0
-  [54] SKIP (already processed): date=2025-12-31 00:00:00, section=ReportSection.ADVANCE_SETTLEMENT
-  [55] SKIP (already processed): date=2025-12-31 00:00:00, section=ReportSection.ADVANCE_SETTLEMENT
-  [56] SKIP (already processed): date=2025-12-31 00:00:00, section=ReportSection.ADVANCE_SETTLEMENT
+  [45] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'org': 14000000.0, 'payable': -1400000.0}
+  [45] ADD org: 122610533.0 + 14000000.0 = 136610533.0
+  [45] ADD payable: 1424571856.0 + -1400000.0 = 1423171856.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-31 00:00:00, bank: 30
@@ -3111,8 +3078,8 @@ Active entries: 1
   Entry: account=1230VN, amount=9000000.0, nature=advance
   -> SINGLE ADVANCE: 9000000.0
   Final result: {'processed': True, 'amounts': {'advance': 9000000.0}}
-  [57] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'advance': 9000000.0}
-  [57] ADD advance: 90446978.0 + 9000000.0 = 99446978.0
+  [46] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'advance': 9000000.0}
+  [46] ADD advance: 90446978.0 + 9000000.0 = 99446978.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-31 00:00:00, bank: 30
@@ -3123,9 +3090,9 @@ Active entries: 2
   -> OTHER entry: edu += 2460000.0
   -> PAYABLE (positive) entry: payable -= 200000.0
   Final result: {'processed': True, 'amounts': {'edu': 2460000.0, 'payable': -200000.0}}
-  [58] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 2460000.0, 'payable': -200000.0}
-  [58] ADD edu: 82189000.0 + 2460000.0 = 84649000.0
-  [58] ADD payable: 1423171856.0 + -200000.0 = 1422971856.0
+  [47] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 2460000.0, 'payable': -200000.0}
+  [47] ADD edu: 82189000.0 + 2460000.0 = 84649000.0
+  [47] ADD payable: 1423171856.0 + -200000.0 = 1422971856.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-31 00:00:00, bank: 30
@@ -3136,9 +3103,9 @@ Active entries: 2
   -> OTHER entry: edu += 2460000.0
   -> PAYABLE (positive) entry: payable -= 200000.0
   Final result: {'processed': True, 'amounts': {'edu': 2460000.0, 'payable': -200000.0}}
-  [59] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 2460000.0, 'payable': -200000.0}
-  [59] ADD edu: 84649000.0 + 2460000.0 = 87109000.0
-  [59] ADD payable: 1422971856.0 + -200000.0 = 1422771856.0
+  [48] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 2460000.0, 'payable': -200000.0}
+  [48] ADD edu: 84649000.0 + 2460000.0 = 87109000.0
+  [48] ADD payable: 1422971856.0 + -200000.0 = 1422771856.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-31 00:00:00, bank: 30
@@ -3149,9 +3116,9 @@ Active entries: 2
   -> OTHER entry: edu += 38500000.0
   -> PAYABLE (positive) entry: payable -= 3850000.0
   Final result: {'processed': True, 'amounts': {'edu': 38500000.0, 'payable': -3850000.0}}
-  [60] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 38500000.0, 'payable': -3850000.0}
-  [60] ADD edu: 87109000.0 + 38500000.0 = 125609000.0
-  [60] ADD payable: 1422771856.0 + -3850000.0 = 1418921856.0
+  [49] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 38500000.0, 'payable': -3850000.0}
+  [49] ADD edu: 87109000.0 + 38500000.0 = 125609000.0
+  [49] ADD payable: 1422771856.0 + -3850000.0 = 1418921856.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-31 00:00:00, bank: 30
@@ -3162,9 +3129,9 @@ Active entries: 2
   -> OTHER entry: edu += 15750000.0
   -> PAYABLE (positive) entry: payable -= 1575000.0
   Final result: {'processed': True, 'amounts': {'edu': 15750000.0, 'payable': -1575000.0}}
-  [61] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 15750000.0, 'payable': -1575000.0}
-  [61] ADD edu: 125609000.0 + 15750000.0 = 141359000.0
-  [61] ADD payable: 1418921856.0 + -1575000.0 = 1417346856.0
+  [50] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 15750000.0, 'payable': -1575000.0}
+  [50] ADD edu: 125609000.0 + 15750000.0 = 141359000.0
+  [50] ADD payable: 1418921856.0 + -1575000.0 = 1417346856.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-31 00:00:00, bank: 30
@@ -3175,9 +3142,9 @@ Active entries: 2
   -> OTHER entry: edu += 12250000.0
   -> PAYABLE (positive) entry: payable -= 1225000.0
   Final result: {'processed': True, 'amounts': {'edu': 12250000.0, 'payable': -1225000.0}}
-  [62] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 12250000.0, 'payable': -1225000.0}
-  [62] ADD edu: 141359000.0 + 12250000.0 = 153609000.0
-  [62] ADD payable: 1417346856.0 + -1225000.0 = 1416121856.0
+  [51] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 12250000.0, 'payable': -1225000.0}
+  [51] ADD edu: 141359000.0 + 12250000.0 = 153609000.0
+  [51] ADD payable: 1417346856.0 + -1225000.0 = 1416121856.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-31 00:00:00, bank: 30
@@ -3188,10 +3155,9 @@ Active entries: 2
   -> OTHER entry: edu += 11423409.0
   -> PAYABLE (positive) entry: payable -= 1142341.0
   Final result: {'processed': True, 'amounts': {'edu': 11423409.0, 'payable': -1142341.0}}
-  [63] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 11423409.0, 'payable': -1142341.0}
-  [63] ADD edu: 153609000.0 + 11423409.0 = 165032409.0
-  [63] ADD payable: 1416121856.0 + -1142341.0 = 1414979515.0
-  [64] SKIP (already processed): date=2025-12-31 00:00:00, section=ReportSection.ADVANCE_SETTLEMENT
+  [52] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 11423409.0, 'payable': -1142341.0}
+  [52] ADD edu: 153609000.0 + 11423409.0 = 165032409.0
+  [52] ADD payable: 1416121856.0 + -1142341.0 = 1414979515.0
 
 === DEBUG _process_by_account_nature ===
 Group date: 2025-12-31 00:00:00, bank: 30
@@ -3206,215 +3172,215 @@ Active entries: 4
   -> PAYABLE (positive) entry: payable -= 1338000.0
   -> PAYABLE (positive) entry: payable -= 613000.0
   Final result: {'processed': True, 'amounts': {'edu': 22862800.0, 'payable': -1951000.0}}
-  [65] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 22862800.0, 'payable': -1951000.0}
-  [65] ADD edu: 165032409.0 + 22862800.0 = 187895209.0
-  [65] ADD payable: 1414979515.0 + -1951000.0 = 1413028515.0
+  [53] ACCOUNT NATURE: date=2025-12-31 00:00:00, result={'edu': 22862800.0, 'payable': -1951000.0}
+  [53] ADD edu: 165032409.0 + 22862800.0 = 187895209.0
+  [53] ADD payable: 1414979515.0 + -1951000.0 = 1413028515.0
   -> SALARY/1500 (positive): payable -= 123233432.0
   -> SALARY split: org=352095520.0, payable=-123233432.0
-  [66] SALARY/BONUS: date=2025-12-31 00:00:00, name=Hien Thi Hien Vo, result={'payable': -123233432.0, 'org': 352095520.0}
-  [66] ADD payable: 1413028515.0 + -123233432.0 = 1289795083.0
-  [66] ADD org: 136610533.0 + 352095520.0 = 488706053.0
+  [54] SALARY/BONUS: date=2025-12-31 00:00:00, name=Hien Thi Hien Vo, result={'payable': -123233432.0, 'org': 352095520.0}
+  [54] ADD payable: 1413028515.0 + -123233432.0 = 1289795083.0
+  [54] ADD org: 136610533.0 + 352095520.0 = 488706053.0
   -> SALARY/1500 (positive): payable -= 18121839.0
   -> SALARY/1500 (positive): payable -= 15333896.0
   -> SALARY split: org=75737258.0, payable=-33455735.0
-  [67] SALARY/BONUS: date=2025-12-31 00:00:00, name=Thuy Thi Bich Thuy Tran, result={'payable': -33455735.0, 'org': 75737258.0}
-  [67] ADD payable: 1289795083.0 + -33455735.0 = 1256339348.0
-  [67] ADD org: 488706053.0 + 75737258.0 = 564443311.0
+  [55] SALARY/BONUS: date=2025-12-31 00:00:00, name=Thuy Thi Bich Thuy Tran, result={'payable': -33455735.0, 'org': 75737258.0}
+  [55] ADD payable: 1289795083.0 + -33455735.0 = 1256339348.0
+  [55] ADD org: 488706053.0 + 75737258.0 = 564443311.0
   -> SALARY/1500 (positive): payable -= 21981267.0
   -> SALARY/1500 (positive): payable -= 15483132.0
   -> SALARY split: edu=83366116.0, payable=-37464399.0
-  [68] SALARY/BONUS: date=2025-12-31 00:00:00, name=Tran Thi Que Chi, result={'payable': -37464399.0, 'edu': 83366116.0}
-  [68] ADD payable: 1256339348.0 + -37464399.0 = 1218874949.0
-  [68] ADD edu: 187895209.0 + 83366116.0 = 271261325.0
+  [56] SALARY/BONUS: date=2025-12-31 00:00:00, name=Tran Thi Que Chi, result={'payable': -37464399.0, 'edu': 83366116.0}
+  [56] ADD payable: 1256339348.0 + -37464399.0 = 1218874949.0
+  [56] ADD edu: 187895209.0 + 83366116.0 = 271261325.0
   -> SALARY/1500 (positive): payable -= 15726096.0
   -> SALARY/1500 (positive): payable -= 15205906.0
   -> SALARY split: org=69194453.00000001, payable=-30932002.0
-  [69] SALARY/BONUS: date=2025-12-31 00:00:00, name=Maggie Huyen Nguyen, result={'payable': -30932002.0, 'org': 69194453.00000001}
-  [69] ADD payable: 1218874949.0 + -30932002.0 = 1187942947.0
-  [69] ADD org: 564443311.0 + 69194453.00000001 = 633637764.0
+  [57] SALARY/BONUS: date=2025-12-31 00:00:00, name=Maggie Huyen Nguyen, result={'payable': -30932002.0, 'org': 69194453.00000001}
+  [57] ADD payable: 1218874949.0 + -30932002.0 = 1187942947.0
+  [57] ADD org: 564443311.0 + 69194453.00000001 = 633637764.0
   -> SALARY/1500 (positive): payable -= 9673865.0
   -> SALARY/1500 (positive): payable -= 13970133.0
   -> SALARY split: org=53583733.0, payable=-23643998.0
-  [70] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Hong Kim, result={'payable': -23643998.0, 'org': 53583733.0}
-  [70] ADD payable: 1187942947.0 + -23643998.0 = 1164298949.0
-  [70] ADD org: 633637764.0 + 53583733.0 = 687221497.0
+  [58] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Hong Kim, result={'payable': -23643998.0, 'org': 53583733.0}
+  [58] ADD payable: 1187942947.0 + -23643998.0 = 1164298949.0
+  [58] ADD org: 633637764.0 + 53583733.0 = 687221497.0
   -> SALARY/1500 (positive): payable -= 5217912.0
   -> SALARY/1500 (positive): payable -= 8879531.0
   -> SALARY split: edu=34058265.0, payable=-14097443.0
-  [71] SALARY/BONUS: date=2025-12-31 00:00:00, name=Hoang Thi Kieu Oanh, result={'payable': -14097443.0, 'edu': 34058265.0}
-  [71] ADD payable: 1164298949.0 + -14097443.0 = 1150201506.0
-  [71] ADD edu: 271261325.0 + 34058265.0 = 305319590.0
+  [59] SALARY/BONUS: date=2025-12-31 00:00:00, name=Hoang Thi Kieu Oanh, result={'payable': -14097443.0, 'edu': 34058265.0}
+  [59] ADD payable: 1164298949.0 + -14097443.0 = 1150201506.0
+  [59] ADD edu: 271261325.0 + 34058265.0 = 305319590.0
   -> SALARY/1500 (positive): payable -= 17301641.0
   -> SALARY/1500 (positive): payable -= 15316796.0
   -> SALARY split: edu=74863118.0, payable=-32618437.0
-  [72] SALARY/BONUS: date=2025-12-31 00:00:00, name=Pham Thi  Dieu Loan, result={'payable': -32618437.0, 'edu': 74863118.0}
-  [72] ADD payable: 1150201506.0 + -32618437.0 = 1117583069.0
-  [72] ADD edu: 305319590.0 + 74863118.0 = 380182708.0
+  [60] SALARY/BONUS: date=2025-12-31 00:00:00, name=Pham Thi  Dieu Loan, result={'payable': -32618437.0, 'edu': 74863118.0}
+  [60] ADD payable: 1150201506.0 + -32618437.0 = 1117583069.0
+  [60] ADD edu: 305319590.0 + 74863118.0 = 380182708.0
   -> SALARY/1500 (positive): payable -= 2398072.0
   -> SALARY/1500 (positive): payable -= 6400558.0
   -> SALARY split: edu=24549935.0, payable=-8798630.0
-  [73] SALARY/BONUS: date=2025-12-31 00:00:00, name=Phan Doan Kim Nhung, result={'payable': -8798630.0, 'edu': 24549935.0}
-  [73] ADD payable: 1117583069.0 + -8798630.0 = 1108784439.0
-  [73] ADD edu: 380182708.0 + 24549935.0 = 404732643.0
+  [61] SALARY/BONUS: date=2025-12-31 00:00:00, name=Phan Doan Kim Nhung, result={'payable': -8798630.0, 'edu': 24549935.0}
+  [61] ADD payable: 1117583069.0 + -8798630.0 = 1108784439.0
+  [61] ADD edu: 380182708.0 + 24549935.0 = 404732643.0
   -> SALARY/1500 (positive): payable -= 14178472.0
   -> SALARY/1500 (positive): payable -= 15117814.0
   -> SALARY split: edu=64691307.0, payable=-29296286.0
-  [74] SALARY/BONUS: date=2025-12-31 00:00:00, name=Truong Thi Hai, result={'payable': -29296286.0, 'edu': 64691307.0}
-  [74] ADD payable: 1108784439.0 + -29296286.0 = 1079488153.0
-  [74] ADD edu: 404732643.0 + 64691307.0 = 469423950.0
+  [62] SALARY/BONUS: date=2025-12-31 00:00:00, name=Truong Thi Hai, result={'payable': -29296286.0, 'edu': 64691307.0}
+  [62] ADD payable: 1108784439.0 + -29296286.0 = 1079488153.0
+  [62] ADD edu: 404732643.0 + 64691307.0 = 469423950.0
   -> SALARY/1500 (positive): payable -= 13018887.0
   -> SALARY/1500 (positive): payable -= 15063924.0
   -> SALARY split: edu=61936442.0, payable=-28082811.0
-  [75] SALARY/BONUS: date=2025-12-31 00:00:00, name=Bui Thi Huong, result={'payable': -28082811.0, 'edu': 61936442.0}
-  [75] ADD payable: 1079488153.0 + -28082811.0 = 1051405342.0
-  [75] ADD edu: 469423950.0 + 61936442.0 = 531360392.0
+  [63] SALARY/BONUS: date=2025-12-31 00:00:00, name=Bui Thi Huong, result={'payable': -28082811.0, 'edu': 61936442.0}
+  [63] ADD payable: 1079488153.0 + -28082811.0 = 1051405342.0
+  [63] ADD edu: 469423950.0 + 61936442.0 = 531360392.0
   -> SALARY/1500 (positive): payable -= 14178472.0
   -> SALARY/1500 (positive): payable -= 15117814.0
   -> SALARY split: edu=64691307.0, payable=-29296286.0
-  [76] SALARY/BONUS: date=2025-12-31 00:00:00, name=Huynh My Ngoc, result={'payable': -29296286.0, 'edu': 64691307.0}
-  [76] ADD payable: 1051405342.0 + -29296286.0 = 1022109056.0
-  [76] ADD edu: 531360392.0 + 64691307.0 = 596051699.0
+  [64] SALARY/BONUS: date=2025-12-31 00:00:00, name=Huynh My Ngoc, result={'payable': -29296286.0, 'edu': 64691307.0}
+  [64] ADD payable: 1051405342.0 + -29296286.0 = 1022109056.0
+  [64] ADD edu: 531360392.0 + 64691307.0 = 596051699.0
   -> SALARY/1500 (positive): payable -= 10694997.0
   -> SALARY/1500 (positive): payable -= 14094497.0
   -> SALARY split: org=54060740.0, payable=-24789494.0
-  [77] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Thanh Thanh, result={'payable': -24789494.0, 'org': 54060740.0}
-  [77] ADD payable: 1022109056.0 + -24789494.0 = 997319562.0
-  [77] ADD org: 687221497.0 + 54060740.0 = 741282237.0
+  [65] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Thanh Thanh, result={'payable': -24789494.0, 'org': 54060740.0}
+  [65] ADD payable: 1022109056.0 + -24789494.0 = 997319562.0
+  [65] ADD org: 687221497.0 + 54060740.0 = 741282237.0
   -> SALARY/1500 (positive): payable -= 23150459.0
   -> SALARY/1500 (positive): payable -= 15534950.0
   -> SALARY split: org=86015025.0, payable=-38685409.0
-  [78] SALARY/BONUS: date=2025-12-31 00:00:00, name=Phan Thi Thao Nguyen, result={'payable': -38685409.0, 'org': 86015025.0}
-  [78] ADD payable: 997319562.0 + -38685409.0 = 958634153.0
-  [78] ADD org: 741282237.0 + 86015025.0 = 827297262.0
+  [66] SALARY/BONUS: date=2025-12-31 00:00:00, name=Phan Thi Thao Nguyen, result={'payable': -38685409.0, 'org': 86015025.0}
+  [66] ADD payable: 997319562.0 + -38685409.0 = 958634153.0
+  [66] ADD org: 741282237.0 + 86015025.0 = 827297262.0
   -> SALARY/1500 (positive): payable -= 3634551.0
   -> SALARY/1500 (positive): payable -= 3984832.0
   -> SALARY split: edu=33522509.0, payable=-7619383.0
-  [79] SALARY/BONUS: date=2025-12-31 00:00:00, name=Mai Thi Kim Hang, result={'payable': -7619383.0, 'edu': 33522509.0}
-  [79] ADD payable: 958634153.0 + -7619383.0 = 951014770.0
-  [79] ADD edu: 596051699.0 + 33522509.0 = 629574208.0
+  [67] SALARY/BONUS: date=2025-12-31 00:00:00, name=Mai Thi Kim Hang, result={'payable': -7619383.0, 'edu': 33522509.0}
+  [67] ADD payable: 958634153.0 + -7619383.0 = 951014770.0
+  [67] ADD edu: 596051699.0 + 33522509.0 = 629574208.0
   -> SALARY/1500 (positive): payable -= 4683243.0
   -> SALARY/1500 (positive): payable -= 5064512.0
   -> SALARY split: edu=41175919.0, payable=-9747755.0
-  [80] SALARY/BONUS: date=2025-12-31 00:00:00, name=Pham Thi Huyen, result={'payable': -9747755.0, 'edu': 41175919.0}
-  [80] ADD payable: 951014770.0 + -9747755.0 = 941267015.0
-  [80] ADD edu: 629574208.0 + 41175919.0 = 670750127.0
+  [68] SALARY/BONUS: date=2025-12-31 00:00:00, name=Pham Thi Huyen, result={'payable': -9747755.0, 'edu': 41175919.0}
+  [68] ADD payable: 951014770.0 + -9747755.0 = 941267015.0
+  [68] ADD edu: 629574208.0 + 41175919.0 = 670750127.0
   -> SALARY/1500 (positive): payable -= 7781840.0
   -> SALARY/1500 (positive): payable -= 6516352.0
   -> SALARY split: edu=51125374.0, payable=-14298192.0
-  [81] SALARY/BONUS: date=2025-12-31 00:00:00, name=Vo Thi Quynh Thi, result={'payable': -14298192.0, 'edu': 51125374.0}
-  [81] ADD payable: 941267015.0 + -14298192.0 = 926968823.0
-  [81] ADD edu: 670750127.0 + 51125374.0 = 721875501.0
+  [69] SALARY/BONUS: date=2025-12-31 00:00:00, name=Vo Thi Quynh Thi, result={'payable': -14298192.0, 'edu': 51125374.0}
+  [69] ADD payable: 941267015.0 + -14298192.0 = 926968823.0
+  [69] ADD edu: 670750127.0 + 51125374.0 = 721875501.0
   -> SALARY/1500 (positive): payable -= 3793089.0
   -> SALARY/1500 (positive): payable -= 4564352.0
   -> SALARY split: edu=37613874.0, payable=-8357441.0
-  [82] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Tram Anh, result={'payable': -8357441.0, 'edu': 37613874.0}
-  [82] ADD payable: 926968823.0 + -8357441.0 = 918611382.0
-  [82] ADD edu: 721875501.0 + 37613874.0 = 759489375.0
+  [70] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Tram Anh, result={'payable': -8357441.0, 'edu': 37613874.0}
+  [70] ADD payable: 926968823.0 + -8357441.0 = 918611382.0
+  [70] ADD edu: 721875501.0 + 37613874.0 = 759489375.0
   -> SALARY/1500 (positive): payable -= 4245474.0
   -> SALARY/1500 (positive): payable -= 5039552.0
   -> SALARY split: edu=31969424.0, payable=-9285026.0
-  [83] SALARY/BONUS: date=2025-12-31 00:00:00, name=Ho Thi Mong Thu, result={'payable': -9285026.0, 'edu': 31969424.0}
-  [83] ADD payable: 918611382.0 + -9285026.0 = 909326356.0
-  [83] ADD edu: 759489375.0 + 31969424.0 = 791458799.0
+  [71] SALARY/BONUS: date=2025-12-31 00:00:00, name=Ho Thi Mong Thu, result={'payable': -9285026.0, 'edu': 31969424.0}
+  [71] ADD payable: 918611382.0 + -9285026.0 = 909326356.0
+  [71] ADD edu: 759489375.0 + 31969424.0 = 791458799.0
   -> SALARY/1500 (positive): payable -= 2247233.0
   -> SALARY split: edu=21156198.0, payable=-2247233.0
-  [84] SALARY/BONUS: date=2025-12-31 00:00:00, name=Truong Thi Diem Phuong, result={'payable': -2247233.0, 'edu': 21156198.0}
-  [84] ADD payable: 909326356.0 + -2247233.0 = 907079123.0
-  [84] ADD edu: 791458799.0 + 21156198.0 = 812614997.0
+  [72] SALARY/BONUS: date=2025-12-31 00:00:00, name=Truong Thi Diem Phuong, result={'payable': -2247233.0, 'edu': 21156198.0}
+  [72] ADD payable: 909326356.0 + -2247233.0 = 907079123.0
+  [72] ADD edu: 791458799.0 + 21156198.0 = 812614997.0
   -> SALARY/1500 (positive): payable -= 3952979.0
   -> SALARY/1500 (positive): payable -= 4069952.0
   -> SALARY split: edu=37141699.0, payable=-8022931.0
-  [85] SALARY/BONUS: date=2025-12-31 00:00:00, name=Vu Thi Thu Thuy, result={'payable': -8022931.0, 'edu': 37141699.0}
-  [85] ADD payable: 907079123.0 + -8022931.0 = 899056192.0
-  [85] ADD edu: 812614997.0 + 37141699.0 = 849756696.0
+  [73] SALARY/BONUS: date=2025-12-31 00:00:00, name=Vu Thi Thu Thuy, result={'payable': -8022931.0, 'edu': 37141699.0}
+  [73] ADD payable: 907079123.0 + -8022931.0 = 899056192.0
+  [73] ADD edu: 812614997.0 + 37141699.0 = 849756696.0
   -> SALARY/1500 (positive): payable -= 5458065.0
   -> SALARY/1500 (positive): payable -= 4564352.0
   -> SALARY split: edu=37173874.0, payable=-10022417.0
-  [86] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Nhung, result={'payable': -10022417.0, 'edu': 37173874.0}
-  [86] ADD payable: 899056192.0 + -10022417.0 = 889033775.0
-  [86] ADD edu: 849756696.0 + 37173874.0 = 886930570.0
+  [74] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Nhung, result={'payable': -10022417.0, 'edu': 37173874.0}
+  [74] ADD payable: 899056192.0 + -10022417.0 = 889033775.0
+  [74] ADD edu: 849756696.0 + 37173874.0 = 886930570.0
   -> SALARY/1500 (positive): payable -= 5323057.0
   -> SALARY/1500 (positive): payable -= 4564352.0
   -> SALARY split: edu=36633843.0, payable=-9887409.0
-  [87] SALARY/BONUS: date=2025-12-31 00:00:00, name=Mai Anh Thu, result={'payable': -9887409.0, 'edu': 36633843.0}
-  [87] ADD payable: 889033775.0 + -9887409.0 = 879146366.0
-  [87] ADD edu: 886930570.0 + 36633843.0 = 923564413.0
+  [75] SALARY/BONUS: date=2025-12-31 00:00:00, name=Mai Anh Thu, result={'payable': -9887409.0, 'edu': 36633843.0}
+  [75] ADD payable: 889033775.0 + -9887409.0 = 879146366.0
+  [75] ADD edu: 886930570.0 + 36633843.0 = 923564413.0
   -> SALARY/1500 (positive): payable -= 810507.0
   -> SALARY split: org=8105070.0, payable=-810507.0
-  [88] SALARY/BONUS: date=2025-12-31 00:00:00, name=Dang Thanh Canh, result={'payable': -810507.0, 'org': 8105070.0}
-  [88] ADD payable: 879146366.0 + -810507.0 = 878335859.0
-  [88] ADD org: 827297262.0 + 8105070.0 = 835402332.0
+  [76] SALARY/BONUS: date=2025-12-31 00:00:00, name=Dang Thanh Canh, result={'payable': -810507.0, 'org': 8105070.0}
+  [76] ADD payable: 879146366.0 + -810507.0 = 878335859.0
+  [76] ADD org: 827297262.0 + 8105070.0 = 835402332.0
   -> SALARY/1500 (positive): payable -= 31082008.0
   -> SALARY split: org=89061270.0, payable=-31082008.0
-  [89] SALARY/BONUS: date=2025-12-31 00:00:00, name=Le Thi Thu Hanh, result={'payable': -31082008.0, 'org': 89061270.0}
-  [89] ADD payable: 878335859.0 + -31082008.0 = 847253851.0
-  [89] ADD org: 835402332.0 + 89061270.0 = 924463602.0
+  [77] SALARY/BONUS: date=2025-12-31 00:00:00, name=Le Thi Thu Hanh, result={'payable': -31082008.0, 'org': 89061270.0}
+  [77] ADD payable: 878335859.0 + -31082008.0 = 847253851.0
+  [77] ADD org: 835402332.0 + 89061270.0 = 924463602.0
   -> SALARY/1500 (positive): payable -= 4153483.0
   -> SALARY/1500 (positive): payable -= 3604352.0
   -> SALARY split: edu=31933574.0, payable=-7757835.0
-  [90] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Thuy Na, result={'payable': -7757835.0, 'edu': 31933574.0}
-  [90] ADD payable: 847253851.0 + -7757835.0 = 839496016.0
-  [90] ADD edu: 923564413.0 + 31933574.0 = 955497987.0
+  [78] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Thuy Na, result={'payable': -7757835.0, 'edu': 31933574.0}
+  [78] ADD payable: 847253851.0 + -7757835.0 = 839496016.0
+  [78] ADD edu: 923564413.0 + 31933574.0 = 955497987.0
   -> SALARY/1500 (positive): payable -= 2524917.0
   -> SALARY/1500 (positive): payable -= 4160000.0
   -> SALARY split: edu=23848333.0, payable=-6684917.0
-  [91] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Thuy Van, result={'payable': -6684917.0, 'edu': 23848333.0}
-  [91] ADD payable: 839496016.0 + -6684917.0 = 832811099.0
-  [91] ADD edu: 955497987.0 + 23848333.0 = 979346320.0
+  [79] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Thuy Van, result={'payable': -6684917.0, 'edu': 23848333.0}
+  [79] ADD payable: 839496016.0 + -6684917.0 = 832811099.0
+  [79] ADD edu: 955497987.0 + 23848333.0 = 979346320.0
   -> SALARY/1500 (positive): payable -= 1600000.0
   -> SALARY split: org=6075000.0, payable=-1600000.0
-  [92] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Hai, result={'payable': -1600000.0, 'org': 6075000.0}
-  [92] ADD payable: 832811099.0 + -1600000.0 = 831211099.0
-  [92] ADD org: 924463602.0 + 6075000.0 = 930538602.0
+  [80] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Hai, result={'payable': -1600000.0, 'org': 6075000.0}
+  [80] ADD payable: 832811099.0 + -1600000.0 = 831211099.0
+  [80] ADD org: 924463602.0 + 6075000.0 = 930538602.0
   -> SALARY/1500 (positive): payable -= 3384354.0
   -> SALARY/1500 (positive): payable -= 3976000.0
   -> SALARY split: edu=28287492.0, payable=-7360354.0
-  [93] SALARY/BONUS: date=2025-12-31 00:00:00, name=Pham Thi Nhi Ca, result={'payable': -7360354.0, 'edu': 28287492.0}
-  [93] ADD payable: 831211099.0 + -7360354.0 = 823850745.0
-  [93] ADD edu: 979346320.0 + 28287492.0 = 1007633812.0
+  [81] SALARY/BONUS: date=2025-12-31 00:00:00, name=Pham Thi Nhi Ca, result={'payable': -7360354.0, 'edu': 28287492.0}
+  [81] ADD payable: 831211099.0 + -7360354.0 = 823850745.0
+  [81] ADD edu: 979346320.0 + 28287492.0 = 1007633812.0
   -> SALARY/1500 (positive): payable -= 2224907.0
   -> SALARY/1500 (positive): payable -= 4160000.0
   -> SALARY split: edu=22348283.0, payable=-6384907.0
-  [94] SALARY/BONUS: date=2025-12-31 00:00:00, name=Mai Thi Mong Tuyen, result={'payable': -6384907.0, 'edu': 22348283.0}
-  [94] ADD payable: 823850745.0 + -6384907.0 = 817465838.0
-  [94] ADD edu: 1007633812.0 + 22348283.0 = 1029982095.0
+  [82] SALARY/BONUS: date=2025-12-31 00:00:00, name=Mai Thi Mong Tuyen, result={'payable': -6384907.0, 'edu': 22348283.0}
+  [82] ADD payable: 823850745.0 + -6384907.0 = 817465838.0
+  [82] ADD edu: 1007633812.0 + 22348283.0 = 1029982095.0
   -> SALARY/1500 (positive): payable -= 2224907.0
   -> SALARY/1500 (positive): payable -= 4160000.0
   -> SALARY split: edu=22348283.0, payable=-6384907.0
-  [95] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Dang Hai Sam, result={'payable': -6384907.0, 'edu': 22348283.0}
-  [95] ADD payable: 817465838.0 + -6384907.0 = 811080931.0
-  [95] ADD edu: 1029982095.0 + 22348283.0 = 1052330378.0
+  [83] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Dang Hai Sam, result={'payable': -6384907.0, 'edu': 22348283.0}
+  [83] ADD payable: 817465838.0 + -6384907.0 = 811080931.0
+  [83] ADD edu: 1029982095.0 + 22348283.0 = 1052330378.0
   -> SALARY/1500 (positive): payable -= 354273.0
   -> SALARY/1500 (positive): payable -= 4160000.0
   -> SALARY split: edu=18585000.0, payable=-4514273.0
-  [96] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Huong, result={'payable': -4514273.0, 'edu': 18585000.0}
-  [96] ADD payable: 811080931.0 + -4514273.0 = 806566658.0
-  [96] ADD edu: 1052330378.0 + 18585000.0 = 1070915378.0
+  [84] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Huong, result={'payable': -4514273.0, 'edu': 18585000.0}
+  [84] ADD payable: 811080931.0 + -4514273.0 = 806566658.0
+  [84] ADD edu: 1052330378.0 + 18585000.0 = 1070915378.0
   -> SALARY/1500 (positive): payable -= 5389074.0
   -> SALARY split: edu=13257458.0, payable=-5389074.0
-  [97] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Minh Ngoc, result={'payable': -5389074.0, 'edu': 13257458.0}
-  [97] ADD payable: 806566658.0 + -5389074.0 = 801177584.0
-  [97] ADD edu: 1070915378.0 + 13257458.0 = 1084172836.0
+  [85] SALARY/BONUS: date=2025-12-31 00:00:00, name=Nguyen Thi Minh Ngoc, result={'payable': -5389074.0, 'edu': 13257458.0}
+  [85] ADD payable: 806566658.0 + -5389074.0 = 801177584.0
+  [85] ADD edu: 1070915378.0 + 13257458.0 = 1084172836.0
 
 === DEBUG: process_manual_groups SUMMARY ===
-Total groups: 98
-Skipped (already processed): 13
-Processed in this step: 85
+Total groups: 86
+Skipped (already processed): 0
+Processed in this step: 86
 Still manual: 0
-Final totals[VND]: {'org': 930538602.0, 'edu': 1084172836.0, 'oper': 51987960.0, 'advance': 99446978.0, 'payable': 801177584.0}
+Final totals[VND]: {'org': 930538602.0, 'edu': 1084172836.0, 'oper': 52124360.0, 'advance': 99446978.0, 'payable': 801177584.0}
 Final totals[USD]: {}
 
 === DEBUG: BEFORE merging manual_nature_totals ===
-nature_totals[VND]: {'edu': 400922868.0, 'oper': 88718912.0, 'manual': 4357217468.0}
-manual_nature_totals[VND]: {'org': 930538602.0, 'edu': 1084172836.0, 'oper': 51987960.0, 'advance': 99446978.0, 'payable': 801177584.0}
+nature_totals[VND]: {'edu': 400922868.0, 'oper': 88012999.0, 'manual': 2900968604.0}
+manual_nature_totals[VND]: {'org': 930538602.0, 'edu': 1084172836.0, 'oper': 52124360.0, 'advance': 99446978.0, 'payable': 801177584.0}
   MERGE 30 org: 0.0 + 930538602.0 = 930538602.0
   MERGE 30 edu: 400922868.0 + 1084172836.0 = 1485095704.0
-  MERGE 30 oper: 88718912.0 + 51987960.0 = 140706872.0
+  MERGE 30 oper: 88012999.0 + 52124360.0 = 140137359.0
   MERGE ADV/SETTLE 30 advance: 1404076855.0 + 99446978.0 = 1503523833.0
   MERGE PAYABLE 30 payable: 0.0 + 801177584.0 = 801177584.0
 
 === DEBUG: AFTER merging - FINAL totals ===
-nature_totals[VND]: {'org': 930538602.0, 'edu': 1485095704.0, 'oper': 140706872.0}
+nature_totals[VND]: {'org': 930538602.0, 'edu': 1485095704.0, 'oper': 140137359.0}
 advance_settlement[VND]: {'advance': 1503523833.0, 'settlement': -16514846.0}
 payable_totals[VND]: {'payable': 801177584.0}
 
@@ -3424,7 +3390,7 @@ payable_totals[VND]: {'payable': 801177584.0}
   Loaded 40 allocation entries
 
 === DEBUG: ProvinceMapper.process_groups ===
-  ADD 29 vnother: 1.15944
+  ADD 29 vnother: 1.0999962050776062
   SKIP (settlement/advance/payable): Service Center for Foreign Affairs - nature_type in entries
   ADD 30 vnother: 11000.0
   SKIP (settlement/advance/payable): Hien Thi Hien Vo - nature_type in entries
@@ -3531,7 +3497,8 @@ payable_totals[VND]: {'payable': 801177584.0}
   ADD 30 vnmoet: 11000.0
   ADD 30 vnmoet: 2592000.0
   ADD 30 vnmoet: 11000.0
-  ADD 30 vnmoet: 19481100.0
+  WARNING: Province sum mismatch! sum+payable=31349000.0, expected=30590100.0, diff=758900.0
+  ADD 30 vnmoet: 20240000.0
   ADD 30 vnla: 13749000.0
   ADD 30 vnmoet: 11000.0
   ADD 30 vnmoet: 22250000.0
@@ -3585,7 +3552,8 @@ payable_totals[VND]: {'payable': 801177584.0}
   ADD 30 vnbn: 11000.0
   ADD 30 vnla: 4961640.0
   ADD 30 vnla: 11000.0
-  ADD 30 vnother: 36987960.0
+  WARNING: Province sum mismatch! sum+payable=51987960.0, expected=36987960.0, diff=15000000.0
+  ADD 30 vnother: 51987960.0
   ADD 30 vnother: 22000.0
   ADD 30 vnmoet: 19649993.0
   ADD 30 vnmoet: 22000.0
@@ -3593,7 +3561,8 @@ payable_totals[VND]: {'payable': 801177584.0}
   ADD 30 vnother: 22000.0
   ADD 30 vnother: 440000.0
   ADD 30 vnother: 22000.0
-  ADD 30 vnmoet: 49200000.0
+  WARNING: Province sum mismatch! sum+payable=8200000.0, expected=49200000.0, diff=-41000000.0
+  ADD 30 vnmoet: 8200000.0
   ADD 30 vnmoet: 11000.0
   ADD 30 vnmoet: 7356000.0
   ADD 30 vnmoet: 40000000.0
@@ -3611,7 +3580,8 @@ payable_totals[VND]: {'payable': 801177584.0}
   ADD 30 vnmoet: 22000.0
   ADD 30 vnmoet: 5676000.0
   ADD 30 vnmoet: 11000.0
-  ADD 30 vnmoet: 30714122.0
+  WARNING: Province sum mismatch! sum+payable=43200000.0, expected=25914122.0, diff=17285878.0
+  ADD 30 vnmoet: 48000000.0
   ADD 30 vnmoet: 11000.0
   ADD 30 vnmoet: 900000.0
   ADD 30 vnmoet: 11000.0
@@ -3697,3 +3667,94 @@ payable_totals[VND]: {'payable': 801177584.0}
   ADD 30 vnqn: 5358373.300000001
   ADD 30 vnhd: 5358373.300000001
   ADD 30 vnmoet: 37508613.099999994
+  SALARY/BONUS (allocation): Hoang Thi Kieu Oanh -> {'vndn': 6811653.0, 'vnqn': 6811653.0, 'vnhd': 6811653.0, 'vnmoet': 13623306.0}
+  ADD 30 vndn: 6811653.0
+  ADD 30 vnqn: 6811653.0
+  ADD 30 vnhd: 6811653.0
+  ADD 30 vnmoet: 13623306.0
+  SALARY/BONUS (allocation): Pham Thi  Dieu Loan -> {'vndn': 14972623.600000001, 'vnqn': 14972623.600000001, 'vnhd': 14972623.600000001, 'vnmoet': 29945247.200000003}
+  ADD 30 vndn: 14972623.600000001
+  ADD 30 vnqn: 14972623.600000001
+  ADD 30 vnhd: 14972623.600000001
+  ADD 30 vnmoet: 29945247.200000003
+  SALARY/BONUS (allocation): Phan Doan Kim Nhung -> {'vndn': 4909987.0, 'vnqn': 4909987.0, 'vnhd': 4909987.0, 'vnmoet': 9819974.0}
+  ADD 30 vndn: 4909987.0
+  ADD 30 vnqn: 4909987.0
+  ADD 30 vnhd: 4909987.0
+  ADD 30 vnmoet: 9819974.0
+  SALARY/BONUS (allocation): Truong Thi Hai -> {'vndn': 12938261.4, 'vnqn': 12938261.4, 'vnhd': 12938261.4, 'vnmoet': 25876522.8}
+  ADD 30 vndn: 12938261.4
+  ADD 30 vnqn: 12938261.4
+  ADD 30 vnhd: 12938261.4
+  ADD 30 vnmoet: 25876522.8
+  SALARY/BONUS (allocation): Bui Thi Huong -> {'vnmoet': 61936442.0}
+  ADD 30 vnmoet: 61936442.0
+  SALARY/BONUS (allocation): Huynh My Ngoc -> {'vnmoet': 64691307.0}
+  ADD 30 vnmoet: 64691307.0
+  SALARY/BONUS (allocation): Nguyen Thi Thanh Thanh -> {'vndn': 9190325.799999999, 'vnqn': 9190325.799999999, 'vnhd': 9190325.799999999, 'vnmoet': 26489762.599999998}
+  ADD 30 vndn: 9190325.799999999
+  ADD 30 vnqn: 9190325.799999999
+  ADD 30 vnhd: 9190325.799999999
+  ADD 30 vnmoet: 26489762.599999998
+  SALARY/BONUS (allocation): Phan Thi Thao Nguyen -> {'vndn': 14622554.249999998, 'vnqn': 14622554.249999998, 'vnhd': 14622554.249999998, 'vnmoet': 42147362.25}
+  ADD 30 vndn: 14622554.249999998
+  ADD 30 vnqn: 14622554.249999998
+  ADD 30 vnhd: 14622554.249999998
+  ADD 30 vnmoet: 42147362.25
+  SALARY/BONUS (allocation): Mai Thi Kim Hang -> {'vndn': 33522509.0}
+  ADD 30 vndn: 33522509.0
+  SALARY/BONUS (allocation): Pham Thi Huyen -> {'vndn': 41175919.0}
+  ADD 30 vndn: 41175919.0
+  SALARY/BONUS (allocation): Vo Thi Quynh Thi -> {'vndn': 51125374.0}
+  ADD 30 vndn: 51125374.0
+  SALARY/BONUS (allocation): Nguyen Thi Tram Anh -> {'vndn': 37613874.0}
+  ADD 30 vndn: 37613874.0
+  SALARY/BONUS (allocation): Ho Thi Mong Thu -> {'vnqn': 31969424.0}
+  ADD 30 vnqn: 31969424.0
+  SALARY/BONUS (allocation): Truong Thi Diem Phuong -> {'vnqn': 21156198.0}
+  ADD 30 vnqn: 21156198.0
+  SALARY/BONUS (allocation): Vu Thi Thu Thuy -> {'vnhd': 37141699.0}
+  ADD 30 vnhd: 37141699.0
+  SALARY/BONUS (allocation): Nguyen Thi Nhung -> {'vnhcm': 37173874.0}
+  ADD 30 vnhcm: 37173874.0
+  SALARY/BONUS (allocation): Mai Anh Thu -> {'vnhcm': 36633843.0}
+  ADD 30 vnhcm: 36633843.0
+  SALARY/BONUS (allocation): Dang Thanh Canh -> {'vndn': 1377861.9, 'vnqn': 1377861.9, 'vnhd': 1377861.9, 'vnmoet': 3971484.3}
+  ADD 30 vndn: 1377861.9
+  ADD 30 vnqn: 1377861.9
+  ADD 30 vnhd: 1377861.9
+  ADD 30 vnmoet: 3971484.3
+  SALARY/BONUS (allocation): Le Thi Thu Hanh -> {'vnmoet': 89061270.0}
+  ADD 30 vnmoet: 89061270.0
+  SALARY/BONUS (allocation): Nguyen Thi Thuy Na -> {'vnqn': 31933574.0}
+  ADD 30 vnqn: 31933574.0
+  SALARY/BONUS (allocation): Nguyen Thi Thuy Van -> {'vnla': 23848333.0}
+  ADD 30 vnla: 23848333.0
+  SALARY/BONUS (allocation): Nguyen Thi Hai -> {'vndn': 607500.0, 'vnqn': 607500.0, 'vnhd': 607500.0, 'vnmoet': 4252500.0}
+  ADD 30 vndn: 607500.0
+  ADD 30 vnqn: 607500.0
+  ADD 30 vnhd: 607500.0
+  ADD 30 vnmoet: 4252500.0
+  SALARY/BONUS (allocation): Pham Thi Nhi Ca -> {'vnqn': 28287492.0}
+  ADD 30 vnqn: 28287492.0
+  SALARY/BONUS (allocation): Mai Thi Mong Tuyen -> {'vnhcm': 22348283.0}
+  ADD 30 vnhcm: 22348283.0
+  SALARY/BONUS (allocation): Nguyen Dang Hai Sam -> {'vnbn': 22348283.0}
+  ADD 30 vnbn: 22348283.0
+  SALARY/BONUS (allocation): Nguyen Thi Huong -> {'vnbn': 18585000.0}
+  ADD 30 vnbn: 18585000.0
+  SALARY/BONUS (allocation): Nguyen Thi Minh Ngoc -> {'vndn': 2651491.6, 'vnqn': 2651491.6, 'vnhd': 2651491.6, 'vnmoet': 5302983.2}
+  ADD 30 vndn: 2651491.6
+  ADD 30 vnqn: 2651491.6
+  ADD 30 vnhd: 2651491.6
+  ADD 30 vnmoet: 5302983.2
+
+=== DEBUG: ProvinceMapper SUMMARY ===
+Processed groups: 226
+Province totals[VND]: {'vnelc': 38829169.0, 'vnhbc': 38871387.0, 'vndn': 308097865.86, 'vnqn': 309454975.86, 'vnhd': 257569729.86, 'vnmoet': 1123741931.42, 'vnla': 86366073.0, 'vnhcm': 198691001.0, 'vnbn': 56683083.0, 'vnother': 137466449.0}
+Province totals[USD]: {'vnother': 1.0999962050776062}
+
+=== DEBUG: FINAL province_totals ===
+VND: {'vnelc': 38829169.0, 'vnhbc': 38871387.0, 'vndn': 308097865.86, 'vnqn': 309454975.86, 'vnhd': 257569729.86, 'vnmoet': 1123741931.42, 'vnla': 86366073.0, 'vnhcm': 198691001.0, 'vnbn': 56683083.0, 'vnother': 137466449.0}
+USD: {'vnother': 1.0999962050776062}
+  Stopping...

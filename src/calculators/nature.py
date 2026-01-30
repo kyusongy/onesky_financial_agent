@@ -242,6 +242,11 @@ class NatureMapper:
             print(f"  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor")
             return result
 
+        # Advance/Settlement groups are handled in advance_settlement.py/manual_input.py
+        # Do not assign nature/province validation values here.
+        if group.memo_contains("advance") or group.memo_contains("settlement"):
+            return result
+
         # Check if any entry requires manual review
         if any(e.is_manual_trigger for e in active_entries):
             result["is_manual"] = True
