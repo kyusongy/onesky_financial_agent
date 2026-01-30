@@ -263,9 +263,6 @@ class NatureMapper:
                 converted = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
                 result["nature_amounts"][entry.nature_type] = abs(converted)
                 print(f"  -> SINGLE-ENTRY mode: {entry.nature_type} = abs({converted}) = {abs(converted)}")
-                # Validation tracking: header row gets abs(converted) - already in USD for bank 29
-                if validation_data:
-                    validation_data.set_value(group.original_row_index, entry.nature_type, abs(converted))
 
         elif num_entries > 1:
             # Fill each entry's amount by its nature (preserve sign, no abs())
@@ -277,9 +274,6 @@ class NatureMapper:
                     old_val = result["nature_amounts"].get(entry.nature_type, 0.0)
                     result["nature_amounts"][entry.nature_type] = old_val + amount
                     print(f"    {entry.nature_type}: {old_val} + {amount} = {result['nature_amounts'][entry.nature_type]}")
-                    # Validation tracking: each entry row gets converted amount (preserve sign)
-                    if validation_data:
-                        validation_data.set_value(entry.original_row_index, entry.nature_type, amount)
 
             # Validation: sum should equal reverse of bank_amount
             total = sum(result["nature_amounts"].values())
@@ -287,6 +281,10 @@ class NatureMapper:
             print(f"  VALIDATION: sum of amounts = {total}, expected (reverse of bank) = {expected}")
             if abs(total - expected) > 1:
                 print(f"  WARNING: Mismatch! Difference = {total - expected}")
+
+        if validation_data and result["nature_amounts"]:
+            for nature_key, amount in result["nature_amounts"].items():
+                validation_data.set_value(group.original_row_index, nature_key, amount)
 
         print(f"  Final result: {result}")
         return result

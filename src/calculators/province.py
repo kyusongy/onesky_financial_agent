@@ -367,14 +367,6 @@ class ProvinceMapper:
                         amount = base_amount * percentage
                         result[province] = result.get(province, 0.0) + amount
 
-                        if validation_data:
-                            # Track on header row - accumulate if multiple provinces
-                            existing = validation_data.get_value(group.original_row_index, province)
-                            if existing is not None:
-                                validation_data.set_value(group.original_row_index, province, existing + amount)
-                            else:
-                                validation_data.set_value(group.original_row_index, province, amount)
-
                 print(f"  SALARY/BONUS (allocation): {group.payee_name} -> {result}")
             else:
                 # Fallback: Find province in memo
@@ -382,15 +374,11 @@ class ProvinceMapper:
                 if province:
                     amount = base_amount
                     result[province] = amount
-                    if validation_data:
-                        validation_data.set_value(group.original_row_index, province, amount)
                     print(f"  SALARY/BONUS (memo fallback): {group.payee_name} -> {province}: {amount}")
                 else:
                     # No province found - goes to Province_Manual
                     amount = base_amount
                     result["province_manual"] = amount
-                    if validation_data:
-                        validation_data.set_value(group.original_row_index, "province_manual", amount)
                     print(f"  SALARY/BONUS (manual): {group.payee_name} -> province_manual: {amount}")
             combined = sum(result.values()) + payable_contribution
             if abs(combined - expected_total) > 0.01:
@@ -408,14 +396,10 @@ class ProvinceMapper:
             if province:
                 amount = base_amount
                 result[province] = amount
-                if validation_data:
-                    validation_data.set_value(group.original_row_index, province, amount)
             else:
                 # Province_Manual fallback
                 amount = base_amount
                 result["province_manual"] = amount
-                if validation_data:
-                    validation_data.set_value(group.original_row_index, "province_manual", amount)
 
         elif num_entries > 1:
             # Multi-entry: Process each entry with preserved sign
@@ -432,12 +416,14 @@ class ProvinceMapper:
 
                 # Normal entry: ADD to province
                 result[province] = result.get(province, 0.0) + amount
-                if validation_data:
-                    validation_data.set_value(entry.original_row_index, province, amount)
 
             # Validation: sum should equal reverse of bank_amount
             result_sum = sum(result.values()) + payable_contribution
             if abs(result_sum - expected_total) > 0.01:  # Allow small floating point difference
                 print(f"  WARNING: Province sum mismatch! sum+payable={result_sum}, expected={expected_total}, diff={result_sum - expected_total}")
+
+        if validation_data and result:
+            for province, amount in result.items():
+                validation_data.set_value(group.original_row_index, province, amount)
 
         return result
