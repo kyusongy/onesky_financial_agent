@@ -139,15 +139,6 @@ def main():
         if staff_allocation_file:
             st.success("✓ Custom staff allocation loaded")
 
-        pit_file = st.file_uploader(
-            "Custom PIT/SI Lookup",
-            type=["xlsx"],
-            help="Optional: Upload a custom PIT_SI.xlsx to override the default (contains PIT/SI payment entries)",
-            key="pit_upload"
-        )
-
-        if pit_file:
-            st.success("✓ Custom PIT/SI lookup loaded")
     
     # Main content area
     if transaction_file is None:
@@ -337,24 +328,15 @@ def main():
 
                 # Step 9: Calculate province totals
                 province_mapper = ProvinceMapper(
-                    allocation_source=BytesIO(staff_allocation_file.read()) if staff_allocation_file else None,
-                    pit_source=BytesIO(pit_file.read()) if pit_file else None
+                    allocation_source=BytesIO(staff_allocation_file.read()) if staff_allocation_file else None
                 )
                 if staff_allocation_file:
                     staff_allocation_file.seek(0)
-                if pit_file:
-                    pit_file.seek(0)
-                province_totals, pit_totals = province_mapper.process_groups(
+                province_totals = province_mapper.process_groups(
                     groups_by_bank,
                     st.session_state.exchange_rates,
                     validation_data
                 )
-
-                # Merge PIT totals into province totals
-                for bank_id in [BANK_USD, BANK_VND]:
-                    for province, amount in pit_totals[bank_id].items():
-                        if province in province_totals[bank_id]:
-                            province_totals[bank_id][province] += amount
 
                 # DEBUG: Province totals
                 print("\n=== DEBUG: FINAL province_totals ===")

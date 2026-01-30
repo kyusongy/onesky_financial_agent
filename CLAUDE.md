@@ -33,7 +33,7 @@ onesky_financial_agent/
     │   └── dec_final/               # Active lookup tables
     │       ├── Nature.xlsx          # Account → Nature mapping (includes 1230/1250/1252/1500)
     │       ├── Staff_&_Allocation.xlsx  # Staff name → Nature + Province allocation %
-    │       └── PIT_SI.xlsx          # PIT/SI payment entries by company
+    │       └── PIT_SI.xlsx          # Legacy PIT/SI payment entries (no longer used)
     └── test_data/                   # Sample transaction files
 ```
 
@@ -45,7 +45,7 @@ onesky_financial_agent/
 |------|-------|---------|
 | Nature.xlsx | Lookup1_AcctList | Account No. → Nature mapping (columns A, B) |
 | Staff_&_Allocation.xlsx | Lookup3_Staff & allocation | Staff name → Nature + Province allocation % |
-| PIT_SI.xlsx | PIT+SI payment | PIT/SI entries (5 columns: Company, Date, Name, Memo, Amount) |
+| PIT_SI.xlsx | PIT+SI payment | Legacy PIT/SI entries (no longer used) |
 
 ### Nature.xlsx Structure
 - Sheet: `Lookup1_AcctList`
@@ -67,17 +67,8 @@ onesky_financial_agent/
 - Column B: PACCOM nature (Org/Edu)
 - Columns C-K: Province allocations (VNELC, VNDN, VNQN, VNHD, VNQNg, VNHCM, VNLA, VNBN, VNMOET)
 
-### PIT_SI.xlsx Structure
-- Sheet: `PIT+SI payment`
-- Column A: Company name (groups entries)
-- Column B: Transaction Date
-- Column C: Staff Name
-- Column D: Memo/Description
-- Column E: Amount
-
-**Company Groups:**
-- "Service Center for Foreign Affairs" → SI/HI/UI transactions
-- "Vietnam Tax Company" → PIT transactions
+### PIT_SI.xlsx Structure (Legacy)
+PIT_SI.xlsx is no longer used in province processing. The file may still exist in templates but is ignored by the pipeline.
 
 ---
 
@@ -195,7 +186,7 @@ These ignored entries are excluded from `group.active_entries`. See `processor.p
 |----------|------|--------|
 | All entries are 1500 | Skip salary processing entirely | Falls through to `_process_by_account_nature` → Payable |
 | Has non-1500 entries, staff not found | Skip salary processing | Falls through to account type processing (entries have correct `nature_type` from NatureMapper) |
-| Has non-1500 entries, staff found | Split: 1500 entries → Payable, rest → org/edu | Salary amount = `abs(bank_amount)` minus payable portion |
+| Has non-1500 entries, staff found | Split: 1500 entries → Payable, rest → org/edu | Salary amount = sum of non-1500 entry amounts |
 
 **Key behavior:** Only non-1500 entries get their `nature_type` overwritten to the staff's nature (org/edu). 1500 entries retain `nature_type = "payable"` as assigned by NatureMapper.
 
@@ -231,18 +222,9 @@ elc, vnelc, vnhbc, vndn, vnqn, vnhd, vnqng, vnmoet,
 vnbd, vnbg, vnla, vnhcm, vnbn, vnother, caobang, province_manual
 ```
 
-#### B. Ignored Groups (Handled via PIT Lookup)
+#### B. Ignored Groups
 
-Groups are ignored from normal province processing (and handled separately via PIT lookup) if:
-
-| Condition | Payee Name | Memo Contains |
-|-----------|-----------|---------------|
-| PIT | "Vietnam Tax Company" | "PIT" |
-| SI/HI/UI | "Service Center for Foreign Affairs" | "SI", "HI", or "UI" |
-
-**Also Skipped:** Groups with `settlement`, `advance`, `payable`, or `cash_settlement` nature types.
-
-**Code Location:** `province.py:221-245` (`_should_ignore_group`)
+Groups are skipped only when all active entries are `settlement`, `advance`, `cash_settlement`, or `payable`.
 
 #### C. Province Assignment Logic
 
@@ -251,7 +233,7 @@ Groups are ignored from normal province processing (and handled separately via P
 If header memo contains "salary" or "bonus":
 1. Look up `payee_name` in `Staff_&_Allocation.xlsx` (Sheet: Lookup3_Staff & allocation)
 2. Allocation table returns province percentages (e.g., VNDN=0.1, VNELC=0.5, VNMOET=0.4)
-3. Distribute `abs(bank_amount)` across provinces by percentage
+3. Distribute sum of non-1500 entry amounts across provinces by percentage
 4. If not found in allocation table: Fall through to memo extraction
 
 **Code Location:** `province.py:412-449`
@@ -267,23 +249,9 @@ Extract province code from transaction memo:
 
 **Fallback:** If no province found → `province_manual`
 
-#### D. PIT Lookup Processing
+#### D. PIT Lookup Processing (Removed)
 
-For ignored groups (PIT/SI/HI transactions), amounts are distributed via `PIT_SI.xlsx`:
-
-**PIT_SI.xlsx Structure:**
-- Entries grouped by company name in Column A
-- "Service Center for Foreign Affairs" → SI/HI transactions
-- "Vietnam Tax Company" → PIT transactions
-
-**Processing Logic:**
-1. For each PIT entry, try allocation lookup by staff name
-2. If found: Distribute by allocation percentages
-3. If not found: Extract province from memo
-4. If memo contains "consultant": → `province_manual`
-5. Match PIT groups to ignored transactions by amount for validation tracking
-
-**Code Location:** `province.py:516-622` (`_process_pit_entries`)
+There is no PIT/SI lookup in the province section anymore. All province totals come from transaction groups directly.
 
 ---
 
@@ -540,12 +508,9 @@ The application will be available at `http://localhost:8501`
 
 9. Calculate Province Totals (ProvinceMapper, tracks validation data)
    ├─> Only process NATURE and MANUAL section groups
-   ├─> Skip settlement/advance/payable/income groups
-   ├─> Ignore PIT/SI/HI transactions (Vietnam Tax Company, Service Center)
+   ├─> Skip groups only if all entries are settlement/advance/cash_settlement/payable
    ├─> Priority 1: Salary/Bonus → Staff_&_Allocation.xlsx percentages
    ├─> Priority 2: Extract province from memo
-   ├─> Process PIT entries from PIT_SI.xlsx
-   │   └─> Match PIT groups to ignored transactions
    └─> Records province validation columns
 
 10. Generate Report
@@ -566,6 +531,6 @@ The application will be available at `http://localhost:8501`
 - **Manual Review:** Groups that cannot be automatically processed are highlighted yellow for manual review.
 - **Validation Columns:** The 29 validation columns (13 nature/income + 16 province) in the processed transaction file enable users to verify report totals by summing each column (filtered by bank).
 - **Province = Nature Total:** Province section total should equal nature section total (same transactions categorized differently).
-- **PIT/SI/HI Groups:** Vietnam Tax Company (PIT) and Service Center (SI/HI/UI) transactions are ignored from normal province processing and handled via `PIT_SI.xlsx` lookup instead.
+- **PIT/SI/HI Groups:** No special PIT/SI/HI handling in province processing.
 - **Province Allocation:** For salary/bonus, staff may have split allocations across multiple provinces (dynamically read from Staff_&_Allocation.xlsx columns).
 - **Payable Section:** 1500 accounts now have their own dedicated section (row 38) separate from Advance/Settlement.
