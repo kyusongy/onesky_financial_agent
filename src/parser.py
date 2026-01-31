@@ -209,14 +209,6 @@ def _determine_currency(account_str: Optional[str]) -> str:
     return "VND"
 
 
-def _is_bank_entry(account_str: Optional[str]) -> bool:
-    """Check if this is a bank account entry (header row)."""
-    if not account_str:
-        return False
-    account_lower = account_str.lower()
-    return "bank vn" in account_lower or "29 bank" in account_lower or "30 bank" in account_lower
-
-
 def _create_group(
     rows: list[dict],
     bank_id: Optional[str],

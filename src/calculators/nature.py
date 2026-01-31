@@ -7,9 +7,12 @@ Applies filling logic based on number of rows and nature types.
 Note: Expense amounts are shown as positive values in the report.
 For USD bank, amounts are converted from VND to USD using the exchange rate.
 """
+import logging
 import pandas as pd
 from pathlib import Path
 from typing import Optional, BinaryIO, Union
+
+logger = logging.getLogger(__name__)
 
 from ..models import TransactionGroup, TransactionEntry, BANK_USD, BANK_VND
 from ..validation import ValidationData
@@ -48,7 +51,7 @@ class NatureMapper:
         # Try to load with new dec_final format first
         try:
             df = pd.read_excel(source, sheet_name="Lookup1_AcctList", header=None, engine='openpyxl')
-            print(f"=== DEBUG: Loaded Nature.xlsx (dec_final format) ===")
+            logger.debug("Loaded Nature.xlsx (dec_final format)")
 
             # Find header row (contains "Account No.")
             header_idx = 0
@@ -71,12 +74,12 @@ class NatureMapper:
                     nature_value = str(nature).strip().lower()
                     lookup[account_key] = nature_value
 
-            print(f"  Loaded {len(lookup)} account mappings")
+            logger.info("Loaded %d account mappings", len(lookup))
             return lookup
 
         except Exception as e:
-            print(f"  Could not load dec_final format: {e}")
-            print(f"  Falling back to legacy format...")
+            logger.warning("Could not load dec_final format: %s", e)
+            logger.info("Falling back to legacy format...")
 
         # Fallback to legacy format (old nature_lookup.xlsx)
         df = pd.read_excel(source, header=None, engine='openpyxl')
@@ -195,11 +198,6 @@ class NatureMapper:
         """
         Process a single group for nature mapping.
 
-        Filling logic:
-        - If any entry's nature = manual OR is_manual_trigger: mark for manual review
-        - If nature != manual AND 1 entry: use entry's nature, fill bank_amount
-        - If nature != manual AND >1 entries: fill each entry's amount by its nature
-
         Returns:
             Dict with keys: is_manual, manual_amount, nature_amounts
         """
@@ -209,82 +207,99 @@ class NatureMapper:
         if not active_entries:
             return result
 
-        # DEBUG: Print group info
         bank_amount_converted = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
-        print(f"\n=== DEBUG _process_group (NatureMapper) ===")
-        print(f"Group date: {group.date}, bank: {group.bank_identifier}")
-        print(f"Bank amount: {group.bank_amount}, converted: {bank_amount_converted}")
-        print(f"Active entries count: {len(active_entries)}")
+        logger.debug("_process_group (NatureMapper): date=%s, bank=%s, amount=%s, converted=%s, entries=%d",
+                      group.date, group.bank_identifier, group.bank_amount, bank_amount_converted, len(active_entries))
 
-        # Assign nature to each entry and check for manual triggers FIRST
-        # (before salary/bonus check, so entries have correct nature_type/is_manual_trigger)
-        for entry in active_entries:
-            nature = self.get_nature(entry.account_code)
+        self._assign_entry_natures(active_entries)
 
-            # If nature is "manual", don't set it as nature_type - let manual_input.py handle it
-            # Only set actual nature types (org, edu, oper, etc.)
-            if nature and nature != "manual":
-                entry.nature_type = nature
+        deferral = self._check_deferral(group, active_entries, bank_amount_converted)
+        if deferral:
+            return deferral
 
-            # Check if this is a manual trigger account (1250, 1230, 1252, 1500)
-            # or if nature lookup returned "manual"
-            if get_account_type(entry.account_code) or nature == "manual":
-                entry.is_manual_trigger = True
-
-            print(f"  Entry: account={entry.account_code}, amount={entry.amount}, nature_type={entry.nature_type}, is_manual_trigger={entry.is_manual_trigger}")
-
-        # Priority: Check if memo contains "salary" or "bonus" - defer to manual_input.py
-        # (done AFTER entry assignment so entries have correct nature_type for 1500 handling)
-        memo = (group.bank_memo or "").lower()
-        if "salary" in memo or "bonus" in memo:
-            result["is_manual"] = True
-            result["manual_amount"] = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
-            print(f"  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor")
-            return result
-
-        # Advance/Settlement groups are handled in advance_settlement.py/manual_input.py
-        # Do not assign nature/province validation values here.
-        if group.memo_contains("advance") or group.memo_contains("settlement"):
-            return result
-
-        # Check if any entry requires manual review
-        if any(e.is_manual_trigger for e in active_entries):
-            result["is_manual"] = True
-            result["manual_amount"] = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
-            print(f"  -> MANUAL REVIEW required, amount={result['manual_amount']}")
-            return result
-
-        num_entries = len(active_entries)
-
-        if num_entries == 1:
-            # Use entry's nature, fill bank_amount
-            entry = active_entries[0]
-            if entry.nature_type:
-                converted = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
-                result["nature_amounts"][entry.nature_type] = abs(converted)
-                print(f"  -> SINGLE-ENTRY mode: {entry.nature_type} = abs({converted}) = {abs(converted)}")
-
-        elif num_entries > 1:
-            # Fill each entry's amount by its nature (preserve sign, no abs())
-            # Sum of entry amounts equals the REVERSE of bank_amount
-            print(f"  -> MULTI-ROW mode: adding entry amounts by nature (preserve sign)")
-            for entry in active_entries:
-                if entry.nature_type and entry.amount:
-                    amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
-                    old_val = result["nature_amounts"].get(entry.nature_type, 0.0)
-                    result["nature_amounts"][entry.nature_type] = old_val + amount
-                    print(f"    {entry.nature_type}: {old_val} + {amount} = {result['nature_amounts'][entry.nature_type]}")
-
-            # Validation: sum should equal reverse of bank_amount
-            total = sum(result["nature_amounts"].values())
-            expected = -bank_amount_converted
-            print(f"  VALIDATION: sum of amounts = {total}, expected (reverse of bank) = {expected}")
-            if abs(total - expected) > 1:
-                print(f"  WARNING: Mismatch! Difference = {total - expected}")
+        result["nature_amounts"] = self._calculate_nature_amounts(
+            group, active_entries, ex_rate, bank_amount_converted
+        )
 
         if validation_data and result["nature_amounts"]:
             for nature_key, amount in result["nature_amounts"].items():
                 validation_data.set_value(group.original_row_index, nature_key, amount)
 
-        print(f"  Final result: {result}")
+        logger.debug("  Final result: %s", result)
         return result
+
+    def _assign_entry_natures(self, active_entries: list) -> None:
+        """Assign nature_type and is_manual_trigger to each entry from Nature.xlsx."""
+        for entry in active_entries:
+            nature = self.get_nature(entry.account_code)
+
+            if nature and nature != "manual":
+                entry.nature_type = nature
+
+            if get_account_type(entry.account_code) or nature == "manual":
+                entry.is_manual_trigger = True
+
+            logger.debug("  Entry: account=%s, amount=%s, nature_type=%s, is_manual_trigger=%s",
+                         entry.account_code, entry.amount, entry.nature_type, entry.is_manual_trigger)
+
+    def _check_deferral(
+        self, group: TransactionGroup, active_entries: list, bank_amount_converted: float
+    ) -> Optional[dict]:
+        """Check if group should be deferred to manual or advance/settlement processing.
+
+        Returns a result dict if deferred, None otherwise.
+        """
+        result = {"is_manual": False, "manual_amount": 0.0, "nature_amounts": {}}
+
+        # Salary/bonus: defer to ManualInputProcessor
+        memo = (group.bank_memo or "").lower()
+        if "salary" in memo or "bonus" in memo:
+            result["is_manual"] = True
+            result["manual_amount"] = bank_amount_converted
+            logger.debug("  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor")
+            return result
+
+        # Advance/Settlement groups handled elsewhere
+        if group.memo_contains("advance") or group.memo_contains("settlement"):
+            return result
+
+        # Manual trigger entries
+        if any(e.is_manual_trigger for e in active_entries):
+            result["is_manual"] = True
+            result["manual_amount"] = bank_amount_converted
+            logger.debug("  -> MANUAL REVIEW required, amount=%s", result['manual_amount'])
+            return result
+
+        return None
+
+    def _calculate_nature_amounts(
+        self, group: TransactionGroup, active_entries: list,
+        ex_rate: float, bank_amount_converted: float
+    ) -> dict[str, float]:
+        """Calculate per-nature amounts from entries."""
+        nature_amounts: dict[str, float] = {}
+        num_entries = len(active_entries)
+
+        if num_entries == 1:
+            entry = active_entries[0]
+            if entry.nature_type:
+                converted = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
+                nature_amounts[entry.nature_type] = abs(converted)
+                logger.debug("  -> SINGLE-ENTRY mode: %s = abs(%s) = %s", entry.nature_type, converted, abs(converted))
+
+        elif num_entries > 1:
+            logger.debug("  -> MULTI-ROW mode: adding entry amounts by nature (preserve sign)")
+            for entry in active_entries:
+                if entry.nature_type and entry.amount:
+                    amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
+                    old_val = nature_amounts.get(entry.nature_type, 0.0)
+                    nature_amounts[entry.nature_type] = old_val + amount
+                    logger.debug("    %s: %s + %s = %s", entry.nature_type, old_val, amount, nature_amounts[entry.nature_type])
+
+            total = sum(nature_amounts.values())
+            expected = -bank_amount_converted
+            logger.debug("  VALIDATION: sum of amounts = %s, expected (reverse of bank) = %s", total, expected)
+            if abs(total - expected) > 1:
+                logger.warning("  Mismatch! Difference = %s", total - expected)
+
+        return nature_amounts

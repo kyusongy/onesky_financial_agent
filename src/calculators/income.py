@@ -76,7 +76,7 @@ def calculate_income(
 
 def _calculate_contribution(group: TransactionGroup, ex_rate: float) -> float:
     """Contribution: deposit + name contains 'onesky'."""
-    if group.is_deposit() and group.any_name_contains("onesky"):
+    if group.is_deposit() and group.name_contains("onesky"):
         return convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
     return 0.0
 

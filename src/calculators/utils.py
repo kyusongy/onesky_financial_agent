@@ -4,10 +4,17 @@ Shared utility functions for calculators.
 Consolidates common operations like exchange rate handling and amount conversion
 to eliminate code duplication across calculator modules.
 """
-from typing import Optional
+import logging
+from typing import Optional, Union
+from pathlib import Path
 from datetime import datetime
+from io import BytesIO
+
+import pandas as pd
 
 from ..models import TransactionGroup, BANK_USD, BANK_VND
+
+logger = logging.getLogger(__name__)
 
 
 def get_exchange_rate(
@@ -116,11 +123,6 @@ def get_account_type(account_number: Optional[str]) -> Optional[str]:
     return None
 
 
-def is_manual_account(account_number: Optional[str]) -> bool:
-    """Check if account number triggers manual input processing."""
-    return get_account_type(account_number) is not None
-
-
 # Nature normalization mapping
 NATURE_NORMALIZATION_MAP = {
     "advance": "advance",
@@ -141,17 +143,174 @@ NATURE_NORMALIZATION_MAP = {
 def normalize_nature(nature_raw: str) -> str:
     """
     Normalize nature string to category key.
-    
+
     Args:
         nature_raw: Raw nature string from lookup
-        
+
     Returns:
         Normalized nature key
     """
     nature_lower = nature_raw.lower().strip()
-    
+
     for pattern, category in NATURE_NORMALIZATION_MAP.items():
         if pattern in nature_lower:
             return category
-    
+
     return nature_lower
+
+
+def load_staff_allocation_data(
+    source: Union[str, Path, BytesIO]
+) -> tuple[dict[str, str], dict[str, dict[str, float]]]:
+    """
+    Load staff lookup and allocation tables from Staff_&_Allocation.xlsx.
+
+    Structure (dec_final):
+    - Sheet: "Lookup3_Staff & allocation"
+    - Header row: 1 (0-indexed)
+    - Column A (0): Staff Name
+    - Column B (1): PACCOM nature (org/edu)
+    - Columns C-K (2-10): Province allocations
+
+    Args:
+        source: Path to Staff_&_Allocation.xlsx or file-like object.
+
+    Returns:
+        Tuple of (staff_lookup, allocation_lookup)
+        - staff_lookup: dict[name_lower] -> nature
+        - allocation_lookup: dict[name_lower] -> {province: percentage}
+    """
+    staff_table: dict[str, str] = {}
+    allocation_table: dict[str, dict[str, float]] = {}
+
+    try:
+        df = pd.read_excel(
+            source,
+            sheet_name="Lookup3_Staff & allocation",
+            header=None
+        )
+        logger.debug("Loading Staff_&_Allocation.xlsx, shape: %s", df.shape)
+
+        # Find header row (row with "Staff Name")
+        header_idx = 1  # Default for dec_final format
+        for idx in range(min(10, len(df))):
+            for val in df.iloc[idx].values:
+                if isinstance(val, str) and "staff name" in val.lower():
+                    header_idx = idx
+                    break
+
+        # Get province column names from header row
+        header_row = df.iloc[header_idx]
+        province_cols: dict[int, str] = {}
+        for col_idx in range(2, len(header_row)):
+            col_name = header_row.iloc[col_idx]
+            if pd.notna(col_name) and str(col_name).strip():
+                province_cols[col_idx] = str(col_name).strip().lower()
+
+        logger.debug("Province columns: %s", province_cols)
+
+        # Parse data rows
+        for idx in range(header_idx + 1, len(df)):
+            row = df.iloc[idx]
+            name = row.iloc[0] if len(row) > 0 else None
+            nature_raw = row.iloc[1] if len(row) > 1 else None
+
+            if pd.isna(name) or str(name).strip() == "":
+                continue
+
+            name_key = str(name).strip().lower()
+
+            # Staff nature lookup
+            if pd.notna(nature_raw):
+                nature = normalize_nature(str(nature_raw))
+                staff_table[name_key] = nature
+
+            # Allocation percentages
+            allocations = {}
+            for col_idx, province_code in province_cols.items():
+                val = row.iloc[col_idx] if len(row) > col_idx else 0
+                if pd.notna(val) and val != 0:
+                    try:
+                        allocations[province_code] = float(val)
+                    except (ValueError, TypeError):
+                        pass
+
+            if allocations:
+                allocation_table[name_key] = allocations
+
+        logger.info("Loaded %d staff entries, %d allocation entries", len(staff_table), len(allocation_table))
+
+    except Exception as e:
+        logger.warning("Could not load staff allocation table: %s", e)
+
+    return staff_table, allocation_table
+
+
+def _load_allocation_legacy(
+    source: Union[str, Path, BytesIO]
+) -> dict[str, dict[str, float]]:
+    """Load allocation table from legacy format (salary allocation-v2 sheet)."""
+    allocation_table: dict[str, dict[str, float]] = {}
+
+    try:
+        df = pd.read_excel(source, sheet_name="salary allocation-v2", header=None)
+        logger.debug("Loading allocation.xlsx (legacy)")
+
+        province_cols = {
+            4: "vnelc", 5: "vndn", 6: "vnqn",
+            7: "vnhd", 8: "vnqng", 9: "vnmoet",
+        }
+
+        header_row = 4
+        for idx in range(header_row + 1, len(df)):
+            row = df.iloc[idx]
+            name = row.iloc[1]
+
+            if pd.isna(name) or str(name).strip() == "":
+                continue
+
+            allocations = {}
+            for col_idx, province_key in province_cols.items():
+                val = row.iloc[col_idx] if len(row) > col_idx else 0
+                if pd.notna(val) and val != 0:
+                    try:
+                        allocations[province_key] = float(val)
+                    except (ValueError, TypeError):
+                        pass
+
+            if allocations:
+                allocation_table[str(name).strip().lower()] = allocations
+
+        logger.info("Loaded %d allocation entries (legacy)", len(allocation_table))
+    except Exception as e:
+        logger.warning("Could not load legacy allocation lookup table: %s", e)
+
+    return allocation_table
+
+
+def lookup_by_name(table: dict, payee_name: str) -> Optional:
+    """
+    Look up a value by name with exact then partial matching.
+
+    Args:
+        table: Dictionary with lowercase name keys
+        payee_name: The payee/name from the transaction
+
+    Returns:
+        The matched value, or None if not found
+    """
+    if not payee_name:
+        return None
+
+    name_lower = payee_name.strip().lower()
+
+    # Exact match first
+    if name_lower in table:
+        return table[name_lower]
+
+    # Partial match
+    for stored_name, value in table.items():
+        if stored_name in name_lower or name_lower in stored_name:
+            return value
+
+    return None
