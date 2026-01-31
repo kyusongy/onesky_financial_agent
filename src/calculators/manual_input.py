@@ -2,10 +2,10 @@
 Manual input calculator for handling 1250/1230/1252/1500 accounts.
 
 This module handles transactions flagged based on their account nature from Nature.xlsx:
-- 1230VN → "advance" → Advance section
-- 1250VN → "advance" → Advance section
-- 1252VN → "settlement" → Settlement section (positive bank_amount → cash_settlement)
-- 1500VN → "payable" → Payable section (NEW)
+- 1230VN → Advance if entry amount > 0, Settlement if entry amount < 0
+- 1250VN → Settlement if entry memo contains "settlement", otherwise Advance
+- 1252VN → Settlement if entry memo contains "settlement", otherwise Advance
+- 1500VN → "payable" → Payable section
 
 The simplified 1500 logic:
 - Positive 1500 entries subtract from Payable only (not from other nature categories)
@@ -354,8 +354,9 @@ class ManualInputProcessor:
         """
         Process group based on account nature from Nature.xlsx.
 
-        - 1250VN → "advance" → Advance section (abs amount)
-        - 1230VN / 1252VN → "settlement" → Settlement section (positive bank_amount → cash_settlement)
+        - 1230VN → Advance if entry amount > 0, Settlement if entry amount < 0
+        - 1250VN → Settlement if entry memo contains "settlement", otherwise Advance
+        - 1252VN → Settlement if entry memo contains "settlement", otherwise Advance
         - 1500VN → "payable" → Payable section (positive 1500 subtracts from payable)
         """
         result = {"processed": False, "amounts": {}}
@@ -367,20 +368,46 @@ class ManualInputProcessor:
         print(f"Bank amount: {group.bank_amount}, converted: {bank_amount_converted}")
         print(f"Active entries: {len(active_entries)}")
 
-        # Collect entries by their account nature
-        advance_entries = []  # 1250
-        settlement_entries = []  # 1230, 1252
+        # Collect entries by their determined category
+        advance_entries = []
+        settlement_entries = []
         payable_entries = []  # 1500
         other_entries = []  # Non-special accounts
 
         for entry in active_entries:
             acct_type = get_account_type(entry.account_code)
-            if acct_type == "1250":
-                advance_entries.append(entry)
-                entry.nature_type = "advance"
-            elif acct_type in ("1230", "1252"):
-                settlement_entries.append(entry)
-                entry.nature_type = "settlement"
+            entry_memo = (entry.original_memo or "").lower()
+
+            if acct_type == "1230":
+                # 1230: Advance if amount > 0, Settlement if amount < 0
+                if entry.amount and entry.amount > 0:
+                    advance_entries.append(entry)
+                    entry.nature_type = "advance"
+                    print(f"  Entry 1230: amount={entry.amount} > 0 → advance")
+                else:
+                    settlement_entries.append(entry)
+                    entry.nature_type = "settlement"
+                    print(f"  Entry 1230: amount={entry.amount} <= 0 → settlement")
+            elif acct_type == "1250":
+                # 1250: Settlement if memo contains "settlement", otherwise Advance
+                if "settlement" in entry_memo:
+                    settlement_entries.append(entry)
+                    entry.nature_type = "settlement"
+                    print(f"  Entry 1250: memo contains 'settlement' → settlement")
+                else:
+                    advance_entries.append(entry)
+                    entry.nature_type = "advance"
+                    print(f"  Entry 1250: memo='{entry_memo}' → advance")
+            elif acct_type == "1252":
+                # 1252: Settlement if memo contains "settlement", otherwise Advance
+                if "settlement" in entry_memo:
+                    settlement_entries.append(entry)
+                    entry.nature_type = "settlement"
+                    print(f"  Entry 1252: memo contains 'settlement' → settlement")
+                else:
+                    advance_entries.append(entry)
+                    entry.nature_type = "advance"
+                    print(f"  Entry 1252: memo='{entry_memo}' → advance")
             elif acct_type == "1500":
                 payable_entries.append(entry)
                 entry.nature_type = "payable"
@@ -390,10 +417,6 @@ class ManualInputProcessor:
 
             print(f"  Entry: account={entry.account_code}, amount={entry.amount}, nature={entry.nature_type}")
 
-        # Determine processing mode
-        has_payable = len(payable_entries) > 0
-        has_advance = len(advance_entries) > 0
-        has_settlement = len(settlement_entries) > 0
         num_entries = len(active_entries)
 
         # Single-entry groups: use abs(bank_amount)
@@ -408,17 +431,10 @@ class ManualInputProcessor:
                 print(f"  -> SINGLE ADVANCE: {converted}")
 
             elif nature == "settlement":
-                # Positive bank_amount → cash_settlement (Income section)
-                if group.bank_amount > 0:
-                    converted = abs(bank_amount_converted)
-                    result["amounts"]["cash_settlement"] = converted
-                    entry.nature_type = "cash_settlement"
-                    print(f"  -> SINGLE SETTLEMENT (positive) → cash_settlement: {converted}")
-                else:
-                    converted = abs(bank_amount_converted)
-                    result["amounts"]["settlement"] = converted
-                    print(f"  -> SINGLE SETTLEMENT: {converted}")
+                converted = abs(bank_amount_converted)
+                result["amounts"]["settlement"] = converted
                 result["processed"] = True
+                print(f"  -> SINGLE SETTLEMENT: {converted}")
 
             elif nature == "payable":
                 converted = abs(bank_amount_converted)
@@ -443,26 +459,19 @@ class ManualInputProcessor:
                     result["amounts"][entry.nature_type] = result["amounts"].get(entry.nature_type, 0.0) + amount
                     print(f"  -> OTHER entry: {entry.nature_type} += {amount}")
 
-            # Process advance entries (1230/1250)
+            # Process advance entries (1230 with positive amount, 1250/1252 without "settlement" in memo)
             for entry in advance_entries:
                 if entry.amount:
                     amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
                     result["amounts"]["advance"] = result["amounts"].get("advance", 0.0) + abs(amount)
                     print(f"  -> ADVANCE entry: advance += abs({amount})")
 
-            # Process settlement entries (1252)
+            # Process settlement entries (1230 with negative amount, 1250/1252 with "settlement" in memo)
             for entry in settlement_entries:
                 if entry.amount:
-                    # Positive bank_amount → cash_settlement
-                    if group.bank_amount > 0:
-                        amount = abs(convert_amount(entry.amount, group.bank_identifier, ex_rate))
-                        result["amounts"]["cash_settlement"] = result["amounts"].get("cash_settlement", 0.0) + amount
-                        entry.nature_type = "cash_settlement"
-                        print(f"  -> SETTLEMENT (positive) → cash_settlement += {amount}")
-                    else:
-                        amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
-                        result["amounts"]["settlement"] = result["amounts"].get("settlement", 0.0) + abs(amount)
-                        print(f"  -> SETTLEMENT entry: settlement += abs({amount})")
+                    amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
+                    result["amounts"]["settlement"] = result["amounts"].get("settlement", 0.0) + abs(amount)
+                    print(f"  -> SETTLEMENT entry: settlement += abs({amount})")
 
             non_payable_sum = sum(
                 convert_amount(entry.amount, group.bank_identifier, ex_rate)
