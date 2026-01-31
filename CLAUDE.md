@@ -53,11 +53,11 @@ onesky_financial_agent/
 - Column B: PACCOM nature
 
 **Special Account Mappings:**
-| Account | Nature | Report Section |
-|---------|--------|----------------|
-| 1230VN | Settlement | Row 37 (Settlement) |
-| 1250VN | Advance | Row 36 (Advance) |
-| 1252VN | Settlement | Row 37 (Settlement) |
+| Account | Logic | Report Section |
+|---------|-------|----------------|
+| 1230VN | Advance if entry amount > 0, Settlement if < 0 | Row 36/37 |
+| 1250VN | Settlement if entry memo contains "settlement", else Advance | Row 36/37 |
+| 1252VN | Settlement if entry memo contains "settlement", else Advance | Row 36/37 |
 | 1500VN | Payable | Row 38 (Payable) |
 
 ### Staff_&_Allocation.xlsx Structure
@@ -123,8 +123,9 @@ Fill this section for Bank 29 and 30 respectively.
 **Note:** Positive settlements (`bank_amount > 0`) go to Income section as "Cash Settlement" instead.
 
 **Additional Source:** Account-based routing from Nature.xlsx:
-- 1250VN → Advance section (use abs amount)
-- 1230VN / 1252VN → Settlement section (positive bank_amount → cash_settlement in Income)
+- 1230VN → Advance if entry amount > 0, Settlement if entry amount < 0
+- 1250VN → Settlement if entry memo contains "settlement", otherwise Advance
+- 1252VN → Settlement if entry memo contains "settlement", otherwise Advance
 
 ---
 
@@ -503,9 +504,10 @@ The application will be available at `http://localhost:8501`
    │   ├─> All entries 1500 → skip salary, fall through to payable
    │   ├─> Staff not found → fall through to account type processing
    │   └─> Staff found → split: 1500 entries → payable, rest → org/edu
-   ├─> Priority 2: Account type processing based on Nature.xlsx
-   │   ├─> 1250VN → Advance section
-   │   ├─> 1230VN / 1252VN → Settlement section (positive → cash_settlement)
+   ├─> Priority 2: Account type processing based on entry-level logic
+   │   ├─> 1230VN → Advance if entry amount > 0, Settlement if < 0
+   │   ├─> 1250VN → Settlement if memo contains "settlement", else Advance
+   │   ├─> 1252VN → Settlement if memo contains "settlement", else Advance
    │   └─> 1500VN → Payable section
    ├─> Handle 1500 offset logic (positive 1500 subtracts from Payable only)
    └─> Records row contributions to respective sections
