@@ -202,8 +202,3 @@ def _remove_capital_rows(group: TransactionGroup) -> TransactionGroup:
             entries[i].is_ignored = True
 
     return group
-
-
-def has_usd_transactions(groups: list[TransactionGroup]) -> bool:
-    """Check if any group is for USD bank."""
-    return any(g.bank_identifier == BANK_USD for g in groups)

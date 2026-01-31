@@ -10,8 +10,6 @@ TEMPLATE_DIR = DATA_DIR / "dec_final"
 DEFAULT_NATURE_LOOKUP = TEMPLATE_DIR / "Nature.xlsx"
 DEFAULT_OUTPUT_TEMPLATE = DATA_DIR / "output_template.xlsx"
 DEFAULT_STAFF_ALLOCATION_LOOKUP = TEMPLATE_DIR / "Staff_&_Allocation.xlsx"
-DEFAULT_PIT_LOOKUP = TEMPLATE_DIR / "PIT_SI.xlsx"
-
 # Bank identifiers (string format)
 BANK_USD = "29"  # USD Bank
 BANK_VND = "30"  # VND Bank
@@ -84,24 +82,7 @@ INCOME_TYPE_MAP = {
     "cash_settlement": "Cash settlement",
 }
 
-# Transaction type identifiers
-TRANSACTION_TYPE_DEPOSIT = "deposit"
-TRANSACTION_TYPE_TRANSFER = "transfer"
-
-# Excel parsing configuration
-EXCEL_HEADER_ROW = 3  # 0-based index where actual headers are
-EXCEL_COLUMNS = {
-    "date": 1,
-    "transaction_type": 2,
-    "name": 5,
-    "memo": 6,
-    "account": 7,
-    "amount": 8,
-}
-
 # Province section constants
-# Note: DEFAULT_STAFF_ALLOCATION_LOOKUP and DEFAULT_PIT_LOOKUP defined above with TEMPLATE_DIR
-DEFAULT_ALLOCATION_LOOKUP = DEFAULT_STAFF_ALLOCATION_LOOKUP  # Alias for backwards compatibility
 
 # Province codes (16 total including manual)
 PROVINCE_CODES = [

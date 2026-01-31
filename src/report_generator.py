@@ -406,7 +406,7 @@ def _get_section_type_labels(group: TransactionGroup) -> tuple[str, str]:
     if section == ReportSection.INCOME:
         section_label = "Income"
         # Determine which income type
-        if group.is_deposit() and group.any_name_contains("onesky"):
+        if group.is_deposit() and group.name_contains("onesky"):
             type_label = "Contribution"
         elif group.any_memo_contains("transfer") and group.any_memo_contains("elc"):
             type_label = "Fund transfer to ELC"

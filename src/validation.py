@@ -58,7 +58,7 @@ VALIDATION_COLUMN_DISPLAY = {
     "org": "Organisational capacity building",
     "edu": "Education quality improvement",
     "oper": "Program Operation",
-    "nutrition": "Nutrion for the children",
+    "nutrition": "Nutrition for the children",
     "edu_infra": "Education Infrastructure",
     "advance": "Advance by cash",
     "settlement": "Settlement",

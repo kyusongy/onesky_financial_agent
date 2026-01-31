@@ -11,23 +11,24 @@ The simplified 1500 logic:
 - Positive 1500 entries subtract from Payable only (not from other nature categories)
 - Non-1500 entries in same group use Nature.xlsx lookup normally
 """
-import pandas as pd
-from pathlib import Path
-from typing import Optional, BinaryIO, Union
+import logging
+from typing import Optional
 
-from ..models import TransactionGroup, TransactionEntry, ReportSection, BANK_USD, BANK_VND
+logger = logging.getLogger(__name__)
+
+from ..models import TransactionGroup, ReportSection, BANK_USD, BANK_VND
 from ..validation import ValidationData
-from .utils import get_exchange_rate, convert_amount, normalize_nature, get_account_type, ACCOUNT_TYPES
+from .utils import (
+    get_exchange_rate, convert_amount, get_account_type,
+    load_staff_allocation_data, lookup_by_name,
+)
 from config.mappings import DEFAULT_STAFF_ALLOCATION_LOOKUP
 
 
 class ManualInputProcessor:
     """Processes manual input transactions using lookup tables."""
 
-    def __init__(
-        self,
-        staff_allocation_source: Optional[Union[str, Path, BinaryIO]] = None
-    ):
+    def __init__(self, staff_allocation_source=None):
         """
         Initialize with staff & allocation lookup file.
 
@@ -35,144 +36,16 @@ class ManualInputProcessor:
             staff_allocation_source: Path to Staff_&_Allocation.xlsx or file-like object.
                                     Uses default if not provided.
         """
-        self.staff_allocation_source = staff_allocation_source or DEFAULT_STAFF_ALLOCATION_LOOKUP
-        self.staff_lookup, self.allocation_lookup = self._load_staff_allocation()
-
-    def _load_staff_allocation(self) -> tuple[dict[str, str], dict[str, dict[str, float]]]:
-        """
-        Load staff lookup and allocation tables from Staff_&_Allocation.xlsx.
-
-        Structure (dec_final):
-        - Sheet: "Lookup3_Staff & allocation"
-        - Header row: 1 (0-indexed)
-        - Column A (0): Staff Name
-        - Column B (1): PACCOM nature (org/edu)
-        - Columns C-K (2-10): Province allocations (VNELC, VNDN, VNQN, VNHD, VNQNg, VNHCM, VNLA, VNBN, VNMOET)
-
-        Returns:
-            Tuple of (staff_lookup, allocation_lookup)
-            - staff_lookup: dict[name_lower] -> nature
-            - allocation_lookup: dict[name_lower] -> {province: percentage}
-        """
-        staff_table: dict[str, str] = {}
-        allocation_table: dict[str, dict[str, float]] = {}
-
-        try:
-            df = pd.read_excel(
-                self.staff_allocation_source,
-                sheet_name="Lookup3_Staff & allocation",
-                header=None
-            )
-            print(f"\n=== DEBUG: Loading Staff_&_Allocation.xlsx ===")
-            print(f"  Shape: {df.shape}")
-
-            # Find header row (row with "Staff Name")
-            header_idx = 1  # Default for dec_final format
-            for idx in range(min(10, len(df))):
-                for val in df.iloc[idx].values:
-                    if isinstance(val, str) and "staff name" in val.lower():
-                        header_idx = idx
-                        break
-
-            # Get province column names from header row
-            header_row = df.iloc[header_idx]
-            province_cols: dict[int, str] = {}
-            for col_idx in range(2, len(header_row)):
-                col_name = header_row.iloc[col_idx]
-                if pd.notna(col_name) and str(col_name).strip():
-                    # Normalize province code
-                    province_code = str(col_name).strip().lower()
-                    province_cols[col_idx] = province_code
-
-            print(f"  Province columns: {province_cols}")
-
-            # Parse data rows
-            for idx in range(header_idx + 1, len(df)):
-                row = df.iloc[idx]
-                name = row.iloc[0] if len(row) > 0 else None
-                nature_raw = row.iloc[1] if len(row) > 1 else None
-
-                if pd.isna(name) or str(name).strip() == "":
-                    continue
-
-                name_key = str(name).strip().lower()
-
-                # Staff nature lookup
-                if pd.notna(nature_raw):
-                    nature = normalize_nature(str(nature_raw))
-                    staff_table[name_key] = nature
-
-                # Allocation percentages
-                allocations = {}
-                for col_idx, province_code in province_cols.items():
-                    val = row.iloc[col_idx] if len(row) > col_idx else 0
-                    if pd.notna(val) and val != 0:
-                        try:
-                            allocations[province_code] = float(val)
-                        except (ValueError, TypeError):
-                            pass
-
-                if allocations:
-                    allocation_table[name_key] = allocations
-
-            print(f"  Loaded {len(staff_table)} staff entries")
-            print(f"  Loaded {len(allocation_table)} allocation entries")
-
-        except Exception as e:
-            print(f"Warning: Could not load staff allocation table: {e}")
-
-        return staff_table, allocation_table
+        source = staff_allocation_source or DEFAULT_STAFF_ALLOCATION_LOOKUP
+        self.staff_lookup, self.allocation_lookup = load_staff_allocation_data(source)
 
     def lookup_staff_by_name(self, payee_name: str) -> Optional[str]:
-        """
-        Look up nature by staff name.
-
-        Args:
-            payee_name: The payee/name from the transaction
-
-        Returns:
-            Nature category (org/edu) or None if not found
-        """
-        if not payee_name:
-            return None
-
-        # Try exact match (case-insensitive)
-        name_lower = payee_name.strip().lower()
-        if name_lower in self.staff_lookup:
-            return self.staff_lookup[name_lower]
-
-        # Try partial match - check if any staff name is contained in payee_name
-        for staff_name, nature in self.staff_lookup.items():
-            if staff_name in name_lower or name_lower in staff_name:
-                return nature
-
-        return None
+        """Look up nature by staff name (exact then partial match)."""
+        return lookup_by_name(self.staff_lookup, payee_name)
 
     def lookup_allocation_by_name(self, payee_name: str) -> Optional[dict[str, float]]:
-        """
-        Look up allocation percentages by staff name.
-
-        Args:
-            payee_name: The payee/name from the transaction
-
-        Returns:
-            Dictionary of province -> percentage, or None if not found
-        """
-        if not payee_name:
-            return None
-
-        name_lower = payee_name.strip().lower()
-
-        # Exact match first
-        if name_lower in self.allocation_lookup:
-            return self.allocation_lookup[name_lower]
-
-        # Partial match
-        for stored_name, allocations in self.allocation_lookup.items():
-            if stored_name in name_lower or name_lower in stored_name:
-                return allocations
-
-        return None
+        """Look up allocation percentages by staff name (exact then partial match)."""
+        return lookup_by_name(self.allocation_lookup, payee_name)
 
     def process_manual_groups(
         self,
@@ -197,8 +70,7 @@ class ManualInputProcessor:
         }
         still_manual: list[TransactionGroup] = []
 
-        print(f"\n=== DEBUG: process_manual_groups ===")
-        print(f"Total manual groups to process: {len(manual_groups)}")
+        logger.debug("process_manual_groups: Total manual groups to process: %d", len(manual_groups))
 
         processed_count = 0
         skipped_already_processed = 0
@@ -206,7 +78,7 @@ class ManualInputProcessor:
         for i, group in enumerate(manual_groups):
             if group.is_processed:
                 skipped_already_processed += 1
-                print(f"  [{i}] SKIP (already processed): date={group.date}, section={group.assigned_section}")
+                logger.debug("[%d] SKIP (already processed): date=%s, section=%s", i, group.date, group.assigned_section)
                 continue
 
             ex_rate = get_exchange_rate(group, exchange_rates)
@@ -216,16 +88,15 @@ class ManualInputProcessor:
             if self._is_salary_or_bonus_memo(group):
                 result = self._process_salary(group, ex_rate, validation_data)
                 if result["processed"]:
-                    print(f"  [{i}] SALARY/BONUS: date={group.date}, name={group.payee_name}, result={result['amounts']}")
+                    logger.debug("[%d] SALARY/BONUS: date=%s, name=%s, result=%s", i, group.date, group.payee_name, result['amounts'])
                 else:
-                    # Salary/bonus memo but staff not found - fall through to account type processing
-                    print(f"  [{i}] SALARY/BONUS memo but staff not found: name={group.payee_name}")
+                    logger.debug("[%d] SALARY/BONUS memo but staff not found: name=%s", i, group.payee_name)
 
             # Priority 2: Process by account type based on nature from Nature.xlsx
             if not result["processed"]:
                 result = self._process_by_account_nature(group, ex_rate, validation_data)
                 if result["processed"]:
-                    print(f"  [{i}] ACCOUNT NATURE: date={group.date}, result={result['amounts']}")
+                    logger.debug("[%d] ACCOUNT NATURE: date=%s, result=%s", i, group.date, result['amounts'])
 
             if result["processed"]:
                 group.is_processed = True
@@ -239,17 +110,14 @@ class ManualInputProcessor:
                     if key in totals[group.bank_identifier]:
                         old_val = totals[group.bank_identifier][key]
                         totals[group.bank_identifier][key] += amount
-                        print(f"  [{i}] ADD {key}: {old_val} + {amount} = {totals[group.bank_identifier][key]}")
+                        logger.debug("[%d] ADD %s: %s + %s = %s", i, key, old_val, amount, totals[group.bank_identifier][key])
             else:
                 still_manual.append(group)
 
-        print(f"\n=== DEBUG: process_manual_groups SUMMARY ===")
-        print(f"Total groups: {len(manual_groups)}")
-        print(f"Skipped (already processed): {skipped_already_processed}")
-        print(f"Processed in this step: {processed_count}")
-        print(f"Still manual: {len(still_manual)}")
-        print(f"Final totals[VND]: { {k: v for k, v in totals[BANK_VND].items() if v != 0} }")
-        print(f"Final totals[USD]: { {k: v for k, v in totals[BANK_USD].items() if v != 0} }")
+        logger.debug("process_manual_groups SUMMARY: total=%d, skipped=%d, processed=%d, still_manual=%d",
+                      len(manual_groups), skipped_already_processed, processed_count, len(still_manual))
+        logger.debug("Final totals[VND]: %s", {k: v for k, v in totals[BANK_VND].items() if v != 0})
+        logger.debug("Final totals[USD]: %s", {k: v for k, v in totals[BANK_USD].items() if v != 0})
 
         return totals, still_manual
 
@@ -293,7 +161,7 @@ class ManualInputProcessor:
 
         # Case 1: ALL entries are 1500 → pure payable, skip salary processing entirely
         if not non_payable_entries:
-            print(f"  -> SALARY/BONUS: all entries are 1500, skipping to payable processing")
+            logger.debug("SALARY/BONUS: all entries are 1500, skipping to payable processing")
             return result  # Falls through to _process_by_account_nature → payable
 
         # Case 2 & 3: Has non-1500 entries → try staff lookup
@@ -320,11 +188,11 @@ class ManualInputProcessor:
                     contribution = abs(amount)
                     net_payable += contribution
                     result["amounts"]["payable"] = result["amounts"].get("payable", 0.0) + contribution
-                    print(f"  -> SALARY/1500 (negative): payable += {contribution}")
+                    logger.debug("SALARY/1500 (negative): payable += %s", contribution)
                 else:
                     net_payable -= amount
                     result["amounts"]["payable"] = result["amounts"].get("payable", 0.0) - amount
-                    print(f"  -> SALARY/1500 (positive): payable -= {amount}")
+                    logger.debug("SALARY/1500 (positive): payable -= %s", amount)
 
         # Salary = sum of non-1500 entry amounts
         salary_amount = non_payable_sum
@@ -334,9 +202,9 @@ class ManualInputProcessor:
         expected = -bank_amount_converted
         combined = non_payable_sum + net_payable
         if abs(combined - expected) > 0.01:
-            print(f"  WARNING: Manual salary sum mismatch! sum+payable={combined}, expected={expected}, diff={combined - expected}")
+            logger.warning("Manual salary sum mismatch! sum+payable=%s, expected=%s, diff=%s", combined, expected, combined - expected)
 
-        print(f"  -> SALARY split: {nature}={salary_amount}, payable={result['amounts'].get('payable', 0.0)}")
+        logger.debug("SALARY split: %s=%s, payable=%s", nature, salary_amount, result['amounts'].get('payable', 0.0))
 
         # Only overwrite nature_type on non-1500 entries
         for entry in group.entries:
@@ -354,156 +222,135 @@ class ManualInputProcessor:
         """
         Process group based on account nature from Nature.xlsx.
 
-        - 1230VN → Advance if entry amount > 0, Settlement if entry amount < 0
-        - 1250VN → Settlement if entry memo contains "settlement", otherwise Advance
-        - 1252VN → Settlement if entry memo contains "settlement", otherwise Advance
-        - 1500VN → "payable" → Payable section (positive 1500 subtracts from payable)
+        - 1230VN -> Advance if entry amount > 0, Settlement if entry amount < 0
+        - 1250VN -> Settlement if entry memo contains "settlement", otherwise Advance
+        - 1252VN -> Settlement if entry memo contains "settlement", otherwise Advance
+        - 1500VN -> Payable section (positive 1500 subtracts from payable)
         """
-        result = {"processed": False, "amounts": {}}
         active_entries = group.active_entries
         bank_amount_converted = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
 
-        print(f"\n=== DEBUG _process_by_account_nature ===")
-        print(f"Group date: {group.date}, bank: {group.bank_identifier}")
-        print(f"Bank amount: {group.bank_amount}, converted: {bank_amount_converted}")
-        print(f"Active entries: {len(active_entries)}")
+        logger.debug("_process_by_account_nature: date=%s, bank=%s, amount=%s, converted=%s, entries=%d",
+                      group.date, group.bank_identifier, group.bank_amount, bank_amount_converted, len(active_entries))
 
-        # Collect entries by their determined category
-        advance_entries = []
-        settlement_entries = []
-        payable_entries = []  # 1500
-        other_entries = []  # Non-special accounts
+        categorized = self._categorize_entries(active_entries)
+
+        num_entries = len(active_entries)
+        if num_entries == 1:
+            result = self._process_single_entry_account(active_entries[0], bank_amount_converted)
+        elif num_entries > 1:
+            result = self._process_multi_entry_account(
+                group, ex_rate, bank_amount_converted, active_entries, categorized
+            )
+        else:
+            result = {"processed": False, "amounts": {}}
+
+        logger.debug("Final result: %s", result)
+        return result
+
+    def _categorize_entries(self, active_entries: list) -> dict[str, list]:
+        """Categorize entries by account type, assigning nature_type as a side effect."""
+        categorized = {"advance": [], "settlement": [], "payable": [], "other": []}
 
         for entry in active_entries:
             acct_type = get_account_type(entry.account_code)
             entry_memo = (entry.original_memo or "").lower()
 
             if acct_type == "1230":
-                # 1230: Advance if amount > 0, Settlement if amount < 0
                 if entry.amount and entry.amount > 0:
-                    advance_entries.append(entry)
+                    categorized["advance"].append(entry)
                     entry.nature_type = "advance"
-                    print(f"  Entry 1230: amount={entry.amount} > 0 → advance")
+                    logger.debug("Entry 1230: amount=%s > 0 -> advance", entry.amount)
                 else:
-                    settlement_entries.append(entry)
+                    categorized["settlement"].append(entry)
                     entry.nature_type = "settlement"
-                    print(f"  Entry 1230: amount={entry.amount} <= 0 → settlement")
-            elif acct_type == "1250":
-                # 1250: Settlement if memo contains "settlement", otherwise Advance
+                    logger.debug("Entry 1230: amount=%s <= 0 -> settlement", entry.amount)
+            elif acct_type in ("1250", "1252"):
                 if "settlement" in entry_memo:
-                    settlement_entries.append(entry)
+                    categorized["settlement"].append(entry)
                     entry.nature_type = "settlement"
-                    print(f"  Entry 1250: memo contains 'settlement' → settlement")
+                    logger.debug("Entry %s: memo contains 'settlement' -> settlement", acct_type)
                 else:
-                    advance_entries.append(entry)
+                    categorized["advance"].append(entry)
                     entry.nature_type = "advance"
-                    print(f"  Entry 1250: memo='{entry_memo}' → advance")
-            elif acct_type == "1252":
-                # 1252: Settlement if memo contains "settlement", otherwise Advance
-                if "settlement" in entry_memo:
-                    settlement_entries.append(entry)
-                    entry.nature_type = "settlement"
-                    print(f"  Entry 1252: memo contains 'settlement' → settlement")
-                else:
-                    advance_entries.append(entry)
-                    entry.nature_type = "advance"
-                    print(f"  Entry 1252: memo='{entry_memo}' → advance")
+                    logger.debug("Entry %s: memo='%s' -> advance", acct_type, entry_memo)
             elif acct_type == "1500":
-                payable_entries.append(entry)
+                categorized["payable"].append(entry)
                 entry.nature_type = "payable"
             else:
-                # Keep existing nature_type from NatureMapper
-                other_entries.append(entry)
+                categorized["other"].append(entry)
 
-            print(f"  Entry: account={entry.account_code}, amount={entry.amount}, nature={entry.nature_type}")
+            logger.debug("Entry: account=%s, amount=%s, nature=%s", entry.account_code, entry.amount, entry.nature_type)
 
-        num_entries = len(active_entries)
+        return categorized
 
-        # Single-entry groups: use abs(bank_amount)
-        if num_entries == 1:
-            entry = active_entries[0]
-            nature = entry.nature_type
+    def _process_single_entry_account(self, entry, bank_amount_converted: float) -> dict:
+        """Handle single-entry groups: use abs(bank_amount) under the entry's nature."""
+        result = {"processed": False, "amounts": {}}
+        nature = entry.nature_type
 
-            if nature == "advance":
-                converted = abs(bank_amount_converted)
-                result["amounts"]["advance"] = converted
-                result["processed"] = True
-                print(f"  -> SINGLE ADVANCE: {converted}")
-
-            elif nature == "settlement":
-                converted = abs(bank_amount_converted)
-                result["amounts"]["settlement"] = converted
-                result["processed"] = True
-                print(f"  -> SINGLE SETTLEMENT: {converted}")
-
-            elif nature == "payable":
-                converted = abs(bank_amount_converted)
-                result["amounts"]["payable"] = converted
-                result["processed"] = True
-                print(f"  -> SINGLE PAYABLE: {converted}")
-            elif nature:
-                # Non-special single-entry (e.g., oper/org/edu) should follow normal nature rules
-                converted = abs(bank_amount_converted)
-                result["amounts"][nature] = converted
-                result["processed"] = True
-                print(f"  -> SINGLE NATURE: {nature} = {converted}")
-
-        # Multi-entry groups
-        elif num_entries > 1:
+        if nature:
+            converted = abs(bank_amount_converted)
+            result["amounts"][nature] = converted
             result["processed"] = True
+            logger.debug("SINGLE %s: %s", nature.upper(), converted)
 
-            # Process other entries (non-special accounts) - use their nature from NatureMapper
-            for entry in other_entries:
-                if entry.amount and entry.nature_type:
-                    amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
-                    result["amounts"][entry.nature_type] = result["amounts"].get(entry.nature_type, 0.0) + amount
-                    print(f"  -> OTHER entry: {entry.nature_type} += {amount}")
+        return result
 
-            # Process advance entries (1230 with positive amount, 1250/1252 without "settlement" in memo)
-            for entry in advance_entries:
-                if entry.amount:
-                    amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
-                    result["amounts"]["advance"] = result["amounts"].get("advance", 0.0) + abs(amount)
-                    print(f"  -> ADVANCE entry: advance += abs({amount})")
+    def _process_multi_entry_account(
+        self, group: TransactionGroup, ex_rate: float,
+        bank_amount_converted: float, active_entries: list, categorized: dict[str, list]
+    ) -> dict:
+        """Handle multi-entry groups: process each category separately."""
+        result = {"processed": True, "amounts": {}}
 
-            # Process settlement entries (1230 with negative amount, 1250/1252 with "settlement" in memo)
-            for entry in settlement_entries:
-                if entry.amount:
-                    amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
-                    result["amounts"]["settlement"] = result["amounts"].get("settlement", 0.0) + abs(amount)
-                    print(f"  -> SETTLEMENT entry: settlement += abs({amount})")
+        # Process other entries (non-special accounts) - use their nature from NatureMapper
+        for entry in categorized["other"]:
+            if entry.amount and entry.nature_type:
+                amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
+                result["amounts"][entry.nature_type] = result["amounts"].get(entry.nature_type, 0.0) + amount
+                logger.debug("OTHER entry: %s += %s", entry.nature_type, amount)
 
+        # Process advance entries
+        for entry in categorized["advance"]:
+            if entry.amount:
+                amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
+                result["amounts"]["advance"] = result["amounts"].get("advance", 0.0) + abs(amount)
+                logger.debug("ADVANCE entry: advance += abs(%s)", amount)
+
+        # Process settlement entries
+        for entry in categorized["settlement"]:
+            if entry.amount:
+                amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
+                result["amounts"]["settlement"] = result["amounts"].get("settlement", 0.0) + abs(amount)
+                logger.debug("SETTLEMENT entry: settlement += abs(%s)", amount)
+
+        # Process payable entries (1500) - negative adds, positive subtracts
+        net_payable = 0.0
+        for entry in categorized["payable"]:
+            if entry.amount:
+                amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
+                if entry.amount < 0:
+                    result["amounts"]["payable"] = result["amounts"].get("payable", 0.0) + abs(amount)
+                    net_payable += abs(amount)
+                    logger.debug("PAYABLE (negative) entry: payable += abs(%s)", amount)
+                else:
+                    result["amounts"]["payable"] = result["amounts"].get("payable", 0.0) - amount
+                    net_payable -= amount
+                    logger.debug("PAYABLE (positive) entry: payable -= %s", amount)
+
+        # Validation check
+        if categorized["payable"] and any(get_account_type(e.account_code) != "1500" for e in active_entries):
             non_payable_sum = sum(
-                convert_amount(entry.amount, group.bank_identifier, ex_rate)
-                for entry in active_entries
-                if entry.amount and get_account_type(entry.account_code) != "1500"
+                convert_amount(e.amount, group.bank_identifier, ex_rate)
+                for e in active_entries
+                if e.amount and get_account_type(e.account_code) != "1500"
             )
+            expected = -bank_amount_converted
+            combined = non_payable_sum + net_payable
+            if abs(combined - expected) > 0.01:
+                logger.warning("Manual sum mismatch! sum+payable=%s, expected=%s, diff=%s", combined, expected, combined - expected)
 
-            # Process payable entries (1500) - SIMPLIFIED LOGIC
-            # Negative 1500: ADD to payable
-            # Positive 1500: SUBTRACT from payable
-            net_payable = 0.0
-            for entry in payable_entries:
-                if entry.amount:
-                    amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
-                    if entry.amount < 0:
-                        # Negative 1500: add absolute value
-                        result["amounts"]["payable"] = result["amounts"].get("payable", 0.0) + abs(amount)
-                        net_payable += abs(amount)
-                        print(f"  -> PAYABLE (negative) entry: payable += abs({amount})")
-                    else:
-                        # Positive 1500: subtract
-                        result["amounts"]["payable"] = result["amounts"].get("payable", 0.0) - amount
-                        net_payable -= amount
-                        print(f"  -> PAYABLE (positive) entry: payable -= {amount}")
-
-            if payable_entries and any(get_account_type(e.account_code) != "1500" for e in active_entries):
-                expected = -bank_amount_converted
-                combined = non_payable_sum + net_payable
-                if abs(combined - expected) > 0.01:
-                    print(f"  WARNING: Manual sum mismatch! sum+payable={combined}, expected={expected}, diff={combined - expected}")
-
-        print(f"  Final result: {result}")
         return result
 
 
@@ -531,7 +378,7 @@ def _get_processed_section(group: TransactionGroup) -> Optional[ReportSection]:
         return None
     # Income checks
     if group.is_deposit():
-        if group.any_name_contains("onesky"):
+        if group.name_contains("onesky"):
             return ReportSection.INCOME
         if group.any_memo_contains("interest"):
             return ReportSection.INCOME

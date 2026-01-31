@@ -157,9 +157,6 @@ class TransactionGroup:
             return True
         return any(entry.memo_contains(keyword) for entry in self.entries)
 
-    def any_name_contains(self, keyword: str) -> bool:
-        """Check if payee name contains keyword."""
-        return self.name_contains(keyword)
 
 
 @dataclass
@@ -195,73 +192,49 @@ class ProcessingResult:
     validation_data: Optional["ValidationData"] = None
 
     def __post_init__(self):
-        # Initialize nested dicts for both bank types
-        for bank in [BANK_USD, BANK_VND]:
-            if bank not in self.groups_by_bank:
-                self.groups_by_bank[bank] = []
-            if bank not in self.income:
-                self.income[bank] = {
-                    "contribution": 0.0,
-                    "fund_transfer": 0.0,
-                    "fund_transfer_elc": 0.0,
-                    "interest": 0.0,
-                    "cash_settlement": 0.0,
-                }
-            if bank not in self.advance_settlement:
-                self.advance_settlement[bank] = {
-                    "advance": 0.0,
-                    "settlement": 0.0,
-                }
-            if bank not in self.payable_totals:
-                self.payable_totals[bank] = {
-                    "payable": 0.0,
-                }
-            if bank not in self.nature_totals:
-                self.nature_totals[bank] = {
-                    "org": 0.0,
-                    "edu": 0.0,
-                    "oper": 0.0,
-                    "nutrition": 0.0,
-                    "edu_infra": 0.0,
-                    "manual": 0.0,
-                }
-            if bank not in self.province_totals:
-                self.province_totals[bank] = {
-                    "elc": 0.0,
-                    "vnelc": 0.0,
-                    "vnhbc": 0.0,
-                    "vndn": 0.0,
-                    "vnqn": 0.0,
-                    "vnhd": 0.0,
-                    "vnqng": 0.0,
-                    "vnmoet": 0.0,
-                    "vnbd": 0.0,
-                    "vnbg": 0.0,
-                    "vnla": 0.0,
-                    "vnhcm": 0.0,
-                    "vnbn": 0.0,
-                    "vnother": 0.0,
-                    "caobang": 0.0,
-                    "province_manual": 0.0,
-                }
-    
+        from config.mappings import PROVINCE_CODES
+
+        _section_defaults: dict[str, callable] = {
+            "groups_by_bank": lambda: [],
+            "income": lambda: {
+                "contribution": 0.0, "fund_transfer": 0.0,
+                "fund_transfer_elc": 0.0, "interest": 0.0, "cash_settlement": 0.0,
+            },
+            "advance_settlement": lambda: {"advance": 0.0, "settlement": 0.0},
+            "payable_totals": lambda: {"payable": 0.0},
+            "nature_totals": lambda: {
+                "org": 0.0, "edu": 0.0, "oper": 0.0,
+                "nutrition": 0.0, "edu_infra": 0.0, "manual": 0.0,
+            },
+            "province_totals": lambda: {code: 0.0 for code in PROVINCE_CODES},
+        }
+        for attr_name, factory in _section_defaults.items():
+            attr = getattr(self, attr_name)
+            for bank in [BANK_USD, BANK_VND]:
+                if bank not in attr:
+                    attr[bank] = factory()
+
+    def _get_section_total(self, section: str, bank_id: str, exclude_keys: tuple = ()) -> float:
+        """Get total for a section, optionally excluding specific keys."""
+        values = getattr(self, section, {}).get(bank_id, {})
+        return sum(v for k, v in values.items() if k not in exclude_keys)
+
     def get_income_total(self, bank_id: str) -> float:
         """Get total income for a bank type."""
-        return sum(self.income.get(bank_id, {}).values())
-    
+        return self._get_section_total("income", bank_id)
+
     def get_expense_total(self, bank_id: str) -> float:
         """Get total expenses (by nature) for a bank type."""
-        return sum(self.nature_totals.get(bank_id, {}).values())
-    
+        return self._get_section_total("nature_totals", bank_id)
+
     def get_advance_settlement_total(self, bank_id: str) -> float:
         """Get total advance/settlement for a bank type."""
-        return sum(self.advance_settlement.get(bank_id, {}).values())
+        return self._get_section_total("advance_settlement", bank_id)
 
     def get_payable_total(self, bank_id: str) -> float:
         """Get total payable for a bank type."""
-        return sum(self.payable_totals.get(bank_id, {}).values())
+        return self._get_section_total("payable_totals", bank_id)
 
     def get_province_total(self, bank_id: str) -> float:
         """Get total province expenditure for a bank type (excluding province_manual)."""
-        totals = self.province_totals.get(bank_id, {})
-        return sum(v for k, v in totals.items() if k != "province_manual")
+        return self._get_section_total("province_totals", bank_id, exclude_keys=("province_manual",))

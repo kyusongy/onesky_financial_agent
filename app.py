@@ -2,9 +2,13 @@
 OneSky Financial Report Automation Tool
 Streamlit-based UI for processing transaction files and generating reports.
 """
+import logging
 import streamlit as st
 from io import BytesIO
 from datetime import datetime
+
+logging.basicConfig(level=logging.INFO, format='%(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 from src.parser import parse_transaction_file
 from src.processor import process_transactions
@@ -71,6 +75,23 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
+
+
+def _display_bank_tab(section_data: dict, format_key):
+    """Display a two-column bank comparison tab (VND left, USD right)."""
+    col1, col2 = st.columns(2)
+    for col, bank_id, label in [
+        (col1, BANK_VND, "VND Bank (30)"),
+        (col2, BANK_USD, "USD Bank (29)"),
+    ]:
+        with col:
+            st.markdown(f"**{label}**")
+            total = 0
+            for key, val in section_data[bank_id].items():
+                if val != 0:
+                    st.write(f"- {format_key(key)}: {val:,.0f}")
+                    total += val
+            st.markdown(f"**Total: {total:,.0f}**")
 
 
 def get_usd_dates(groups) -> list[str]:
@@ -244,19 +265,16 @@ def main():
                 
                 nature_totals, manual_groups = nature_mapper.process_groups(groups_by_bank, st.session_state.exchange_rates, validation_data)
                 
-                # DEBUG: Initial nature_totals from nature_mapper
-                print("\n=== DEBUG: nature_totals AFTER nature_mapper.process_groups ===")
-                print(f"VND totals: { {k: v for k, v in nature_totals[BANK_VND].items() if v != 0} }")
-                print(f"USD totals: { {k: v for k, v in nature_totals[BANK_USD].items() if v != 0} }")
-                print(f"Manual groups count: {len(manual_groups)}")
+                logger.debug("nature_totals AFTER nature_mapper.process_groups")
+                logger.debug("VND totals: %s", {k: v for k, v in nature_totals[BANK_VND].items() if v != 0})
+                logger.debug("USD totals: %s", {k: v for k, v in nature_totals[BANK_USD].items() if v != 0})
+                logger.debug("Manual groups count: %d", len(manual_groups))
                 
                 # Step 7: Mark processed groups (for avoiding double counting)
                 mark_processed_groups(groups_by_bank, income, advance_settlement, nature_totals)
                 
-                # DEBUG: Check how many groups are marked as processed after this
                 processed_count = sum(1 for grps in groups_by_bank.values() for g in grps if g.is_processed)
-                print(f"\n=== DEBUG: After mark_processed_groups ===")
-                print(f"Total processed groups: {processed_count}")
+                logger.debug("After mark_processed_groups: Total processed groups: %d", processed_count)
                 
                 # Step 8: Process manual input groups
                 manual_processor = ManualInputProcessor(
@@ -271,10 +289,9 @@ def main():
                     validation_data
                 )
                 
-                # DEBUG: Before merging
-                print("\n=== DEBUG: BEFORE merging manual_nature_totals ===")
-                print(f"nature_totals[VND]: { {k: v for k, v in nature_totals[BANK_VND].items() if v != 0} }")
-                print(f"manual_nature_totals[VND]: { {k: v for k, v in manual_nature_totals[BANK_VND].items() if v != 0} }")
+                logger.debug("BEFORE merging manual_nature_totals")
+                logger.debug("nature_totals[VND]: %s", {k: v for k, v in nature_totals[BANK_VND].items() if v != 0})
+                logger.debug("manual_nature_totals[VND]: %s", {k: v for k, v in manual_nature_totals[BANK_VND].items() if v != 0})
                 
                 # Initialize payable_totals as its own section
                 payable_totals = {
@@ -290,24 +307,24 @@ def main():
                             old_val = payable_totals[bank_id]["payable"]
                             payable_totals[bank_id]["payable"] = old_val + value
                             if value != 0:
-                                print(f"  MERGE PAYABLE {bank_id} {key}: {old_val} + {value} = {payable_totals[bank_id]['payable']}")
+                                logger.debug("MERGE PAYABLE %s %s: %s + %s = %s", bank_id, key, old_val, value, payable_totals[bank_id]['payable'])
                         elif key in ["advance", "settlement"]:
                             # Add to advance/settlement section (row 36-37)
                             old_val = advance_settlement[bank_id].get(key, 0)
                             advance_settlement[bank_id][key] = old_val + value
                             if value != 0:
-                                print(f"  MERGE ADV/SETTLE {bank_id} {key}: {old_val} + {value} = {advance_settlement[bank_id][key]}")
+                                logger.debug("MERGE ADV/SETTLE %s %s: %s + %s = %s", bank_id, key, old_val, value, advance_settlement[bank_id][key])
                         elif key == "cash_settlement":
                             # Add to income section (positive settlements)
                             old_val = income[bank_id].get("cash_settlement", 0)
                             income[bank_id]["cash_settlement"] = old_val + value
                             if value != 0:
-                                print(f"  MERGE INCOME {bank_id} {key}: {old_val} + {value} = {income[bank_id]['cash_settlement']}")
+                                logger.debug("MERGE INCOME %s %s: %s + %s = %s", bank_id, key, old_val, value, income[bank_id]['cash_settlement'])
                         elif key in nature_totals[bank_id]:
                             old_val = nature_totals[bank_id][key]
                             nature_totals[bank_id][key] += value
                             if value != 0:
-                                print(f"  MERGE {bank_id} {key}: {old_val} + {value} = {nature_totals[bank_id][key]}")
+                                logger.debug("MERGE %s %s: %s + %s = %s", bank_id, key, old_val, value, nature_totals[bank_id][key])
 
                 # Clear the "manual" tracking category - those amounts are now categorized
                 # Only keep "manual" amount for groups that are still unprocessed (still_manual)
@@ -320,11 +337,10 @@ def main():
                         )
                         nature_totals[bank_id]["manual"] = remaining_manual
 
-                # DEBUG: After merging
-                print("\n=== DEBUG: AFTER merging - FINAL totals ===")
-                print(f"nature_totals[VND]: { {k: v for k, v in nature_totals[BANK_VND].items() if v != 0} }")
-                print(f"advance_settlement[VND]: { {k: v for k, v in advance_settlement[BANK_VND].items() if v != 0} }")
-                print(f"payable_totals[VND]: { {k: v for k, v in payable_totals[BANK_VND].items() if v != 0} }")
+                logger.debug("AFTER merging - FINAL totals")
+                logger.debug("nature_totals[VND]: %s", {k: v for k, v in nature_totals[BANK_VND].items() if v != 0})
+                logger.debug("advance_settlement[VND]: %s", {k: v for k, v in advance_settlement[BANK_VND].items() if v != 0})
+                logger.debug("payable_totals[VND]: %s", {k: v for k, v in payable_totals[BANK_VND].items() if v != 0})
 
                 # Step 9: Calculate province totals
                 province_mapper = ProvinceMapper(
@@ -338,10 +354,9 @@ def main():
                     validation_data
                 )
 
-                # DEBUG: Province totals
-                print("\n=== DEBUG: FINAL province_totals ===")
-                print(f"VND: { {k: v for k, v in province_totals[BANK_VND].items() if v != 0} }")
-                print(f"USD: { {k: v for k, v in province_totals[BANK_USD].items() if v != 0} }")
+                logger.debug("FINAL province_totals")
+                logger.debug("VND: %s", {k: v for k, v in province_totals[BANK_VND].items() if v != 0})
+                logger.debug("USD: %s", {k: v for k, v in province_totals[BANK_USD].items() if v != 0})
 
                 # Collect all groups for marked transaction output
                 all_groups = []
@@ -401,99 +416,15 @@ def main():
             tab1, tab2, tab3, tab4, tab5 = st.tabs(["Income", "Advance/Settlement", "Payable", "By Nature", "By Province"])
 
             with tab1:
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.markdown("**VND Bank (30)**")
-                    vnd_total = 0
-                    for key, val in result.income[BANK_VND].items():
-                        if val != 0:
-                            st.write(f"- {key.replace('_', ' ').title()}: {val:,.0f}")
-                            vnd_total += val
-                    st.markdown(f"**Total: {vnd_total:,.0f}**")
-                with col2:
-                    st.markdown("**USD Bank (29)**")
-                    usd_total = 0
-                    for key, val in result.income[BANK_USD].items():
-                        if val != 0:
-                            st.write(f"- {key.replace('_', ' ').title()}: {val:,.0f}")
-                            usd_total += val
-                    st.markdown(f"**Total: {usd_total:,.0f}**")
-
+                _display_bank_tab(result.income, lambda k: k.replace('_', ' ').title())
             with tab2:
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.markdown("**VND Bank (30)**")
-                    vnd_total = 0
-                    for key, val in result.advance_settlement[BANK_VND].items():
-                        if val != 0:
-                            st.write(f"- {key.title()}: {val:,.0f}")
-                            vnd_total += val
-                    st.markdown(f"**Total: {vnd_total:,.0f}**")
-                with col2:
-                    st.markdown("**USD Bank (29)**")
-                    usd_total = 0
-                    for key, val in result.advance_settlement[BANK_USD].items():
-                        if val != 0:
-                            st.write(f"- {key.title()}: {val:,.0f}")
-                            usd_total += val
-                    st.markdown(f"**Total: {usd_total:,.0f}**")
-
+                _display_bank_tab(result.advance_settlement, lambda k: k.title())
             with tab3:
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.markdown("**VND Bank (30)**")
-                    vnd_total = 0
-                    for key, val in result.payable_totals[BANK_VND].items():
-                        if val != 0:
-                            st.write(f"- {key.title()}: {val:,.0f}")
-                            vnd_total += val
-                    st.markdown(f"**Total: {vnd_total:,.0f}**")
-                with col2:
-                    st.markdown("**USD Bank (29)**")
-                    usd_total = 0
-                    for key, val in result.payable_totals[BANK_USD].items():
-                        if val != 0:
-                            st.write(f"- {key.title()}: {val:,.0f}")
-                            usd_total += val
-                    st.markdown(f"**Total: {usd_total:,.0f}**")
-
+                _display_bank_tab(result.payable_totals, lambda k: k.title())
             with tab4:
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.markdown("**VND Bank (30)**")
-                    vnd_total = 0
-                    for key, val in result.nature_totals[BANK_VND].items():
-                        if val != 0:
-                            st.write(f"- {key.upper()}: {val:,.0f}")
-                            vnd_total += val
-                    st.markdown(f"**Total: {vnd_total:,.0f}**")
-                with col2:
-                    st.markdown("**USD Bank (29)**")
-                    usd_total = 0
-                    for key, val in result.nature_totals[BANK_USD].items():
-                        if val != 0:
-                            st.write(f"- {key.upper()}: {val:,.0f}")
-                            usd_total += val
-                    st.markdown(f"**Total: {usd_total:,.0f}**")
-
+                _display_bank_tab(result.nature_totals, lambda k: k.upper())
             with tab5:
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.markdown("**VND Bank (30)**")
-                    vnd_total = 0
-                    for key, val in result.province_totals[BANK_VND].items():
-                        if val != 0:
-                            st.write(f"- {key.upper()}: {val:,.0f}")
-                            vnd_total += val
-                    st.markdown(f"**Total: {vnd_total:,.0f}**")
-                with col2:
-                    st.markdown("**USD Bank (29)**")
-                    usd_total = 0
-                    for key, val in result.province_totals[BANK_USD].items():
-                        if val != 0:
-                            st.write(f"- {key.upper()}: {val:,.0f}")
-                            usd_total += val
-                    st.markdown(f"**Total: {usd_total:,.0f}**")
+                _display_bank_tab(result.province_totals, lambda k: k.upper())
 
         # Download section
         st.markdown('<p class="section-header">📥 Download Results</p>', unsafe_allow_html=True)
