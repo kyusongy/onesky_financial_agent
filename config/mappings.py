@@ -6,10 +6,10 @@ from pathlib import Path
 # Base paths
 PROJECT_ROOT = Path(__file__).parent.parent
 DATA_DIR = PROJECT_ROOT / "instruction_data" / "templates"
-TEMPLATE_DIR = DATA_DIR / "dec_final"
-DEFAULT_NATURE_LOOKUP = TEMPLATE_DIR / "Nature.xlsx"
+TEMPLATE_DIR = DATA_DIR / "jan"
+DEFAULT_NATURE_LOOKUP = TEMPLATE_DIR / "nature.xlsx"
 DEFAULT_OUTPUT_TEMPLATE = DATA_DIR / "output_template.xlsx"
-DEFAULT_STAFF_ALLOCATION_LOOKUP = TEMPLATE_DIR / "Staff_&_Allocation.xlsx"
+DEFAULT_STAFF_ALLOCATION_LOOKUP = TEMPLATE_DIR / "staff.xlsx"
 # Bank identifiers (string format)
 BANK_USD = "29"  # USD Bank
 BANK_VND = "30"  # VND Bank

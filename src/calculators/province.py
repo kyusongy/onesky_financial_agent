@@ -33,17 +33,11 @@ def _is_1500(entry: TransactionEntry) -> bool:
 
 
 def _calc_payable_contribution(payable_entries: list, bank_identifier: str, ex_rate: float) -> float:
-    """Calculate net payable contribution from 1500 entries."""
-    contribution = 0.0
-    for entry in payable_entries:
-        if not entry.amount:
-            continue
-        amount = convert_amount(entry.amount, bank_identifier, ex_rate)
-        if entry.amount < 0:
-            contribution += abs(amount)
-        else:
-            contribution -= amount
-    return contribution
+    """Calculate net payable contribution from 1500 entries (preserve sign)."""
+    return sum(
+        convert_amount(e.amount, bank_identifier, ex_rate)
+        for e in payable_entries if e.amount
+    )
 
 
 class ProvinceMapper:

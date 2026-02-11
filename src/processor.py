@@ -41,9 +41,7 @@ def process_transactions(
             # Step 2: Remove capital rows (mark as ignored)
             cleaned_group = _remove_capital_rows(split_group)
 
-            # Only add groups with non-zero bank amount (ignore zero bank_amount transactions)
-            if cleaned_group.bank_amount != 0:
-                processed_groups[cleaned_group.bank_identifier].append(cleaned_group)
+            processed_groups[cleaned_group.bank_identifier].append(cleaned_group)
     
     return processed_groups
 
