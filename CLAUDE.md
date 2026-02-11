@@ -23,9 +23,9 @@ onesky_financial_agent/
 │   └── calculators/
 │       ├── utils.py                 # Exchange rate, amount conversion helpers
 │       ├── income.py                # Income section calculation
-│       ├── advance_settlement.py    # Advance/Settlement calculation
+│       ├── advance_settlement.py    # Special account (1230/1250/1252/1500) processing
 │       ├── nature.py                # Nature categorization
-│       ├── manual_input.py          # Manual account (1250/1230/1252/1500) handling
+│       ├── manual_input.py          # Salary/bonus staff lookup handling
 │       └── province.py              # Province section calculation
 └── instruction_data/
     ├── templates/
@@ -52,13 +52,13 @@ onesky_financial_agent/
 - Column A: Account No. (e.g., "71101VN", "1500VN")
 - Column B: PACCOM nature
 
-**Special Account Mappings:**
+**Special Account Mappings (processed before NatureMapper):**
 | Account | Logic | Report Section |
 |---------|-------|----------------|
-| 1230VN | Advance if entry amount > 0, Settlement if < 0 | Row 36/37 |
-| 1250VN | Settlement if entry memo contains "settlement", else Advance | Row 36/37 |
-| 1252VN | Settlement if entry memo contains "settlement", else Advance | Row 36/37 |
-| 1500VN | Payable | Row 38 (Payable) |
+| 1230VN | Settlement if entry amount > 0, Advance if < 0 | Row 36/37 |
+| 1250VN | Settlement if entry amount > 0, Advance if < 0 | Row 36/37 |
+| 1252VN | Settlement if entry amount > 0, Advance if < 0 | Row 36/37 |
+| 1500VN | Payable (preserve original sign) | Row 38 (Payable) |
 
 ### Staff_&_Allocation.xlsx Structure
 - Sheet: `Lookup3_Staff & allocation`
@@ -88,7 +88,7 @@ PIT_SI.xlsx is no longer used in province processing. The file may still exist i
 - **Other banks (34, etc.):** Ignored completely - only process bank 29 and 30
 
 **Zero Amount Filtering:**
-- Groups with `bank_amount = 0` are ignored
+- Groups with `bank_amount = 0` are still processed (accrual basis) - they contribute 0 to totals
 - Entries with `amount = 0` or `amount = None` are filtered out from `active_entries`
 
 **Currency Conversion:** For USD transactions, user provides daily exchange rates via UI. Amounts are converted using: `amount / exchange_rate`
@@ -111,43 +111,28 @@ Fill this section for Bank 29 and 30 respectively.
 
 ---
 
-### Step 3: Advance/Settlement Section
+### Step 3: Special Account Processing (Advance/Settlement/Payable)
 
-| Category | Rule | Code Location |
-|----------|------|---------------|
-| **Advance by Cash** | `header memo contains "advance" AND NOT "settlement"` → Sum **absolute** amount | `advance_settlement.py:41-45` |
-| **Settlement** | `header memo contains "settlement" AND bank_amount <= 0` → Sum **original** amount (preserve sign) | `advance_settlement.py:47-51` |
+**Runs BEFORE NatureMapper.** Processes special account entries (1230/1250/1252/1500), marks them as `is_ignored`, so downstream stages never see them.
 
-**Note:** Advance/Settlement detection only checks the **header memo (bank_memo)**, not entry memos. This prevents false positives from entries containing "advance" in their memo.
+| Account | Rule | Report Section |
+|---------|------|----------------|
+| 1230VN | Settlement if entry amount > 0, Advance if < 0 | Row 36/37 |
+| 1250VN | Settlement if entry amount > 0, Advance if < 0 | Row 36/37 |
+| 1252VN | Settlement if entry amount > 0, Advance if < 0 | Row 36/37 |
+| 1500VN | Payable (preserve original sign) | Row 38 |
 
-**Note:** Positive settlements (`bank_amount > 0`) go to Income section as "Cash Settlement" instead.
+**Sign Convention:** Advance values are negative, settlement values are positive. No abs() applied.
 
-**Additional Source:** Account-based routing from Nature.xlsx:
-- 1230VN → Advance if entry amount > 0, Settlement if entry amount < 0
-- 1250VN → Settlement if entry memo contains "settlement", otherwise Advance
-- 1252VN → Settlement if entry memo contains "settlement", otherwise Advance
+**Group Completion:** If ALL active entries in a group were special accounts, the group is marked `is_processed = True` and won't be seen by NatureMapper or downstream.
 
----
-
-### Step 4: Payable Section (NEW)
-
-**For 1500 accounts** (nature = "payable" from Nature.xlsx):
-
-| Scenario | Rule | Report Row |
-|----------|------|------------|
-| Single 1500 entry | Use abs(bank_amount) | Row 38 (Payable) |
-| Multi-row with 1500 | Negative 1500: ADD abs(amount) to Payable | Row 38 |
-| Multi-row with 1500 | Positive 1500: SUBTRACT amount from Payable | Row 38 |
-
-**Simplified Logic:** Positive 1500 entries only subtract from the Payable section itself, NOT from other nature categories (org/edu/etc.). Non-1500 entries in the same group are processed normally via Nature.xlsx lookup.
-
-**Code Location:** `manual_input.py:300-450`
+**Code Location:** `advance_settlement.py`
 
 ---
 
-### Step 5: By Nature (Automated & Manual)
+### Step 4: By Nature (Automated & Manual)
 
-**Priority Logic:** If a group was processed in Income, Advance/Settlement, or Payable sections (`is_processed = True`), do NOT double count it here.
+**Priority Logic:** If a group was processed in Income or Special Accounts (`is_processed = True`), do NOT double count it here. Special account entries (1230/1250/1252/1500) are already `is_ignored` and excluded from `active_entries`.
 
 #### A. The "Row 13" Capital Cleaning Rule
 
@@ -163,9 +148,10 @@ These ignored entries are excluded from `group.active_entries`. See `processor.p
 #### B. Nature Lookup Logic
 
 1. Extract account number (e.g., "71101VN") from the Account column
-2. Match against `Nature.xlsx` (Sheet: Lookup1_AcctList)
-3. Map to normalized categories: `org`, `edu`, `oper`, `nutrition`, `edu_infra`
-4. Special accounts (1230/1250/1252/1500) are flagged with `is_manual_trigger = True`
+2. Skip special accounts (already processed upstream)
+3. Match against `Nature.xlsx` (Sheet: Lookup1_AcctList)
+4. Map to normalized categories: `org`, `edu`, `oper`, `nutrition`, `edu_infra`
+5. Entries with "manual" nature in Nature.xlsx are flagged with `is_manual_trigger = True`
 
 **Nature Normalization Map:**
 | Nature.xlsx Value | Internal Code |
@@ -181,36 +167,32 @@ These ignored entries are excluded from `group.active_entries`. See `processor.p
 
 #### C. Salary/Bonus Processing (Priority Rule)
 
-**After** NatureMapper assigns `nature_type`/`is_manual_trigger` to all entries (including salary/bonus groups), check if the header memo contains "salary" or "bonus". The group is deferred to `ManualInputProcessor._process_salary`, which handles three cases:
+If the header memo contains "salary" or "bonus", the group is deferred to `ManualInputProcessor._process_salary`, which handles:
 
 | Scenario | Rule | Result |
 |----------|------|--------|
-| All entries are 1500 | Skip salary processing entirely | Falls through to `_process_by_account_nature` → Payable |
-| Has non-1500 entries, staff not found | Skip salary processing | Falls through to account type processing (entries have correct `nature_type` from NatureMapper) |
-| Has non-1500 entries, staff found | Split: 1500 entries → Payable, rest → org/edu | Salary amount = sum of non-1500 entry amounts |
+| No active entries (all were special) | Mark processed, skip | Special accounts already handled upstream |
+| Staff not found | Use entry natures from Nature.xlsx | Entries keep their assigned nature_type |
+| Staff found | Assign staff's nature to all active entries | All active entries get org/edu |
 
-**Note:** If salary/bonus memo is present but staff is not found, ManualInputProcessor falls through to account-type processing. Single-entry non-special accounts (e.g., 73209VN) are treated as normal nature and recorded in nature totals.
+**Note:** Special account entries (1500, etc.) are already `is_ignored` before salary processing, so `active_entries` only contains non-special entries.
 
-**Key behavior:** Only non-1500 entries get their `nature_type` overwritten to the staff's nature (org/edu). 1500 entries retain `nature_type = "payable"` as assigned by NatureMapper.
+**Code Location:** `nature.py` (salary/bonus detection), `manual_input.py` (processing)
 
-**Code Location:** `nature.py:236-243` (salary/bonus detection, after entry assignment), `manual_input.py:267-338` (three-case processing)
+#### D. Reporting Logic (Unified)
 
-#### D. Reporting Logic (Standard - Non-Manual)
+**All groups (single or multi-entry):**
+- Use each entry's `amount` (preserve sign)
+- Convert using exchange rate for USD
+- Accumulate by nature_type
 
-**2-Row Groups (Header + 1 Split):**
-- Use the Nature of the entry row
-- Report the `bank_amount` (absolute value) under that nature
+No distinction between single-entry and multi-entry groups. No abs() applied.
 
-**Multi-Row Groups (>2 rows):**
-- Report the `amount` of each individual entry under its respective Nature
-- **Add amounts as-is (preserve sign)** - DO NOT use abs()
-- The sum of all entry amounts equals the REVERSE of `bank_amount`
-
-**Code Location:** `nature.py:209-234` - preserves sign, no abs()
+**Code Location:** `nature.py:_calculate_nature_amounts`
 
 ---
 
-### Step 6: By Province Section
+### Step 5: By Province Section
 
 **Overview:** The province section distributes expenditures by geographic location. Province totals should equal nature section totals (same transactions, different categorization).
 
@@ -474,7 +456,7 @@ The application will be available at `http://localhost:8501`
 1. Parse Transaction.xlsx
    └─> TransactionGroup + TransactionEntry objects
 
-2. Process Transactions
+2. Process Transactions (all groups, including zero bank_amount)
    ├─> Split transfer groups (In/Out legs)
    └─> Remove capital rows (Row 13 rule)
 
@@ -485,32 +467,29 @@ The application will be available at `http://localhost:8501`
    └─> Deposit+OneSky, Transfer, Interest, Cash Settlement (positive settlement)
    └─> Records header row contributions to income columns
 
-5. Calculate Advance/Settlement (tracks validation data)
-   └─> Advance, Settlement (negative only) memos
-   └─> Records header row contributions to advance/settlement columns
+5. Process Special Accounts (tracks validation data)
+   ├─> 1230/1250/1252 entries → advance (negative) or settlement (positive)
+   ├─> 1500 entries → payable (preserve sign)
+   ├─> Mark processed entries as is_ignored
+   └─> If all entries were special → mark group as processed
 
 6. Map Nature Categories (NatureMapper, tracks validation data)
-   ├─> Assign nature_type to ALL entries first (including salary/bonus groups)
-   ├─> Lookup accounts in Nature.xlsx (Lookup1_AcctList sheet)
-   ├─> Mark manual triggers (1250/1230/1252/1500)
-   ├─> THEN check salary/bonus memo → defer to ManualInputProcessor (entries already typed)
-   └─> Records header or entry row contributions to nature columns
+   ├─> Skip special accounts (already is_ignored)
+   ├─> Assign nature_type from Nature.xlsx
+   ├─> Unified: always use entry.amount, preserve sign
+   ├─> Salary/bonus memo → defer to ManualInputProcessor
+   └─> Records entry row contributions to nature columns
 
 7. Mark Processed Groups
+   ├─> Skip already-processed groups (from special accounts)
    └─> Prevent double-counting
 
 8. Process Manual Input (ManualInputProcessor, tracks validation data)
-   ├─> Priority 1: Salary/Bonus check (memo contains "salary" or "bonus")
-   │   ├─> All entries 1500 → skip salary, fall through to payable
-   │   ├─> Staff not found → fall through to account type processing
-   │   └─> Staff found → split: 1500 entries → payable, rest → org/edu
-   ├─> Priority 2: Account type processing based on entry-level logic
-   │   ├─> 1230VN → Advance if entry amount > 0, Settlement if < 0
-   │   ├─> 1250VN → Settlement if memo contains "settlement", else Advance
-   │   ├─> 1252VN → Settlement if memo contains "settlement", else Advance
-   │   └─> 1500VN → Payable section
-   ├─> Handle 1500 offset logic (positive 1500 subtracts from Payable only)
-   └─> Records row contributions to respective sections
+   ├─> Salary/Bonus: staff lookup → assign nature to active entries
+   │   ├─> No active entries → already processed upstream
+   │   ├─> Staff not found → use Nature.xlsx natures
+   │   └─> Staff found → assign staff's nature (org/edu)
+   └─> Unprocessed groups → manual review (highlighted yellow)
 
 9. Calculate Province Totals (ProvinceMapper, tracks validation data)
    ├─> Only process NATURE and MANUAL section groups
@@ -529,10 +508,12 @@ The application will be available at `http://localhost:8501`
 
 ## Important Notes
 
-- **Sign Convention:** Entry amounts are added as-is (preserve sign). The sum of entries equals the reverse of bank_amount.
-- **Settlement Sign:** Settlement uses original bank_amount (preserves sign), while Advance uses absolute value.
-- **1500 Handling (Simplified):** Positive 1500 amounts are SUBTRACTED from the Payable section only, not from other nature categories.
-- **Salary/Bonus Priority:** Transactions with "salary" or "bonus" in memo are processed via staff lookup BEFORE account type processing. However, 1500 (payable) entries within salary/bonus groups are NOT overridden — they remain payable and are split out separately. Only non-1500 entries get the staff's nature (org/edu). If all entries are 1500, salary processing is skipped entirely.
+- **Sign Convention:** All amounts preserve original sign. Entry amounts are added as-is. Advance values are negative, settlement values are positive. No abs() applied to data values.
+- **Special Accounts:** 1230/1250/1252/1500 entries are processed BEFORE NatureMapper and marked `is_ignored`. Downstream stages never see them in `active_entries`.
+- **Unified 1230/1250/1252 Logic:** Positive amount = settlement, negative amount = advance. No memo-based detection.
+- **1500 Payable:** Preserves original sign. No abs() applied.
+- **Salary/Bonus:** Special account entries are already excluded from `active_entries` before salary processing. Staff lookup only applies to remaining non-special entries.
+- **Zero Bank Amount:** Groups with `bank_amount = 0` are processed (accrual basis). They contribute 0 to totals.
 - **Double-Counting Prevention:** Groups are marked as `is_processed` after being categorized to avoid counting in multiple sections.
 - **Manual Review:** Groups that cannot be automatically processed are highlighted yellow for manual review.
 - **Validation Columns:** The 29 validation columns (13 nature/income + 16 province) in the processed transaction file enable users to verify report totals by summing each column (filtered by bank).

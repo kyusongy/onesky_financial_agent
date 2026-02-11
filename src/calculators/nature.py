@@ -231,12 +231,16 @@ class NatureMapper:
     def _assign_entry_natures(self, active_entries: list) -> None:
         """Assign nature_type and is_manual_trigger to each entry from Nature.xlsx."""
         for entry in active_entries:
+            # Special accounts already processed upstream - skip
+            if get_account_type(entry.account_code):
+                continue
+
             nature = self.get_nature(entry.account_code)
 
             if nature and nature != "manual":
                 entry.nature_type = nature
 
-            if get_account_type(entry.account_code) or nature == "manual":
+            if nature == "manual":
                 entry.is_manual_trigger = True
 
             logger.debug("  Entry: account=%s, amount=%s, nature_type=%s, is_manual_trigger=%s",
@@ -259,11 +263,7 @@ class NatureMapper:
             logger.debug("  -> SALARY/BONUS detected in memo, deferring to ManualInputProcessor")
             return result
 
-        # Advance/Settlement groups handled elsewhere
-        if group.memo_contains("advance") or group.memo_contains("settlement"):
-            return result
-
-        # Manual trigger entries
+        # Manual trigger entries (from Nature.xlsx "manual" category)
         if any(e.is_manual_trigger for e in active_entries):
             result["is_manual"] = True
             result["manual_amount"] = bank_amount_converted
@@ -276,30 +276,12 @@ class NatureMapper:
         self, group: TransactionGroup, active_entries: list,
         ex_rate: float, bank_amount_converted: float
     ) -> dict[str, float]:
-        """Calculate per-nature amounts from entries."""
+        """Calculate per-nature amounts from entries. Always uses entry.amount, preserves sign."""
         nature_amounts: dict[str, float] = {}
-        num_entries = len(active_entries)
 
-        if num_entries == 1:
-            entry = active_entries[0]
-            if entry.nature_type:
-                converted = convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
-                nature_amounts[entry.nature_type] = abs(converted)
-                logger.debug("  -> SINGLE-ENTRY mode: %s = abs(%s) = %s", entry.nature_type, converted, abs(converted))
-
-        elif num_entries > 1:
-            logger.debug("  -> MULTI-ROW mode: adding entry amounts by nature (preserve sign)")
-            for entry in active_entries:
-                if entry.nature_type and entry.amount:
-                    amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
-                    old_val = nature_amounts.get(entry.nature_type, 0.0)
-                    nature_amounts[entry.nature_type] = old_val + amount
-                    logger.debug("    %s: %s + %s = %s", entry.nature_type, old_val, amount, nature_amounts[entry.nature_type])
-
-            total = sum(nature_amounts.values())
-            expected = -bank_amount_converted
-            logger.debug("  VALIDATION: sum of amounts = %s, expected (reverse of bank) = %s", total, expected)
-            if abs(total - expected) > 1:
-                logger.warning("  Mismatch! Difference = %s", total - expected)
+        for entry in active_entries:
+            if entry.nature_type and entry.amount:
+                amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
+                nature_amounts[entry.nature_type] = nature_amounts.get(entry.nature_type, 0.0) + amount
 
         return nature_amounts

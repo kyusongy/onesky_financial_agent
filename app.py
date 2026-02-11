@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 from src.parser import parse_transaction_file
 from src.processor import process_transactions
 from src.calculators.income import calculate_income
-from src.calculators.advance_settlement import calculate_advance_settlement
+from src.calculators.advance_settlement import process_special_accounts
 from src.calculators.nature import NatureMapper
 from src.calculators.manual_input import ManualInputProcessor, mark_processed_groups
 from src.calculators.province import ProvinceMapper
@@ -251,8 +251,8 @@ def main():
                 # Step 4: Calculate income (with exchange rates for USD conversion)
                 income = calculate_income(groups_by_bank, st.session_state.exchange_rates, validation_data)
 
-                # Step 5: Calculate advance/settlement (with exchange rates for USD conversion)
-                advance_settlement = calculate_advance_settlement(groups_by_bank, st.session_state.exchange_rates, validation_data)
+                # Step 5: Process special accounts (1230/1250/1252 -> adv/settle, 1500 -> payable)
+                advance_settlement, payable_totals = process_special_accounts(groups_by_bank, st.session_state.exchange_rates, validation_data)
                 
                 # Step 6: Map nature categories (with exchange rates for USD conversion)
                 nature_mapper = NatureMapper(
@@ -271,7 +271,7 @@ def main():
                 logger.debug("Manual groups count: %d", len(manual_groups))
                 
                 # Step 7: Mark processed groups (for avoiding double counting)
-                mark_processed_groups(groups_by_bank, income, advance_settlement, nature_totals)
+                mark_processed_groups(groups_by_bank)
                 
                 processed_count = sum(1 for grps in groups_by_bank.values() for g in grps if g.is_processed)
                 logger.debug("After mark_processed_groups: Total processed groups: %d", processed_count)
@@ -293,38 +293,11 @@ def main():
                 logger.debug("nature_totals[VND]: %s", {k: v for k, v in nature_totals[BANK_VND].items() if v != 0})
                 logger.debug("manual_nature_totals[VND]: %s", {k: v for k, v in manual_nature_totals[BANK_VND].items() if v != 0})
                 
-                # Initialize payable_totals as its own section
-                payable_totals = {
-                    BANK_USD: {"payable": 0.0},
-                    BANK_VND: {"payable": 0.0},
-                }
-
-                # Merge manual nature totals into respective sections
+                # Merge manual nature totals into nature totals
                 for bank_id in [BANK_USD, BANK_VND]:
                     for key, value in manual_nature_totals[bank_id].items():
-                        if key == "payable":
-                            # Add to payable section (row 38) - its own section
-                            old_val = payable_totals[bank_id]["payable"]
-                            payable_totals[bank_id]["payable"] = old_val + value
-                            if value != 0:
-                                logger.debug("MERGE PAYABLE %s %s: %s + %s = %s", bank_id, key, old_val, value, payable_totals[bank_id]['payable'])
-                        elif key in ["advance", "settlement"]:
-                            # Add to advance/settlement section (row 36-37)
-                            old_val = advance_settlement[bank_id].get(key, 0)
-                            advance_settlement[bank_id][key] = old_val + value
-                            if value != 0:
-                                logger.debug("MERGE ADV/SETTLE %s %s: %s + %s = %s", bank_id, key, old_val, value, advance_settlement[bank_id][key])
-                        elif key == "cash_settlement":
-                            # Add to income section (positive settlements)
-                            old_val = income[bank_id].get("cash_settlement", 0)
-                            income[bank_id]["cash_settlement"] = old_val + value
-                            if value != 0:
-                                logger.debug("MERGE INCOME %s %s: %s + %s = %s", bank_id, key, old_val, value, income[bank_id]['cash_settlement'])
-                        elif key in nature_totals[bank_id]:
-                            old_val = nature_totals[bank_id][key]
+                        if key in nature_totals[bank_id]:
                             nature_totals[bank_id][key] += value
-                            if value != 0:
-                                logger.debug("MERGE %s %s: %s + %s = %s", bank_id, key, old_val, value, nature_totals[bank_id][key])
 
                 # Clear the "manual" tracking category - those amounts are now categorized
                 # Only keep "manual" amount for groups that are still unprocessed (still_manual)

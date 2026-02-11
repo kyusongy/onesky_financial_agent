@@ -1,67 +1,81 @@
 """
-Advance/Settlement section calculator.
+Special account processor for 1230/1250/1252 (advance/settlement) and 1500 (payable).
 
-Calculates:
-- Advance by cash: memo contains "advance" but NOT "settlement"
-- Settlement: memo contains "settlement" AND bank_amount <= 0 (negative settlements only)
+Runs BEFORE NatureMapper. Marks processed entries as is_ignored so they're
+excluded from active_entries in downstream processing.
 
-Note: Positive settlements go to Income section as "Cash settlement".
-For USD bank, amounts are converted from VND to USD using the exchange rate.
+Rules:
+- 1230/1250/1252: positive amount -> settlement, negative amount -> advance
+- 1500: payable (preserve original sign)
 """
+import logging
 from typing import Optional
-from ..models import TransactionGroup, BANK_USD, BANK_VND
+
+from ..models import TransactionGroup, ReportSection
 from ..validation import ValidationData
-from .utils import get_exchange_rate, convert_amount, init_advance_settlement_totals
+from .utils import get_exchange_rate, convert_amount, get_account_type
+
+logger = logging.getLogger(__name__)
 
 
-def calculate_advance_settlement(
+def process_special_accounts(
     groups_by_bank: dict[str, list[TransactionGroup]],
     exchange_rates: dict[str, float] = None,
     validation_data: Optional[ValidationData] = None
-) -> dict[str, dict[str, float]]:
+) -> tuple[dict[str, dict[str, float]], dict[str, dict[str, float]]]:
     """
-    Calculate advance and settlement totals for each bank type.
+    Process 1230/1250/1252 entries as advance/settlement and 1500 entries as payable.
 
-    Args:
-        groups_by_bank: Dictionary mapping bank_identifier to list of transaction groups
-        exchange_rates: Dictionary of date string to exchange rate (for USD conversion)
-        validation_data: Optional ValidationData to track per-row contributions
+    Runs BEFORE NatureMapper. Marks processed entries as is_ignored so they're
+    excluded from active_entries in downstream processing.
 
     Returns:
-        Dictionary mapping bank_identifier to advance/settlement totals (as positive values)
+        Tuple of (advance_settlement totals, payable totals) by bank
     """
-    result: dict[str, dict[str, float]] = {}
+    adv_settle = {bank_id: {"advance": 0.0, "settlement": 0.0} for bank_id in groups_by_bank}
+    payable = {bank_id: {"payable": 0.0} for bank_id in groups_by_bank}
 
     for bank_id, groups in groups_by_bank.items():
-        result[bank_id] = init_advance_settlement_totals()
-
         for group in groups:
+            if group.is_processed:
+                continue
+
             ex_rate = get_exchange_rate(group, exchange_rates)
+            special_amounts = {}
 
-            advance = _calculate_advance(group, ex_rate)
-            if advance != 0.0 and validation_data:
-                # Advance uses abs - already converted for USD
-                validation_data.set_value(group.original_row_index, "advance", advance)
-            result[bank_id]["advance"] += advance
+            for entry in list(group.active_entries):  # snapshot - we modify is_ignored
+                acct_type = get_account_type(entry.account_code)
+                if not acct_type:
+                    continue
 
-            settlement = _calculate_settlement(group, ex_rate)
-            if settlement != 0.0 and validation_data:
-                # Settlement preserves sign - already converted for USD
-                validation_data.set_value(group.original_row_index, "settlement", settlement)
-            result[bank_id]["settlement"] += settlement
+                amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
 
-    return result
+                if acct_type in ("1230", "1250", "1252"):
+                    if entry.amount > 0:
+                        entry.nature_type = "settlement"
+                        adv_settle[bank_id]["settlement"] += amount
+                        special_amounts["settlement"] = special_amounts.get("settlement", 0) + amount
+                    else:
+                        entry.nature_type = "advance"
+                        adv_settle[bank_id]["advance"] += amount
+                        special_amounts["advance"] = special_amounts.get("advance", 0) + amount
+                    entry.is_ignored = True
 
+                elif acct_type == "1500":
+                    entry.nature_type = "payable"
+                    payable[bank_id]["payable"] += amount
+                    special_amounts["payable"] = special_amounts.get("payable", 0) + amount
+                    entry.is_ignored = True
 
-def _calculate_advance(group: TransactionGroup, ex_rate: float) -> float:
-    """Advance: header memo contains 'advance' but not 'settlement'."""
-    if group.memo_contains("advance") and not group.memo_contains("settlement"):
-        return abs(convert_amount(group.bank_amount, group.bank_identifier, ex_rate))
-    return 0.0
+            # If ALL active entries were special -> mark group as processed
+            if special_amounts and not group.active_entries:
+                group.is_processed = True
+                group.assigned_section = ReportSection.ADVANCE_SETTLEMENT
 
+            # Record validation data
+            if special_amounts and validation_data:
+                for key, amt in special_amounts.items():
+                    if amt != 0:
+                        validation_data.set_value(group.original_row_index, key, amt)
 
-def _calculate_settlement(group: TransactionGroup, ex_rate: float) -> float:
-    """Settlement: header memo contains 'settlement' AND bank_amount <= 0. Use original bank_amount (preserve sign)."""
-    if group.memo_contains("settlement") and group.bank_amount <= 0:
-        return convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
-    return 0.0
+    return adv_settle, payable
