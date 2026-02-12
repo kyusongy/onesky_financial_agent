@@ -85,13 +85,14 @@ PIT_SI.xlsx is no longer used in province processing. The file may still exist i
 **Bank ID Assignment:**
 - Bank 29 (USD): Account column contains "USD", "29 bank", or "vietnam (usd)"
 - Bank 30 (VND): Account column contains "VND", "30 bank", or "vietnam (vnd)"
-- **Other banks (34, etc.):** Ignored completely - only process bank 29 and 30
+- Bank 34 (VND): Account column contains "34 bank" or "34" + bank keywords
+- **Other banks:** Ignored completely - only process banks 29, 30, and 34
 
 **Zero Amount Filtering:**
 - Groups with `bank_amount = 0` are still processed (accrual basis) - they contribute 0 to totals
 - Entries with `amount = 0` or `amount = None` are filtered out from `active_entries`
 
-**Currency Conversion:** For USD transactions, user provides daily exchange rates via UI. Amounts are converted using: `amount / exchange_rate`
+**Currency Conversion:** For USD transactions, user provides per-transaction exchange rates via UI (auto-extracted from entry memos when available, default 25,000). Amounts are converted using: `amount / exchange_rate`
 
 **Transfer Edge Case:** If `transaction_type == "Transfer"`, the raw data contains both "In" and "Out" legs. These are split into separate TransactionGroup objects (one per bank). See `processor.py:59-149`.
 
@@ -104,10 +105,10 @@ Fill this section for Bank 29 and 30 respectively.
 | Category | Rule | Code Location |
 |----------|------|---------------|
 | **Contribution** | `transaction_type == "Deposit" AND name contains "OneSky"` → Sum `bank_amount` | `income.py:49-52` |
-| **Fund Transfer to USD** | `memo contains "transfer" AND NOT "ELC"` → Sum amount | `income.py:54-57` |
+| **Fund Transfer to USD** | `transaction_type == "Transfer" AND memo NOT "ELC"` → Sum amount | `income.py:54-57` |
 | **Interest** | `transaction_type == "Deposit" AND memo contains "interest"` → Sum amount | `income.py:64-67` |
 | **Cash Settlement** | `memo contains "settlement" AND bank_amount > 0` → Sum amount | `income.py:69-72` |
-| **Fund Transfer to ELC** | `memo contains "transfer" AND "elc"` → Sum amount | `income.py:59-62` |
+| **Fund Transfer to ELC** | `transaction_type == "Transfer" AND memo contains "elc"` → Sum amount | `income.py:59-62` |
 
 ---
 
@@ -356,6 +357,7 @@ The processed transaction file includes 29 validation columns (13 nature/income/
 **Column Assignment:**
 - Column D: VND (Bank 30)
 - Column E: USD (Bank 29)
+- Column F: VND (Bank 34)
 
 ---
 

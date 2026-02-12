@@ -18,8 +18,9 @@ from src.calculators.nature import NatureMapper
 from src.calculators.manual_input import ManualInputProcessor, mark_processed_groups
 from src.calculators.province import ProvinceMapper
 from src.report_generator import ReportGenerator, generate_marked_transactions
-from src.models import ProcessingResult, BANK_USD, BANK_VND
+from src.models import ProcessingResult, TransactionGroup, BANK_USD, BANK_VND, BANK_34
 from src.validation import ValidationData
+from src.calculators.utils import extract_exchange_rate_from_memo
 
 # Page configuration
 st.set_page_config(
@@ -78,29 +79,27 @@ st.markdown("""
 
 
 def _display_bank_tab(section_data: dict, format_key):
-    """Display a two-column bank comparison tab (VND left, USD right)."""
-    col1, col2 = st.columns(2)
+    """Display a three-column bank comparison tab (VND left, USD middle, 34 right)."""
+    col1, col2, col3 = st.columns(3)
     for col, bank_id, label in [
         (col1, BANK_VND, "VND Bank (30)"),
         (col2, BANK_USD, "USD Bank (29)"),
+        (col3, BANK_34, "VND Bank (34)"),
     ]:
         with col:
             st.markdown(f"**{label}**")
             total = 0
-            for key, val in section_data[bank_id].items():
+            bank_data = section_data.get(bank_id, {})
+            for key, val in bank_data.items():
                 if val != 0:
                     st.write(f"- {format_key(key)}: {val:,.0f}")
                     total += val
             st.markdown(f"**Total: {total:,.0f}**")
 
 
-def get_usd_dates(groups) -> list[str]:
-    """Extract unique dates that have USD transactions."""
-    usd_dates = set()
-    for group in groups:
-        if group.bank_identifier == BANK_USD and group.date:
-            usd_dates.add(group.date.strftime("%Y-%m-%d"))
-    return sorted(list(usd_dates))
+def get_usd_groups(groups) -> list[TransactionGroup]:
+    """Get USD transaction groups for per-transaction exchange rate input."""
+    return [g for g in groups if g.bank_identifier == BANK_USD]
 
 
 def main():
@@ -117,8 +116,8 @@ def main():
         st.session_state.transaction_bytes = None
     if "parsed_groups" not in st.session_state:
         st.session_state.parsed_groups = None
-    if "usd_dates" not in st.session_state:
-        st.session_state.usd_dates = []
+    if "usd_groups" not in st.session_state:
+        st.session_state.usd_groups = []
     if "exchange_rates" not in st.session_state:
         st.session_state.exchange_rates = {}
     if "nature_mapper" not in st.session_state:
@@ -193,39 +192,48 @@ def main():
             st.session_state.parsed_groups = groups
             st.success(f"✓ Loaded {len(groups)} transaction groups")
             
-            # Get USD dates
+            # Get USD groups for per-transaction exchange rate input
             if has_usd:
-                st.session_state.usd_dates = get_usd_dates(groups)
+                st.session_state.usd_groups = get_usd_groups(groups)
         except Exception as e:
             st.error(f"Error parsing transaction file: {str(e)}")
             return
     
-    # Exchange rate input section for each USD date
-    if st.session_state.usd_dates:
-        st.markdown('<p class="section-header">💱 Exchange Rates</p>', unsafe_allow_html=True)
-        st.markdown('<div class="warning-box">USD transactions detected. Please enter the exchange rate for each date below.</div>', unsafe_allow_html=True)
-        
-        # Create columns for exchange rate inputs
-        num_dates = len(st.session_state.usd_dates)
+    # Exchange rate input section for each USD transaction
+    if st.session_state.usd_groups:
+        st.markdown('<p class="section-header">Exchange Rates</p>', unsafe_allow_html=True)
+        st.markdown('<div class="warning-box">USD transactions detected. Please verify the exchange rate for each transaction below.</div>', unsafe_allow_html=True)
+
+        num_groups = len(st.session_state.usd_groups)
         cols_per_row = 3
-        
-        for i in range(0, num_dates, cols_per_row):
+
+        for i in range(0, num_groups, cols_per_row):
             cols = st.columns(cols_per_row)
             for j, col in enumerate(cols):
                 idx = i + j
-                if idx < num_dates:
-                    date_str = st.session_state.usd_dates[idx]
+                if idx < num_groups:
+                    group = st.session_state.usd_groups[idx]
+                    group_id = group.group_id
+                    date_str = group.date.strftime("%Y-%m-%d") if group.date else "N/A"
+                    payee = group.payee_name or "Unknown"
+                    amount = group.bank_amount
+
+                    # Auto-extract rate from memo, fall back to 25000
+                    memo_rate = extract_exchange_rate_from_memo(group.entries)
+                    default_rate = memo_rate or 25000.0
+
                     with col:
+                        label = f"{date_str} | {payee[:20]} | {amount:,.0f}"
                         rate = st.number_input(
-                            f"Rate for {date_str}",
+                            label,
                             min_value=1.0,
                             max_value=100000.0,
-                            value=st.session_state.exchange_rates.get(date_str, 25000.0),
+                            value=st.session_state.exchange_rates.get(group_id, default_rate),
                             step=100.0,
-                            key=f"rate_{date_str}",
-                            help=f"VND to USD rate (e.g., 25000 = 1 USD = 25,000 VND)"
+                            key=f"rate_{group_id}",
+                            help=f"VND/USD rate. {'Auto-detected from memo.' if memo_rate else 'Default 25,000.'}"
                         )
-                        st.session_state.exchange_rates[date_str] = rate
+                        st.session_state.exchange_rates[group_id] = rate
     
     # Process button
     st.markdown('<p class="section-header">🔄 Processing</p>', unsafe_allow_html=True)
@@ -236,11 +244,10 @@ def main():
                 # Step 1: Use already parsed groups
                 groups = st.session_state.parsed_groups
                 
-                # Step 2: Assign exchange rates to groups
+                # Step 2: Assign exchange rates to groups (per-transaction, keyed by group_id)
                 for group in groups:
-                    if group.bank_identifier == BANK_USD and group.date:
-                        date_key = group.date.strftime("%Y-%m-%d")
-                        group.exchange_rate = st.session_state.exchange_rates.get(date_key, 1.0)
+                    if group.bank_identifier == BANK_USD:
+                        group.exchange_rate = st.session_state.exchange_rates.get(group.group_id, 1.0)
                 
                 # Step 3: Process groups (split transfers, remove capital rows)
                 groups_by_bank = process_transactions(groups)
@@ -294,14 +301,14 @@ def main():
                 logger.debug("manual_nature_totals[VND]: %s", {k: v for k, v in manual_nature_totals[BANK_VND].items() if v != 0})
                 
                 # Merge manual nature totals into nature totals
-                for bank_id in [BANK_USD, BANK_VND]:
+                for bank_id in [BANK_USD, BANK_VND, BANK_34]:
                     for key, value in manual_nature_totals[bank_id].items():
                         if key in nature_totals[bank_id]:
                             nature_totals[bank_id][key] += value
 
                 # Clear the "manual" tracking category - those amounts are now categorized
                 # Only keep "manual" amount for groups that are still unprocessed (still_manual)
-                for bank_id in [BANK_USD, BANK_VND]:
+                for bank_id in [BANK_USD, BANK_VND, BANK_34]:
                     if "manual" in nature_totals[bank_id]:
                         # Calculate remaining manual amount from still_manual groups
                         remaining_manual = sum(
@@ -378,7 +385,7 @@ def main():
             st.metric("Manual Review", len(result.manual_groups))
         
         with col3:
-            st.metric("USD Dates", len(st.session_state.usd_dates))
+            st.metric("USD Transactions", len(st.session_state.usd_groups))
         
         with col4:
             vnd_income = result.get_income_total(BANK_VND)

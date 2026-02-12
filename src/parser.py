@@ -10,7 +10,7 @@ from typing import Optional, BinaryIO, Union
 from datetime import datetime
 import uuid
 
-from .models import TransactionEntry, TransactionGroup, BANK_USD, BANK_VND
+from .models import TransactionEntry, TransactionGroup, BANK_USD, BANK_VND, BANK_34
 
 
 def parse_transaction_file(
@@ -43,8 +43,8 @@ def parse_transaction_file(
         # Check for bank section markers
         bank_marker = _check_bank_marker(row)
         if bank_marker:
-            # Save current group if exists (only if it's a valid 29/30 bank)
-            if current_group_rows and current_bank_id in (BANK_USD, BANK_VND):
+            # Save current group if exists
+            if current_group_rows and current_bank_id in (BANK_USD, BANK_VND, BANK_34):
                 groups.append(_create_group(current_group_rows, current_bank_id, current_date))
             current_group_rows = []
             current_bank_id = bank_marker  # Could be "OTHER" - groups under this will be skipped
@@ -56,7 +56,7 @@ def parse_transaction_file(
 
         # Check for empty row (group separator)
         if _is_empty_row(row):
-            if current_group_rows and current_bank_id in (BANK_USD, BANK_VND):
+            if current_group_rows and current_bank_id in (BANK_USD, BANK_VND, BANK_34):
                 groups.append(_create_group(current_group_rows, current_bank_id, current_date))
             current_group_rows = []
             current_date = None
@@ -72,7 +72,7 @@ def parse_transaction_file(
         current_group_rows.append(row_data)
 
     # Don't forget the last group (only if it's a valid 29/30 bank)
-    if current_group_rows and current_bank_id in (BANK_USD, BANK_VND):
+    if current_group_rows and current_bank_id in (BANK_USD, BANK_VND, BANK_34):
         groups.append(_create_group(current_group_rows, current_bank_id, current_date))
     
     # Check if there are USD transactions
@@ -114,6 +114,9 @@ def _check_bank_marker(row: pd.Series) -> Optional[str]:
     # Check for 30 VND bank
     if "30" in val_str and "vnd" in val_str:
         return BANK_VND
+    # Check for 34 VND bank
+    if "34" in val_str and ("vnd" in val_str or "vietnam" in val_str or "bank" in val_str or "elc" in val_str):
+        return BANK_34
     # Check for other bank markers (any number + currency/bank keywords) - mark as OTHER to ignore
     # Pattern: contains a number and bank-related keywords
     import re

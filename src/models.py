@@ -30,6 +30,7 @@ class ReportSection(Enum):
 # Bank identifier constants
 BANK_USD = "29"
 BANK_VND = "30"
+BANK_34 = "34"
 
 
 @dataclass
@@ -210,7 +211,7 @@ class ProcessingResult:
         }
         for attr_name, factory in _section_defaults.items():
             attr = getattr(self, attr_name)
-            for bank in [BANK_USD, BANK_VND]:
+            for bank in [BANK_USD, BANK_VND, BANK_34]:
                 if bank not in attr:
                     attr[bank] = factory()
 

@@ -14,7 +14,7 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-from ..models import TransactionGroup, TransactionEntry, ReportSection, BANK_USD, BANK_VND
+from ..models import TransactionGroup, TransactionEntry, ReportSection, BANK_USD, BANK_VND, BANK_34
 from ..validation import ValidationData
 from .utils import get_exchange_rate, convert_amount, load_staff_allocation_data, _load_allocation_legacy, lookup_by_name
 from config.mappings import DEFAULT_STAFF_ALLOCATION_LOOKUP, PROVINCE_CODES
@@ -100,6 +100,7 @@ class ProvinceMapper:
         return {
             BANK_USD: {code: 0.0 for code in PROVINCE_CODES},
             BANK_VND: {code: 0.0 for code in PROVINCE_CODES},
+            BANK_34: {code: 0.0 for code in PROVINCE_CODES},
         }
 
     def process_groups(

@@ -11,7 +11,7 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-from ..models import TransactionGroup, ReportSection, BANK_USD, BANK_VND
+from ..models import TransactionGroup, ReportSection, BANK_USD, BANK_VND, BANK_34
 from ..validation import ValidationData
 from .utils import (
     get_exchange_rate, convert_amount,
@@ -50,6 +50,7 @@ class ManualInputProcessor:
         totals: dict[str, dict[str, float]] = {
             BANK_USD: self._init_totals(),
             BANK_VND: self._init_totals(),
+            BANK_34: self._init_totals(),
         }
         still_manual: list[TransactionGroup] = []
 

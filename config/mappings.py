@@ -13,10 +13,12 @@ DEFAULT_STAFF_ALLOCATION_LOOKUP = TEMPLATE_DIR / "staff.xlsx"
 # Bank identifiers (string format)
 BANK_USD = "29"  # USD Bank
 BANK_VND = "30"  # VND Bank
+BANK_34 = "34"   # VND Bank (34)
 
 # Column indices in output template (0-based)
 TEMPLATE_COL_VND = 3  # Column D - VND bank (30)
 TEMPLATE_COL_USD = 4  # Column E - USD bank (29)
+TEMPLATE_COL_34 = 5   # Column F - VND bank (34)
 
 # Row indices in output template (0-based, after header)
 TEMPLATE_ROWS = {
