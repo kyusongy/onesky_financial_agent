@@ -55,9 +55,9 @@ onesky_financial_agent/
 **Special Account Mappings (processed before NatureMapper):**
 | Account | Logic | Report Section |
 |---------|-------|----------------|
-| 1230VN | Settlement if entry amount > 0, Advance if < 0 | Row 36/37 |
-| 1250VN | Settlement if entry amount > 0, Advance if < 0 | Row 36/37 |
-| 1252VN | Settlement if entry amount > 0, Advance if < 0 | Row 36/37 |
+| 1230VN | Advance if entry amount > 0, Settlement if < 0 | Row 36/37 |
+| 1250VN | Advance if entry amount > 0, Settlement if < 0 | Row 36/37 |
+| 1252VN | Advance if entry amount > 0, Settlement if < 0 | Row 36/37 |
 | 1500VN | Payable (preserve original sign) | Row 38 (Payable) |
 
 ### Staff_&_Allocation.xlsx Structure
@@ -117,12 +117,12 @@ Fill this section for Bank 29 and 30 respectively.
 
 | Account | Rule | Report Section |
 |---------|------|----------------|
-| 1230VN | Settlement if entry amount > 0, Advance if < 0 | Row 36/37 |
-| 1250VN | Settlement if entry amount > 0, Advance if < 0 | Row 36/37 |
-| 1252VN | Settlement if entry amount > 0, Advance if < 0 | Row 36/37 |
+| 1230VN | Advance if entry amount > 0, Settlement if < 0 | Row 36/37 |
+| 1250VN | Advance if entry amount > 0, Settlement if < 0 | Row 36/37 |
+| 1252VN | Advance if entry amount > 0, Settlement if < 0 | Row 36/37 |
 | 1500VN | Payable (preserve original sign) | Row 38 |
 
-**Sign Convention:** Advance values are negative, settlement values are positive. No abs() applied.
+**Sign Convention:** Advance values are positive, settlement values are negative. No abs() applied.
 
 **Group Completion:** If ALL active entries in a group were special accounts, the group is marked `is_processed = True` and won't be seen by NatureMapper or downstream.
 
@@ -468,7 +468,7 @@ The application will be available at `http://localhost:8501`
    └─> Records header row contributions to income columns
 
 5. Process Special Accounts (tracks validation data)
-   ├─> 1230/1250/1252 entries → advance (negative) or settlement (positive)
+   ├─> 1230/1250/1252 entries → advance (positive) or settlement (negative)
    ├─> 1500 entries → payable (preserve sign)
    ├─> Mark processed entries as is_ignored
    └─> If all entries were special → mark group as processed
@@ -508,9 +508,9 @@ The application will be available at `http://localhost:8501`
 
 ## Important Notes
 
-- **Sign Convention:** All amounts preserve original sign. Entry amounts are added as-is. Advance values are negative, settlement values are positive. No abs() applied to data values.
+- **Sign Convention:** All amounts preserve original sign. Entry amounts are added as-is. Advance values are positive, settlement values are negative. No abs() applied to data values.
 - **Special Accounts:** 1230/1250/1252/1500 entries are processed BEFORE NatureMapper and marked `is_ignored`. Downstream stages never see them in `active_entries`.
-- **Unified 1230/1250/1252 Logic:** Positive amount = settlement, negative amount = advance. No memo-based detection.
+- **Unified 1230/1250/1252 Logic:** Positive amount = advance, negative amount = settlement. No memo-based detection.
 - **1500 Payable:** Preserves original sign. No abs() applied.
 - **Salary/Bonus:** Special account entries are already excluded from `active_entries` before salary processing. Staff lookup only applies to remaining non-special entries.
 - **Zero Bank Amount:** Groups with `bank_amount = 0` are processed (accrual basis). They contribute 0 to totals.
