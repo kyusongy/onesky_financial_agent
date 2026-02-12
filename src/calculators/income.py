@@ -3,10 +3,10 @@ Income section calculator.
 
 Calculates:
 - Contribution: deposit + name contains "onesky"
-- Fund transfer to USD account: memo contains "transfer" AND NOT "ELC"
+- Fund transfer to USD account: transaction_type == "Transfer" AND memo NOT "ELC"
 - Interest: deposit + memo contains "interest"
 - Cash settlement: memo contains "settlement" AND bank_amount > 0
-- Fund transfer to ELC: memo contains "transfer to ELC"
+- Fund transfer to ELC: transaction_type == "Transfer" AND memo contains "ELC"
 
 Note: For grouped transactions, the transaction type (e.g., "deposit") is typically
 on the header row, while the identifying memo/name may be on detail rows.
@@ -82,15 +82,15 @@ def _calculate_contribution(group: TransactionGroup, ex_rate: float) -> float:
 
 
 def _calculate_fund_transfer(group: TransactionGroup, ex_rate: float) -> float:
-    """Fund transfer: memo contains 'transfer' but not 'elc'."""
-    if group.any_memo_contains("transfer") and not group.any_memo_contains("elc"):
+    """Fund transfer: transaction_type is Transfer AND memo does not contain 'elc'."""
+    if group.is_transfer() and not group.any_memo_contains("elc"):
         return convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
     return 0.0
 
 
 def _calculate_fund_transfer_elc(group: TransactionGroup, ex_rate: float) -> float:
-    """Fund transfer to ELC: memo contains 'transfer to ELC'."""
-    if group.any_memo_contains("transfer") and group.any_memo_contains("elc"):
+    """Fund transfer to ELC: transaction_type is Transfer AND memo contains 'elc'."""
+    if group.is_transfer() and group.any_memo_contains("elc"):
         return convert_amount(group.bank_amount, group.bank_identifier, ex_rate)
     return 0.0
 

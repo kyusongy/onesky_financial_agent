@@ -9,7 +9,7 @@ from typing import Optional
 from copy import deepcopy
 import uuid
 
-from .models import TransactionEntry, TransactionGroup, BANK_USD, BANK_VND
+from .models import TransactionEntry, TransactionGroup, BANK_USD, BANK_VND, BANK_34
 
 
 def process_transactions(
@@ -31,6 +31,7 @@ def process_transactions(
     processed_groups: dict[str, list[TransactionGroup]] = {
         BANK_USD: [],
         BANK_VND: [],
+        BANK_34: [],
     }
     
     for group in groups:
@@ -51,7 +52,7 @@ def _is_bank_entry(entry: TransactionEntry) -> bool:
     if not entry.account_name:
         return False
     account_lower = entry.account_name.lower()
-    return "bank vn" in account_lower or "29 bank" in account_lower or "30 bank" in account_lower
+    return "bank vn" in account_lower or "29 bank" in account_lower or "30 bank" in account_lower or "34 bank" in account_lower
 
 
 def _split_transfer_group(group: TransactionGroup) -> list[TransactionGroup]:
@@ -151,21 +152,23 @@ def _determine_entry_bank(entry: TransactionEntry) -> Optional[str]:
     """Determine bank type from an entry's account column."""
     if not entry.account_name:
         return None
-    
+
     account_str = entry.account_name.lower()
-    
+
     # Check for explicit bank markers
     if "29 bank" in account_str or "vietnam (usd)" in account_str:
         return BANK_USD
     if "30 bank" in account_str or "vietnam (vnd)" in account_str:
         return BANK_VND
-    
+    if "34 bank" in account_str:
+        return BANK_34
+
     # Check for USD/VND keywords in account code
     if "usd" in account_str:
         return BANK_USD
     if "vnd" in account_str:
         return BANK_VND
-    
+
     return None
 
 

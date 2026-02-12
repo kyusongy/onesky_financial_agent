@@ -5,6 +5,7 @@ Consolidates common operations like exchange rate handling and amount conversion
 to eliminate code duplication across calculator modules.
 """
 import logging
+import re
 from typing import Optional, Union
 from pathlib import Path
 from datetime import datetime
@@ -23,23 +24,32 @@ def get_exchange_rate(
 ) -> float:
     """
     Get exchange rate for a transaction group.
-    
+
     Returns 1.0 for VND bank (no conversion needed).
-    For USD bank, looks up rate by date.
-    
+    For USD bank, looks up rate by group_id, then date, then group.exchange_rate.
+
     Args:
         group: Transaction group
-        exchange_rates: Dictionary of date string to exchange rate
-        
+        exchange_rates: Dictionary of group_id or date string to exchange rate
+
     Returns:
         Exchange rate (1.0 if not applicable or not found)
     """
     if group.bank_identifier != BANK_USD:
         return 1.0
-    if not exchange_rates or not group.date:
-        return 1.0
-    date_key = group.date.strftime("%Y-%m-%d")
-    return exchange_rates.get(date_key, 1.0)
+    if exchange_rates:
+        # Try group_id first (per-transaction rates)
+        if group.group_id in exchange_rates:
+            return exchange_rates[group.group_id]
+        # Fall back to date key (legacy per-date rates)
+        if group.date:
+            date_key = group.date.strftime("%Y-%m-%d")
+            if date_key in exchange_rates:
+                return exchange_rates[date_key]
+    # Fall back to rate stored on group (set before transfer splitting)
+    if group.exchange_rate and group.exchange_rate != 1.0:
+        return group.exchange_rate
+    return 1.0
 
 
 def convert_amount(amount: float, bank_identifier: str, ex_rate: float) -> float:
@@ -314,3 +324,68 @@ def lookup_by_name(table: dict, payee_name: str) -> Optional:
             return value
 
     return None
+
+
+def extract_exchange_rate_from_memo(entries: list) -> Optional[float]:
+    """
+    Extract exchange rate from entry memos.
+
+    Patterns:
+    - "Ex rate : 26.200" -> 26200 (period as thousands separator)
+    - "exchange rate : 26,282" -> 26282
+    - "1.1 USD x VND26250" -> 26250
+
+    Returns:
+        Exchange rate as float, or None if not found
+    """
+    for entry in entries:
+        memo = entry.original_memo if hasattr(entry, 'original_memo') else ""
+        if not memo:
+            continue
+
+        rate = _parse_rate_from_text(memo)
+        if rate:
+            return rate
+
+    return None
+
+
+def _parse_rate_from_text(text: str) -> Optional[float]:
+    """Parse exchange rate from a text string."""
+    # Pattern 1: "rate" keyword followed by a number
+    match = re.search(r'(?:rate)\s*[:\s]\s*([\d.,]+)', text, re.IGNORECASE)
+    if match:
+        rate = _normalize_rate_number(match.group(1))
+        if rate and 10_000 <= rate <= 100_000:
+            return rate
+
+    # Pattern 2: "VND" followed by number (near multiplication context)
+    match = re.search(r'x\s*VND\s*([\d.,]+)', text, re.IGNORECASE)
+    if match:
+        rate = _normalize_rate_number(match.group(1))
+        if rate and 10_000 <= rate <= 100_000:
+            return rate
+
+    return None
+
+
+def _normalize_rate_number(num_str: str) -> Optional[float]:
+    """
+    Normalize a rate number string by removing thousands separators.
+
+    Handles both period and comma as thousands separators:
+    - "26.200" -> 26200
+    - "26,282" -> 26282
+    - "26200" -> 26200
+    """
+    num_str = num_str.strip()
+
+    # If the string has a period or comma followed by exactly 3 digits at the end,
+    # treat it as a thousands separator
+    cleaned = re.sub(r'[.,](?=\d{3}(?:\D|$))', '', num_str)
+    cleaned = cleaned.rstrip('.,')
+
+    try:
+        return float(cleaned)
+    except ValueError:
+        return None

@@ -14,7 +14,7 @@ from typing import Optional, BinaryIO, Union
 
 logger = logging.getLogger(__name__)
 
-from ..models import TransactionGroup, TransactionEntry, BANK_USD, BANK_VND
+from ..models import TransactionGroup, TransactionEntry, BANK_USD, BANK_VND, BANK_34
 from ..validation import ValidationData
 from .utils import get_exchange_rate, convert_amount, init_nature_totals, get_account_type
 from config.mappings import DEFAULT_NATURE_LOOKUP, NATURE_CATEGORY_MAP
@@ -171,6 +171,7 @@ class NatureMapper:
         nature_totals: dict[str, dict[str, float]] = {
             BANK_USD: init_nature_totals(),
             BANK_VND: init_nature_totals(),
+            BANK_34: init_nature_totals(),
         }
         manual_groups: list[TransactionGroup] = []
 

@@ -9,7 +9,7 @@ from typing import Optional, BinaryIO, Union
 from io import BytesIO
 from datetime import datetime
 
-from .models import TransactionGroup, TransactionEntry, ProcessingResult, ReportSection, BANK_USD, BANK_VND
+from .models import TransactionGroup, TransactionEntry, ProcessingResult, ReportSection, BANK_USD, BANK_VND, BANK_34
 from .validation import (
     ValidationData,
     VALIDATION_COLUMN_DISPLAY,
@@ -20,6 +20,7 @@ from config.mappings import (
     DEFAULT_OUTPUT_TEMPLATE,
     TEMPLATE_COL_VND,
     TEMPLATE_COL_USD,
+    TEMPLATE_COL_34,
     TEMPLATE_ROWS,
     PROVINCE_TEMPLATE_ROWS,
     NATURE_DISPLAY_MAP,
@@ -119,11 +120,8 @@ class ReportGenerator:
             # Settlement
             self._set_cell(ws, TEMPLATE_ROWS["settlement"], col, values.get("settlement", 0))
 
-            # Total for advance/settlement section (excluding payable which is separate)
+            # Total for advance/settlement section (advance + settlement only, payable is separate)
             total = sum(values.values())
-            # Add payable to the section total
-            payable_val = result.payable_totals.get(bank_id, {}).get("payable", 0)
-            total += payable_val
             if "advance_settlement_total" in TEMPLATE_ROWS:
                 self._set_cell(ws, TEMPLATE_ROWS["advance_settlement_total"], col, total)
 
@@ -186,6 +184,8 @@ class ReportGenerator:
         """Get column index for bank type (1-based for openpyxl)."""
         if bank_id == BANK_VND:
             return TEMPLATE_COL_VND + 1  # Column D (4)
+        if bank_id == BANK_34:
+            return TEMPLATE_COL_34 + 1   # Column F (6)
         return TEMPLATE_COL_USD + 1  # Column E (5)
     
     def _set_cell(self, ws, row: int, col: int, value: float) -> None:
@@ -298,9 +298,14 @@ def generate_marked_transactions(
     
     # Process each group
     for group in all_groups:
-        # Get exchange rate for this group's date
-        date_key = group.date.strftime("%Y-%m-%d") if group.date else ""
-        ex_rate = exchange_rates.get(date_key) if exchange_rates else None
+        # Get exchange rate for this group (try group_id first, then date key)
+        ex_rate = exchange_rates.get(group.group_id) if exchange_rates else None
+        if not ex_rate and exchange_rates and group.date:
+            date_key = group.date.strftime("%Y-%m-%d")
+            ex_rate = exchange_rates.get(date_key)
+        # Fall back to rate stored on group (set before transfer splitting)
+        if not ex_rate and group.exchange_rate and group.exchange_rate != 1.0:
+            ex_rate = group.exchange_rate
         
         # Bank label
         bank_label = group.bank_identifier
