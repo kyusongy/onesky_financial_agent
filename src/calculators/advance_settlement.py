@@ -5,7 +5,7 @@ Runs BEFORE NatureMapper. Marks processed entries as is_ignored so they're
 excluded from active_entries in downstream processing.
 
 Rules:
-- 1230/1250/1252: positive amount -> settlement, negative amount -> advance
+- 1230/1250/1252: positive amount -> advance, negative amount -> settlement
 - 1500: payable (preserve original sign)
 """
 import logging
@@ -52,13 +52,13 @@ def process_special_accounts(
 
                 if acct_type in ("1230", "1250", "1252"):
                     if entry.amount > 0:
-                        entry.nature_type = "settlement"
-                        adv_settle[bank_id]["settlement"] += amount
-                        special_amounts["settlement"] = special_amounts.get("settlement", 0) + amount
-                    else:
                         entry.nature_type = "advance"
                         adv_settle[bank_id]["advance"] += amount
                         special_amounts["advance"] = special_amounts.get("advance", 0) + amount
+                    else:
+                        entry.nature_type = "settlement"
+                        adv_settle[bank_id]["settlement"] += amount
+                        special_amounts["settlement"] = special_amounts.get("settlement", 0) + amount
                     entry.is_ignored = True
 
                 elif acct_type == "1500":
