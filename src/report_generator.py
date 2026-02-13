@@ -340,10 +340,13 @@ def generate_marked_transactions(
                     ws.cell(row=excel_row, column=col_amount_currency).value = group.bank_amount
 
             # Fill validation columns for header row
+            # For Bank 29 (USD), convert validation values back to VND
             if validation_data:
                 for col_name, col_idx in validation_col_indices.items():
                     val = validation_data.get_value(group.original_row_index, col_name)
                     if val is not None:
+                        if group.bank_identifier == BANK_USD and ex_rate:
+                            val = val * ex_rate
                         ws.cell(row=excel_row, column=col_idx).value = val
 
         # Fill entry rows
@@ -380,10 +383,13 @@ def generate_marked_transactions(
                     ws.cell(row=excel_row, column=col_amount_currency).value = entry.amount
 
             # Fill validation columns for entry row
+            # For Bank 29 (USD), convert validation values back to VND
             if validation_data:
                 for col_name, col_idx in validation_col_indices.items():
                     val = validation_data.get_value(entry.original_row_index, col_name)
                     if val is not None:
+                        if group.bank_identifier == BANK_USD and ex_rate:
+                            val = val * ex_rate
                         ws.cell(row=excel_row, column=col_idx).value = val
     
     # Apply highlighting for manual review rows
