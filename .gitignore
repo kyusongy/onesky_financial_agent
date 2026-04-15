@@ -32,6 +32,7 @@ MANIFEST
 #  include them in your source control.
 *.manifest
 *.spec
+!onesky.spec
 
 # Installer logs
 pip-log.txt
@@ -166,3 +167,9 @@ Thumbs.db
 
 
 output*.txt
+
+# Desktop build artifacts
+build/
+dist/
+scripts/icon.icns
+scripts/icon.iconset/
