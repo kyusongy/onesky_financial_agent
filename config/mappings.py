@@ -1,24 +1,26 @@
 """
 Constants and default mappings for the financial report automation.
 """
+
 from pathlib import Path
 
 # Base paths
 PROJECT_ROOT = Path(__file__).parent.parent
 DATA_DIR = PROJECT_ROOT / "instruction_data" / "templates"
-TEMPLATE_DIR = DATA_DIR / "jan"
+TEMPLATE_DIR = DATA_DIR / "defaults"
 DEFAULT_NATURE_LOOKUP = TEMPLATE_DIR / "nature.xlsx"
 DEFAULT_OUTPUT_TEMPLATE = DATA_DIR / "output_template.xlsx"
 DEFAULT_STAFF_ALLOCATION_LOOKUP = TEMPLATE_DIR / "staff.xlsx"
+DEFAULT_PROVINCE_PATTERNS = TEMPLATE_DIR / "province_patterns.xlsx"
 # Bank identifiers (string format)
 BANK_USD = "29"  # USD Bank
 BANK_VND = "30"  # VND Bank
-BANK_34 = "34"   # VND Bank (34)
+BANK_34 = "34"  # VND Bank (34)
 
 # Column indices in output template (0-based)
 TEMPLATE_COL_VND = 3  # Column D - VND bank (30)
 TEMPLATE_COL_USD = 4  # Column E - USD bank (29)
-TEMPLATE_COL_34 = 5   # Column F - VND bank (34)
+TEMPLATE_COL_34 = 5  # Column F - VND bank (34)
 
 # Row indices in output template (0-based, after header)
 TEMPLATE_ROWS = {
@@ -56,7 +58,7 @@ NATURE_CATEGORY_MAP = {
     "manual input": "manual",
     "advance by cash": "advance",
     "reimbursement": "settlement",
-    # New mappings for dec_final Nature.xlsx
+    # Mappings for defaults nature.xlsx
     "advance": "advance",
     "settlement": "settlement",
     "payable": "payable",
@@ -88,9 +90,22 @@ INCOME_TYPE_MAP = {
 
 # Province codes (16 total including manual)
 PROVINCE_CODES = [
-    "elc", "vnelc", "vnhbc", "vndn", "vnqn", "vnhd", "vnqng",
-    "vnmoet", "vnbd", "vnbg", "vnla", "vnhcm", "vnbn", "vnother",
-    "caobang", "province_manual"
+    "elc",
+    "vnelc",
+    "vnhbc",
+    "vndn",
+    "vnqn",
+    "vnhd",
+    "vnqng",
+    "vnmoet",
+    "vnbd",
+    "vnbg",
+    "vnla",
+    "vnhcm",
+    "vnbn",
+    "vnother",
+    "caobang",
+    "province_manual",
 ]
 
 # Template row indices for province section (0-based, after header)

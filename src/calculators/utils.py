@@ -4,6 +4,7 @@ Shared utility functions for calculators.
 Consolidates common operations like exchange rate handling and amount conversion
 to eliminate code duplication across calculator modules.
 """
+
 import logging
 import re
 from typing import Optional, Union
@@ -19,8 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_exchange_rate(
-    group: TransactionGroup,
-    exchange_rates: Optional[dict[str, float]] = None
+    group: TransactionGroup, exchange_rates: Optional[dict[str, float]] = None
 ) -> float:
     """
     Get exchange rate for a transaction group.
@@ -55,15 +55,15 @@ def get_exchange_rate(
 def convert_amount(amount: float, bank_identifier: str, ex_rate: float) -> float:
     """
     Convert amount using exchange rate (divide for VND to USD).
-    
+
     For USD bank, divides amount by exchange rate.
     For VND bank, returns amount as-is.
-    
+
     Args:
         amount: Amount to convert
         bank_identifier: "29" for USD or "30" for VND
         ex_rate: Exchange rate
-        
+
     Returns:
         Converted amount
     """
@@ -117,10 +117,10 @@ ACCOUNT_TYPES = ("1250", "1230", "1252", "1500")
 def get_account_type(account_number: Optional[str]) -> Optional[str]:
     """
     Determine account type from account number string.
-    
+
     Args:
         account_number: Account number string
-        
+
     Returns:
         Account type ("1250", "1230", "1252", "1500") or None
     """
@@ -143,7 +143,7 @@ NATURE_NORMALIZATION_MAP = {
     "oper": "oper",
     "nutrition": "nutrition",
     "infra": "edu_infra",
-    # Mappings for dec_final Nature.xlsx values
+    # Mappings for defaults nature.xlsx values
     "organisational capacity building": "org",
     "education quality improvement": "edu",
     "program operation": "oper",
@@ -170,12 +170,12 @@ def normalize_nature(nature_raw: str) -> str:
 
 
 def load_staff_allocation_data(
-    source: Union[str, Path, BytesIO]
+    source: Union[str, Path, BytesIO],
 ) -> tuple[dict[str, str], dict[str, dict[str, float]]]:
     """
-    Load staff lookup and allocation tables from Staff_&_Allocation.xlsx.
+    Load staff lookup and allocation tables from staff.xlsx.
 
-    Structure (dec_final):
+    Structure (defaults):
     - Sheet: "Lookup3_Staff & allocation"
     - Header row: 1 (0-indexed)
     - Column A (0): Staff Name
@@ -183,7 +183,7 @@ def load_staff_allocation_data(
     - Columns C-K (2-10): Province allocations
 
     Args:
-        source: Path to Staff_&_Allocation.xlsx or file-like object.
+        source: Path to staff.xlsx or file-like object.
 
     Returns:
         Tuple of (staff_lookup, allocation_lookup)
@@ -194,15 +194,11 @@ def load_staff_allocation_data(
     allocation_table: dict[str, dict[str, float]] = {}
 
     try:
-        df = pd.read_excel(
-            source,
-            sheet_name="Lookup3_Staff & allocation",
-            header=None
-        )
-        logger.debug("Loading Staff_&_Allocation.xlsx, shape: %s", df.shape)
+        df = pd.read_excel(source, sheet_name="Lookup3_Staff & allocation", header=None)
+        logger.debug("Loading staff.xlsx, shape: %s", df.shape)
 
         # Find header row (row with "Staff Name")
-        header_idx = 1  # Default for dec_final format
+        header_idx = 1  # Default for defaults format
         for idx in range(min(10, len(df))):
             for val in df.iloc[idx].values:
                 if isinstance(val, str) and "staff name" in val.lower():
@@ -248,7 +244,11 @@ def load_staff_allocation_data(
             if allocations:
                 allocation_table[name_key] = allocations
 
-        logger.info("Loaded %d staff entries, %d allocation entries", len(staff_table), len(allocation_table))
+        logger.info(
+            "Loaded %d staff entries, %d allocation entries",
+            len(staff_table),
+            len(allocation_table),
+        )
 
     except Exception as e:
         logger.warning("Could not load staff allocation table: %s", e)
@@ -257,7 +257,7 @@ def load_staff_allocation_data(
 
 
 def _load_allocation_legacy(
-    source: Union[str, Path, BytesIO]
+    source: Union[str, Path, BytesIO],
 ) -> dict[str, dict[str, float]]:
     """Load allocation table from legacy format (salary allocation-v2 sheet)."""
     allocation_table: dict[str, dict[str, float]] = {}
@@ -267,8 +267,12 @@ def _load_allocation_legacy(
         logger.debug("Loading allocation.xlsx (legacy)")
 
         province_cols = {
-            4: "vnelc", 5: "vndn", 6: "vnqn",
-            7: "vnhd", 8: "vnqng", 9: "vnmoet",
+            4: "vnelc",
+            5: "vndn",
+            6: "vnqn",
+            7: "vnhd",
+            8: "vnqng",
+            9: "vnmoet",
         }
 
         header_row = 4
@@ -339,7 +343,7 @@ def extract_exchange_rate_from_memo(entries: list) -> Optional[float]:
         Exchange rate as float, or None if not found
     """
     for entry in entries:
-        memo = entry.original_memo if hasattr(entry, 'original_memo') else ""
+        memo = entry.original_memo if hasattr(entry, "original_memo") else ""
         if not memo:
             continue
 
@@ -353,14 +357,14 @@ def extract_exchange_rate_from_memo(entries: list) -> Optional[float]:
 def _parse_rate_from_text(text: str) -> Optional[float]:
     """Parse exchange rate from a text string."""
     # Pattern 1: "rate" keyword followed by a number
-    match = re.search(r'(?:rate)\s*[:\s]\s*([\d.,]+)', text, re.IGNORECASE)
+    match = re.search(r"(?:rate)\s*[:\s]\s*([\d.,]+)", text, re.IGNORECASE)
     if match:
         rate = _normalize_rate_number(match.group(1))
         if rate and 10_000 <= rate <= 100_000:
             return rate
 
     # Pattern 2: "VND" followed by number (near multiplication context)
-    match = re.search(r'x\s*VND\s*([\d.,]+)', text, re.IGNORECASE)
+    match = re.search(r"x\s*VND\s*([\d.,]+)", text, re.IGNORECASE)
     if match:
         rate = _normalize_rate_number(match.group(1))
         if rate and 10_000 <= rate <= 100_000:
@@ -382,8 +386,8 @@ def _normalize_rate_number(num_str: str) -> Optional[float]:
 
     # If the string has a period or comma followed by exactly 3 digits at the end,
     # treat it as a thousands separator
-    cleaned = re.sub(r'[.,](?=\d{3}(?:\D|$))', '', num_str)
-    cleaned = cleaned.rstrip('.,')
+    cleaned = re.sub(r"[.,](?=\d{3}(?:\D|$))", "", num_str)
+    cleaned = cleaned.rstrip(".,")
 
     try:
         return float(cleaned)

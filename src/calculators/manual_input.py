@@ -6,6 +6,7 @@ this module handles:
 - Salary/bonus transactions via staff name lookup
 - Groups that couldn't be auto-categorized (flagged for manual review)
 """
+
 import logging
 from typing import Optional
 
@@ -14,8 +15,10 @@ logger = logging.getLogger(__name__)
 from ..models import TransactionGroup, ReportSection, BANK_USD, BANK_VND, BANK_34
 from ..validation import ValidationData
 from .utils import (
-    get_exchange_rate, convert_amount,
-    load_staff_allocation_data, lookup_by_name,
+    get_exchange_rate,
+    convert_amount,
+    load_staff_allocation_data,
+    lookup_by_name,
 )
 from config.mappings import DEFAULT_STAFF_ALLOCATION_LOOKUP
 
@@ -23,9 +26,19 @@ from config.mappings import DEFAULT_STAFF_ALLOCATION_LOOKUP
 class ManualInputProcessor:
     """Processes manual input transactions using lookup tables."""
 
-    def __init__(self, staff_allocation_source=None):
-        source = staff_allocation_source or DEFAULT_STAFF_ALLOCATION_LOOKUP
-        self.staff_lookup, self.allocation_lookup = load_staff_allocation_data(source)
+    def __init__(self, staff_data=None, source=None):
+        """
+        Args:
+            staff_data: Pre-parsed (staff_lookup, allocation_lookup) tuple.
+                       When provided, skips all file I/O.
+            source: Path or file-like for staff.xlsx. Used only when staff_data
+                   is None. Falls back to DEFAULT_STAFF_ALLOCATION_LOOKUP.
+        """
+        if staff_data is not None:
+            self.staff_lookup, self.allocation_lookup = staff_data
+        else:
+            src = source or DEFAULT_STAFF_ALLOCATION_LOOKUP
+            self.staff_lookup, self.allocation_lookup = load_staff_allocation_data(src)
 
     def lookup_staff_by_name(self, payee_name: str) -> Optional[str]:
         """Look up nature by staff name (exact then partial match)."""
@@ -39,7 +52,7 @@ class ManualInputProcessor:
         self,
         manual_groups: list[TransactionGroup],
         exchange_rates: dict[str, float] = None,
-        validation_data: Optional[ValidationData] = None
+        validation_data: Optional[ValidationData] = None,
     ) -> tuple[dict[str, dict[str, float]], list[TransactionGroup]]:
         """
         Process manual input groups and calculate totals.
@@ -111,11 +124,15 @@ class ManualInputProcessor:
         nature = self.lookup_staff_by_name(group.payee_name)
 
         if not nature:
-            # Staff not found - use entry natures from Nature.xlsx
+            # Staff not found - use entry natures from nature.xlsx
             for entry in active:
                 if entry.nature_type and entry.amount:
-                    amount = convert_amount(entry.amount, group.bank_identifier, ex_rate)
-                    result["amounts"][entry.nature_type] = result["amounts"].get(entry.nature_type, 0) + amount
+                    amount = convert_amount(
+                        entry.amount, group.bank_identifier, ex_rate
+                    )
+                    result["amounts"][entry.nature_type] = (
+                        result["amounts"].get(entry.nature_type, 0) + amount
+                    )
             result["processed"] = True
             return result
 
