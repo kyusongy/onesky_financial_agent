@@ -173,3 +173,12 @@ build/
 dist/
 scripts/icon.icns
 scripts/icon.iconset/
+
+# User guide generation (local only)
+node_modules/
+package.json
+package-lock.json
+scripts/generate_instructions.js
+.playwright-cli/
+screenshots/
+OneSky_Financial_Agent_User_Guide.docx

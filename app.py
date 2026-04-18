@@ -417,25 +417,28 @@ def main():
             """)
         return
 
-    # Store transaction bytes for later use
-    st.session_state.transaction_bytes = transaction_file.read()
-    transaction_file.seek(0)  # Reset for processing
+    # Only re-parse when the uploaded file actually changes
+    tx_sig = (transaction_file.name, transaction_file.size)
+    if st.session_state.get("tx_sig") != tx_sig:
+        st.session_state.tx_sig = tx_sig
+        st.session_state.transaction_bytes = transaction_file.read()
+        transaction_file.seek(0)
 
-    # Parse transaction file to check for USD transactions
-    with st.spinner("Analyzing transaction file..."):
-        try:
-            groups, has_usd = parse_transaction_file(
-                BytesIO(st.session_state.transaction_bytes)
-            )
-            st.session_state.parsed_groups = groups
-            st.success(f"✓ Loaded {len(groups)} transaction groups")
+        with st.spinner("Analyzing transaction file..."):
+            try:
+                groups, has_usd = parse_transaction_file(
+                    BytesIO(st.session_state.transaction_bytes)
+                )
+                st.session_state.parsed_groups = groups
+                st.session_state.usd_groups = get_usd_groups(groups) if has_usd else []
+                st.session_state.exchange_rates = {}
+            except Exception as e:
+                st.error(f"Error parsing transaction file: {str(e)}")
+                return
 
-            # Get USD groups for per-transaction exchange rate input
-            if has_usd:
-                st.session_state.usd_groups = get_usd_groups(groups)
-        except Exception as e:
-            st.error(f"Error parsing transaction file: {str(e)}")
-            return
+    if st.session_state.parsed_groups is None:
+        return
+    st.success(f"✓ Loaded {len(st.session_state.parsed_groups)} transaction groups")
 
     # Exchange rate input section for each USD transaction
     if st.session_state.usd_groups:
@@ -461,9 +464,12 @@ def main():
                     payee = group.payee_name or "Unknown"
                     amount = group.bank_amount
 
-                    # Auto-extract rate from memo, fall back to 25000
                     memo_rate = extract_exchange_rate_from_memo(group.entries)
                     default_rate = memo_rate or 25000.0
+
+                    widget_key = f"rate_{group_id}"
+                    if widget_key not in st.session_state:
+                        st.session_state[widget_key] = default_rate
 
                     with col:
                         label = f"{date_str} | {payee[:20]} | {amount:,.0f}"
@@ -471,11 +477,8 @@ def main():
                             label,
                             min_value=1.0,
                             max_value=100000.0,
-                            value=st.session_state.exchange_rates.get(
-                                group_id, default_rate
-                            ),
                             step=100.0,
-                            key=f"rate_{group_id}",
+                            key=widget_key,
                             help=f"VND/USD rate. {'Auto-detected from memo.' if memo_rate else 'Default 25,000.'}",
                         )
                         st.session_state.exchange_rates[group_id] = rate
